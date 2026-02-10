@@ -1,0 +1,1 @@
+-- SQLite schema: CREATE TABLE for Tournament, Fencer, Referee, Pool, PoolBout, PoolResult, DEBout, FencerSkillEstimate, WinProbability, Strip, NarratorEvent, Tokens
