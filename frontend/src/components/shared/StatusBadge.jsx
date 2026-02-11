@@ -1,1 +1,9 @@
-// Status badge: generic color-coded pill component for displaying entity status (pool, referee, strip, bout)
+import { capitalize } from '../../utils/formatters';
+
+export default function StatusBadge({ status }) {
+  return (
+    <span className={`status-badge ${status || ''}`}>
+      {capitalize(status)}
+    </span>
+  );
+}

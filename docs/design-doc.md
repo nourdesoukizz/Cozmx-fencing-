@@ -54,19 +54,19 @@ FenceFlow is a web application with four interfaces serving four user types:
 | Component | Technology | Rationale |
 |-----------|-----------|-----------|
 | Frontend | React (single-page application) | Works on laptops and iPads, single codebase, real-time updates |
-| Backend | Node.js with Express | Fast development, JSON-native, good WebSocket support |
-| Database | SQLite | Zero-config, single file, perfect for hackathon, holds all tournament state |
+| Backend | Python with FastAPI | Fast development, auto-generated API docs, async support, great WebSocket support |
+| Data Storage | CSV files loaded into memory | Zero-config, no database setup, CSV files from real tournament data |
 | Real-time Updates | WebSockets (Socket.io) | Live dashboard, live bracket, live coach analytics, live spectator view |
 | SMS Notifications | Twilio API | Industry standard, free trial credit, simple API |
 | AI / OCR | Claude API (Vision + Text) | Pool sheet extraction, anomaly detection, performance insights |
-| Bayesian Model | Custom implementation (Node.js) | Posterior skill estimation with live updating |
-| Hosting | Local machine for demo (deployable to any Node.js host) | Simplicity for hackathon demo |
+| Bayesian Model | Custom implementation (Python) | Posterior skill estimation with live updating |
+| Hosting | Local machine for demo (deployable to any Python host) | Simplicity for hackathon demo |
 
 ---
 
 ## 3. Data Model
 
-FenceFlow operates on tournament data that would normally come from a current fencing software export. For the hackathon, this data is simulated from a real tournament the developer has hosted. All entities below are stored in SQLite.
+FenceFlow operates on tournament data that would normally come from a current fencing software export. For the hackathon, this data is simulated from a real tournament the developer has hosted. All entities below are stored in csv files under backend/data.
 
 ### 3.1 Core Entities
 
