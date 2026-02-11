@@ -1185,6 +1185,532 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
+   SCORE CELLS — Victory / Defeat coloring
+   ══════════════════════════════════════════════════ */
+
+.matrix-table td.bout-cell.victory {
+  background: var(--green-bg);
+  color: var(--green);
+  font-weight: 700;
+}
+
+.matrix-table td.bout-cell.defeat {
+  background: var(--red-bg);
+  color: var(--red);
+  font-weight: 600;
+}
+
+.matrix-table td.result-cell {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 11px;
+  background: var(--bg-secondary);
+}
+
+.matrix-table td.result-cell.place {
+  font-weight: 800;
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════════════
+   PENDING GLOW — Pool cards awaiting review
+   ══════════════════════════════════════════════════ */
+
+.pool-matrix-card.pending-glow {
+  border-color: var(--yellow);
+  box-shadow: 0 0 12px var(--yellow-bg), inset 0 0 8px var(--yellow-bg);
+  animation: pendingPulse 2s ease-in-out infinite;
+}
+
+@keyframes pendingPulse {
+  0%, 100% { box-shadow: 0 0 12px var(--yellow-bg), inset 0 0 8px var(--yellow-bg); }
+  50% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.25), inset 0 0 12px var(--yellow-bg); }
+}
+
+.pending-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  background: var(--yellow-bg);
+  color: var(--yellow);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 20px;
+}
+
+.event-pending-count {
+  margin-left: 10px;
+  padding: 2px 10px;
+  background: var(--yellow-bg);
+  color: var(--yellow);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+/* ══════════════════════════════════════════════════
+   REVIEW PANEL — Modal overlay
+   ══════════════════════════════════════════════════ */
+
+.review-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s ease;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.review-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: 100%;
+  max-width: 1100px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+}
+
+.review-panel h2 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.review-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.review-close:hover {
+  color: var(--text-primary);
+}
+
+.ocr-failed-banner {
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  background: var(--orange-bg);
+  color: var(--orange);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.review-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.review-photo {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  max-height: 500px;
+}
+
+.review-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.no-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.review-grid {
+  overflow-x: auto;
+}
+
+.matrix-table.editable td.edit-cell {
+  padding: 2px;
+}
+
+.matrix-table.editable td.edit-cell input {
+  width: 40px;
+  padding: 4px;
+  text-align: center;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.15s;
+  -moz-appearance: textfield;
+}
+
+.matrix-table.editable td.edit-cell input::-webkit-outer-spin-button,
+.matrix-table.editable td.edit-cell input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.matrix-table.editable td.edit-cell input:focus {
+  border-color: var(--accent);
+}
+
+.confidence-bar {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.review-anomalies {
+  margin-bottom: 20px;
+}
+
+.review-anomalies h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.anomaly-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 0 6px 6px 0;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.anomaly-pill.error {
+  background: var(--red-bg);
+  color: var(--red);
+}
+
+.anomaly-pill.warning {
+  background: var(--yellow-bg);
+  color: var(--yellow);
+}
+
+.anomaly-pill.info {
+  background: var(--blue-bg);
+  color: var(--blue);
+}
+
+.review-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.approve-btn {
+  padding: 10px 28px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.approve-btn:hover {
+  opacity: 0.9;
+}
+
+.approve-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.reject-btn {
+  padding: 10px 28px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.reject-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+/* ══════════════════════════════════════════════════
+   REFEREE PORTAL — Pool grid & upload
+   ══════════════════════════════════════════════════ */
+
+.referee-portal-content {
+  padding: 24px 28px;
+}
+
+.referee-pool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.referee-pool-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color 0.15s;
+}
+
+.referee-pool-card:hover {
+  border-color: rgba(192, 192, 192, 0.2);
+}
+
+.referee-pool-card.status-pending_review {
+  border-color: var(--yellow);
+}
+
+.referee-pool-card.status-approved {
+  border-color: var(--green);
+}
+
+.referee-pool-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.referee-pool-header .pool-label {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.referee-pool-meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.referee-pool-meta p {
+  margin-bottom: 2px;
+}
+
+.referee-pool-status {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.upload-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.upload-btn:hover {
+  background: var(--accent-hover);
+}
+
+.upload-btn.primary {
+  background: var(--green);
+  color: #fff;
+}
+
+.upload-btn.primary:hover {
+  opacity: 0.9;
+}
+
+.submitted-note,
+.approved-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 8px;
+}
+
+.submitted-note { color: var(--yellow); }
+.approved-note { color: var(--green); }
+
+/* ══════════════════════════════════════════════════
+   UPLOAD PAGE — Camera capture UI
+   ══════════════════════════════════════════════════ */
+
+.upload-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+.upload-content {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.upload-pool-info {
+  margin-bottom: 24px;
+}
+
+.upload-pool-info h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.upload-pool-info p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  overflow: hidden;
+}
+
+.upload-area:hover {
+  border-color: var(--accent);
+}
+
+.upload-preview {
+  width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+}
+
+.upload-placeholder {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.camera-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.upload-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: var(--red-bg);
+  border-radius: var(--radius-sm);
+}
+
+.upload-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.upload-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.upload-success {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.success-icon {
+  font-size: 48px;
+  color: var(--green);
+  margin-bottom: 16px;
+}
+
+.success-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* ══════════════════════════════════════════════════
+   PUBLIC VIEW
+   ══════════════════════════════════════════════════ */
+
+.public-content {
+  padding: 24px 28px;
+}
+
+.public-empty {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.public-empty h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.public-empty p {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+/* ══════════════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════════════ */
 
@@ -1251,5 +1777,25 @@ body {
   .pool-controls {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .review-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .review-panel {
+    padding: 20px;
+  }
+
+  .referee-pool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-content {
+    padding: 16px;
+  }
+
+  .public-content {
+    padding: 18px 16px;
   }
 }

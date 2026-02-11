@@ -1,11 +1,42 @@
+import json
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 
-from config import PORT
+from config import PORT, UPLOADS_DIR
 from data_loader import load_data
-from routers import tournament, pools, referees
+from routers import tournament, pools, referees, scores
+
+
+class ConnectionManager:
+    """Manages active WebSocket connections and broadcasts messages."""
+
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        payload = json.dumps(message)
+        disconnected = []
+        for connection in self.active_connections:
+            try:
+                await connection.send_text(payload)
+            except Exception:
+                disconnected.append(connection)
+        for conn in disconnected:
+            self.disconnect(conn)
+
+
+manager = ConnectionManager()
 
 
 @asynccontextmanager
@@ -26,11 +57,27 @@ app.add_middleware(
 app.include_router(tournament.router)
 app.include_router(pools.router)
 app.include_router(referees.router)
+app.include_router(scores.router)
+
+# Mount uploads directory for serving score sheet photos
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Keep connection alive; we only broadcast from server
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
 
 
 if __name__ == "__main__":

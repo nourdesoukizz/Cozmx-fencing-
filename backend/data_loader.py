@@ -1,4 +1,6 @@
 import csv
+import json
+from datetime import datetime
 from config import DATA_DIR, TOURNAMENT_NAME, TOURNAMENT_DATE
 
 # In-memory data stores
@@ -10,6 +12,9 @@ _tournament: dict = {}
 _fencer_by_id: dict[int, dict] = {}
 _pool_by_id: dict[int, dict] = {}
 _referee_by_id: dict[int, dict] = {}
+
+# Submissions store: pool_id -> submission dict
+_submissions: dict[int, dict] = {}
 
 
 def _strip_row(row: dict) -> dict:
@@ -186,6 +191,9 @@ def load_data():
         },
     }
 
+    # --- Load previously saved scores ---
+    load_scores()
+
     print(f"CSV data loaded: {len(_fencers)} fencers, {len(_pools)} pools, {len(_referees)} referees, {len(events_summary)} events")
 
 
@@ -229,3 +237,76 @@ def get_referees(event: str | None = None) -> list[dict]:
 
 def get_referee_by_id(referee_id: int) -> dict | None:
     return _referee_by_id.get(referee_id)
+
+
+# --- Score / Submission functions ---
+
+def load_scores():
+    """Load previously approved scores from pool_scores.csv on startup."""
+    scores_path = DATA_DIR / "pool_scores.csv"
+    if not scores_path.exists():
+        return
+    with open(scores_path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            pool_id = int(row["pool_id"])
+            submission = {
+                "pool_id": pool_id,
+                "status": row.get("status", "approved"),
+                "scores": json.loads(row.get("scores_json", "[]")),
+                "anomalies": json.loads(row.get("anomalies_json", "[]")),
+                "confidence": float(row.get("confidence", 0)),
+                "photo_path": row.get("photo_path", ""),
+                "submitted_at": row.get("submitted_at", ""),
+                "reviewed_at": row.get("reviewed_at", ""),
+                "reviewed_by": row.get("reviewed_by", ""),
+            }
+            _submissions[pool_id] = submission
+            # Update pool status
+            pool = _pool_by_id.get(pool_id)
+            if pool:
+                pool["status"] = "approved"
+                pool["submission"] = submission
+
+
+def save_submission(pool_id: int, data: dict):
+    """Store a submission in memory and attach to pool."""
+    _submissions[pool_id] = data
+    pool = _pool_by_id.get(pool_id)
+    if pool:
+        pool["status"] = data.get("status", "pending_review")
+        pool["submission"] = data
+
+
+def write_scores_csv():
+    """Persist all approved submissions to pool_scores.csv."""
+    scores_path = DATA_DIR / "pool_scores.csv"
+    fieldnames = [
+        "pool_id", "status", "scores_json", "anomalies_json",
+        "confidence", "photo_path", "submitted_at", "reviewed_at", "reviewed_by",
+    ]
+    approved = {pid: sub for pid, sub in _submissions.items() if sub.get("status") == "approved"}
+    with open(scores_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for pid in sorted(approved.keys()):
+            sub = approved[pid]
+            writer.writerow({
+                "pool_id": pid,
+                "status": sub["status"],
+                "scores_json": json.dumps(sub.get("scores", [])),
+                "anomalies_json": json.dumps(sub.get("anomalies", [])),
+                "confidence": sub.get("confidence", 0),
+                "photo_path": sub.get("photo_path", ""),
+                "submitted_at": sub.get("submitted_at", ""),
+                "reviewed_at": sub.get("reviewed_at", ""),
+                "reviewed_by": sub.get("reviewed_by", ""),
+            })
+
+
+def get_all_submissions() -> list[dict]:
+    return list(_submissions.values())
+
+
+def get_submission(pool_id: int) -> dict | None:
+    return _submissions.get(pool_id)

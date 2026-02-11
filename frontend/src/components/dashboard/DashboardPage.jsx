@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../api/client';
 import { useNotification } from '../../context/NotificationContext';
+import useSocket from '../../hooks/useSocket';
 import StatusBadge from '../shared/StatusBadge';
 import StripBoard from './StripBoard';
 import PoolProgress from './PoolProgress';
@@ -48,6 +49,17 @@ export default function DashboardPage() {
     setLoading(true);
     fetchData(true).finally(() => setLoading(false));
   }, [fetchData]);
+
+  // WebSocket: auto-refresh on score events
+  useSocket(useCallback((msg) => {
+    if (msg.type === 'submission_received') {
+      addNotification('info', 'New Submission', `Pool ${msg.pool_id} score sheet uploaded`);
+      fetchData();
+    } else if (msg.type === 'scores_approved') {
+      addNotification('success', 'Scores Approved', `Pool ${msg.pool_id} scores approved`);
+      fetchData();
+    }
+  }, [addNotification, fetchData]));
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -128,7 +140,7 @@ export default function DashboardPage() {
       {/* Tab Content */}
       <div className="tab-content">
         {activeTab === 'strips' && <StripBoard pools={pools} />}
-        {activeTab === 'pools' && <PoolProgress pools={pools} />}
+        {activeTab === 'pools' && <PoolProgress pools={pools} onRefresh={() => fetchData()} />}
         {activeTab === 'referees' && <RefereePanel referees={referees} />}
       </div>
     </div>

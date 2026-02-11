@@ -1,8 +1,15 @@
 import { useState, useMemo } from 'react';
 import PoolTable from './PoolTable';
+import PoolReview from './PoolReview';
 
-export default function PoolProgress({ pools }) {
+export default function PoolProgress({ pools, onRefresh }) {
   const [search, setSearch] = useState('');
+  const [reviewPool, setReviewPool] = useState(null);
+
+  const pendingCount = useMemo(
+    () => pools.filter((p) => p.submission?.status === 'pending_review' || p.submission?.status === 'ocr_failed').length,
+    [pools]
+  );
 
   const filteredPools = useMemo(() => {
     if (!search.trim()) return pools;
@@ -27,6 +34,17 @@ export default function PoolProgress({ pools }) {
     return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
   }, [filteredPools]);
 
+  const handlePoolClick = (pool) => {
+    if (pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed') {
+      setReviewPool(pool);
+    }
+  };
+
+  const handleReviewClose = () => {
+    setReviewPool(null);
+    if (onRefresh) onRefresh();
+  };
+
   return (
     <div>
       <div className="pool-controls">
@@ -37,18 +55,27 @@ export default function PoolProgress({ pools }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        {pendingCount > 0 && (
+          <div className="pending-badge">
+            {pendingCount} pending review
+          </div>
+        )}
       </div>
 
       {groupedByEvent.map(([event, eventPools]) => {
-        const completed = eventPools.filter((p) => p.status === 'completed').length;
-        const pct = eventPools.length > 0 ? Math.round((completed / eventPools.length) * 100) : 0;
+        const approved = eventPools.filter((p) => p.submission?.status === 'approved').length;
+        const pending = eventPools.filter((p) => p.submission?.status === 'pending_review' || p.submission?.status === 'ocr_failed').length;
+        const pct = eventPools.length > 0 ? Math.round((approved / eventPools.length) * 100) : 0;
 
         return (
           <div key={event} className="pool-event-group">
-            <h3>{event}</h3>
+            <h3>
+              {event}
+              {pending > 0 && <span className="event-pending-count">{pending} pending</span>}
+            </h3>
             <div className="progress-summary">
               <span>{eventPools.length} pools</span>
-              <span>{completed} completed</span>
+              <span>{approved} scored</span>
               <span>{pct}%</span>
             </div>
             <div className="progress-bar-container">
@@ -59,7 +86,11 @@ export default function PoolProgress({ pools }) {
               {eventPools
                 .sort((a, b) => a.pool_number - b.pool_number)
                 .map((pool) => (
-                  <PoolTable key={pool.id} pool={pool} />
+                  <PoolTable
+                    key={pool.id}
+                    pool={pool}
+                    onClick={pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed' ? () => handlePoolClick(pool) : undefined}
+                  />
                 ))}
             </div>
           </div>
@@ -70,6 +101,10 @@ export default function PoolProgress({ pools }) {
         <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 32 }}>
           No pools match your search.
         </p>
+      )}
+
+      {reviewPool && (
+        <PoolReview pool={reviewPool} onClose={handleReviewClose} />
       )}
     </div>
   );
