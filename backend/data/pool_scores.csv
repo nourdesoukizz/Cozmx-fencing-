@@ -1,0 +1,2 @@
+pool_id,status,scores_json,anomalies_json,confidence,photo_path,submitted_at,reviewed_at,reviewed_by
+11,approved,"[[null, 0, 5, 5, 5, 5], [5, null, 5, 2, 5, 5], [1, 4, null, 1, 5, 5], [2, 5, 5, null, 4, 5], [3, 1, 2, 5, null, 5], [1, 1, 2, 0, 2, null]]","[{""level"": ""info"", ""message"": ""Upset: YU (D25) lost to KHANAL (U)""}]",0,uploads/pool_11_1770793792.jpg,2026-02-10T23:09:52.578843,2026-02-10T23:11:30.827544,Bout Committee

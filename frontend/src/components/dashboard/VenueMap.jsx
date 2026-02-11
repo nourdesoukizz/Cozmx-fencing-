@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
-import { formatRefereeName, formatFencerName, formatEventShort } from '../../utils/formatters';
+import { formatRefereeName, formatFencerName } from '../../utils/formatters';
 import StatusBadge from '../shared/StatusBadge';
 
-// Static venue layout: 3 areas with predefined strip positions
 const VENUE_LAYOUT = [
   {
     id: 'F',
@@ -27,7 +26,6 @@ const VENUE_LAYOUT = [
 export default function VenueMap({ pools }) {
   const [selectedPool, setSelectedPool] = useState(null);
 
-  // Build a lookup: strip_number -> pool data
   const stripMap = useMemo(() => {
     const map = {};
     pools.forEach((pool) => {
@@ -37,66 +35,90 @@ export default function VenueMap({ pools }) {
     return map;
   }, [pools]);
 
-  const handleTileClick = (stripId) => {
+  const handleStripClick = (stripId) => {
     const pool = stripMap[stripId];
     if (pool) setSelectedPool(pool);
   };
 
   const closeDetail = () => setSelectedPool(null);
 
-  return (
-    <div className="venue-map">
-      {VENUE_LAYOUT.map((area) => (
-        <div key={area.id} className="venue-area">
-          <div className="venue-area-header">
-            <span className="area-label">{area.label}</span>
-            <span className="area-event">{area.event}</span>
-          </div>
-          <div className="venue-strip-row">
-            {area.strips.map((stripId) => {
-              const pool = stripMap[stripId];
-              const status = pool?.status || 'empty';
+  const getStatusClass = (pool) => {
+    if (!pool) return 'empty';
+    if (pool.submission?.status === 'approved') return 'completed';
+    if (pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed') return 'in-progress';
+    return 'pending';
+  };
 
-              return (
-                <div
-                  key={stripId}
-                  className={`venue-strip-tile status-${status}`}
-                  onClick={() => handleTileClick(stripId)}
-                  title={pool ? `Pool ${pool.pool_number} — ${formatRefereeName(pool.referee)}` : 'Empty'}
-                >
-                  <span className="tile-strip-label">{stripId}</span>
-                  {pool && (
-                    <>
-                      <span className="tile-pool-label">Pool {pool.pool_number}</span>
-                      <span className="tile-referee">{formatRefereeName(pool.referee)}</span>
-                    </>
-                  )}
-                </div>
-              );
-            })}
+  return (
+    <div className="venue-floor">
+      <div className="venue-floor-title">Venue Floor Plan</div>
+
+      <div className="venue-floor-grid">
+        {VENUE_LAYOUT.map((area) => (
+          <div key={area.id} className="floor-area">
+            <div className="floor-area-label">
+              <span className="floor-area-name">{area.label}</span>
+              <span className="floor-area-event">{area.event}</span>
+            </div>
+            <div className="floor-strips">
+              {area.strips.map((stripId) => {
+                const pool = stripMap[stripId];
+                const status = getStatusClass(pool);
+                return (
+                  <div
+                    key={stripId}
+                    className={`floor-strip strip-${status}`}
+                    onClick={() => handleStripClick(stripId)}
+                    title={pool ? `Pool ${pool.pool_number} — ${formatRefereeName(pool.referee)}` : 'Empty strip'}
+                  >
+                    {/* The fencing strip surface */}
+                    <div className="strip-surface">
+                      {/* En-garde lines */}
+                      <div className="strip-line strip-line-left" />
+                      <div className="strip-line strip-line-center" />
+                      <div className="strip-line strip-line-right" />
+                    </div>
+
+                    {/* Strip info overlay */}
+                    <div className="strip-info">
+                      <span className="strip-id">{stripId}</span>
+                      {pool && (
+                        <>
+                          <span className="strip-pool">Pool {pool.pool_number}</span>
+                          <span className="strip-ref">{formatRefereeName(pool.referee)}</span>
+                          <span className="strip-fencers">{pool.fencer_count} fencers</span>
+                        </>
+                      )}
+                      {!pool && <span className="strip-empty-label">Empty</span>}
+                    </div>
+
+                    {/* Status indicator dot */}
+                    <div className={`strip-status-dot dot-${status}`} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {/* Legend */}
-      <div className="venue-area" style={{ background: 'transparent', border: 'none' }}>
-        <div className="venue-legend">
-          <div className="venue-legend-item">
-            <span className="venue-legend-dot completed" />
-            <span>Completed</span>
-          </div>
-          <div className="venue-legend-item">
-            <span className="venue-legend-dot in_progress" />
-            <span>In Progress</span>
-          </div>
-          <div className="venue-legend-item">
-            <span className="venue-legend-dot pending" />
-            <span>Pending</span>
-          </div>
-          <div className="venue-legend-item">
-            <span className="venue-legend-dot empty" />
-            <span>Empty</span>
-          </div>
+      <div className="floor-legend">
+        <div className="floor-legend-item">
+          <span className="floor-legend-dot dot-completed" />
+          <span>Scores Approved</span>
+        </div>
+        <div className="floor-legend-item">
+          <span className="floor-legend-dot dot-in-progress" />
+          <span>Pending Review</span>
+        </div>
+        <div className="floor-legend-item">
+          <span className="floor-legend-dot dot-pending" />
+          <span>Awaiting Upload</span>
+        </div>
+        <div className="floor-legend-item">
+          <span className="floor-legend-dot dot-empty" />
+          <span>Empty Strip</span>
         </div>
       </div>
 

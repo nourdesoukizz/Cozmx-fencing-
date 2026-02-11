@@ -112,7 +112,10 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="app-header">
         <div className="app-header-left">
-          <h1>FenceFlow</h1>
+          <div className="brand-name brand-name-sm">
+            <h1>FenceFlow</h1>
+            <span className="by-cozmx">by CozMx</span>
+          </div>
           <Link to="/" className="header-home-link">Home</Link>
         </div>
         <button

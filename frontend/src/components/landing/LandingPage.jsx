@@ -42,7 +42,10 @@ export default function LandingPage() {
   return (
     <div className="landing-page">
       <div className="landing-brand">
-        <h1>FenceFlow</h1>
+        <div className="brand-name">
+          <h1>FenceFlow</h1>
+          <span className="by-cozmx">by CozMx</span>
+        </div>
         <p>Tournament Operations Platform</p>
       </div>
 

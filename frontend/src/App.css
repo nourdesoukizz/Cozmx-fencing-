@@ -76,12 +76,52 @@ body {
   margin-bottom: 48px;
 }
 
+.brand-name {
+  display: inline-block;
+  text-align: right;
+}
+
+.brand-name h1 {
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+.by-cozmx {
+  display: block;
+  font-family: 'Georgia', 'Times New Roman', 'Palatino', cursive, serif;
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: -4px;
+  letter-spacing: 0.5px;
+}
+
+.brand-name-sm .by-cozmx {
+  font-size: 11px;
+  margin-top: -2px;
+}
+
+.brand-name-sm h1 {
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
 .landing-brand h1 {
   font-size: 42px;
   font-weight: 800;
   letter-spacing: -1.5px;
   color: var(--text-primary);
   margin-bottom: 8px;
+}
+
+.landing-brand .brand-name h1 {
+  margin-bottom: 0;
+}
+
+.landing-brand .by-cozmx {
+  font-size: 16px;
+  margin-top: -6px;
 }
 
 .landing-brand p {
@@ -432,149 +472,258 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
-   VENUE MAP (Strip Board replacement)
+   VENUE FLOOR PLAN — Realistic Fencing Strips
    ══════════════════════════════════════════════════ */
 
-.venue-map {
+.venue-floor {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
-.venue-map-controls {
+.venue-floor-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.venue-floor-grid {
   display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.venue-area {
+  flex-direction: column;
+  gap: 28px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  padding: 28px;
+  position: relative;
+  /* Subtle floor texture */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(255,255,255,0.015) 39px,
+      rgba(255,255,255,0.015) 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 39px,
+      rgba(255,255,255,0.015) 39px,
+      rgba(255,255,255,0.015) 40px
+    );
+  background-color: var(--bg-card);
 }
 
-.venue-area-header {
-  padding: 14px 20px;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.venue-area-header .area-label {
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: var(--accent);
-}
-
-.venue-area-header .area-event {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
-.venue-strip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 16px 20px;
-}
-
-.venue-strip-tile {
-  width: 110px;
-  height: 90px;
-  border-radius: var(--radius);
+.floor-area {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s;
-  position: relative;
-  border: 1px solid transparent;
+  gap: 12px;
 }
 
-.venue-strip-tile:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 16px rgba(0,0,0,0.3);
-}
-
-.venue-strip-tile.status-completed {
-  background: var(--green);
-  color: #fff;
-}
-
-.venue-strip-tile.status-active,
-.venue-strip-tile.status-in_progress {
-  background: var(--yellow);
-  color: #000;
-}
-
-.venue-strip-tile.status-pending {
-  background: var(--red);
-  color: #fff;
-}
-
-.venue-strip-tile.status-empty {
-  background: var(--bg-hover);
-  border-color: var(--border);
-  color: var(--text-muted);
-}
-
-.venue-strip-tile .tile-strip-label {
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.venue-strip-tile .tile-pool-label {
-  font-size: 11px;
-  font-weight: 600;
-  opacity: 0.85;
-}
-
-.venue-strip-tile .tile-referee {
-  font-size: 9px;
-  opacity: 0.7;
-  margin-top: 2px;
-  max-width: 100px;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Venue map legend */
-.venue-legend {
+.floor-area-label {
   display: flex;
-  gap: 20px;
-  padding: 14px 20px;
-  border-top: 1px solid var(--border);
+  align-items: baseline;
+  gap: 10px;
+}
+
+.floor-area-name {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.floor-area-event {
   font-size: 12px;
   color: var(--text-muted);
 }
 
-.venue-legend-item {
+.floor-strips {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.venue-legend-dot {
+/* Individual fencing strip */
+.floor-strip {
+  position: relative;
+  height: 56px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.floor-strip:hover {
+  transform: scaleY(1.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  z-index: 2;
+}
+
+/* The metallic strip surface */
+.strip-surface {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* En-garde / warning / center lines on the strip */
+.strip-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  opacity: 0.25;
+}
+
+.strip-line-left {
+  left: 20%;
+  background: #fff;
+}
+
+.strip-line-center {
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  width: 3px;
+  opacity: 0.35;
+}
+
+.strip-line-right {
+  right: 20%;
+  background: #fff;
+}
+
+/* Strip info positioned on top */
+.strip-info {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 100%;
+  padding: 0 16px;
+}
+
+.strip-id {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  min-width: 32px;
+}
+
+.strip-pool {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.strip-ref {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+.strip-fencers {
+  font-size: 11px;
+  opacity: 0.6;
+  margin-left: auto;
+}
+
+.strip-empty-label {
+  font-size: 12px;
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* Status indicator dot */
+.strip-status-dot {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.3);
 }
 
-.venue-legend-dot.completed { background: var(--green); }
-.venue-legend-dot.in_progress { background: var(--yellow); }
-.venue-legend-dot.pending { background: var(--red); }
-.venue-legend-dot.empty {
-  background: var(--bg-hover);
-  border: 1px solid var(--border);
+/* Strip status colors — metallic / realistic tones */
+.floor-strip.strip-completed {
+  background: linear-gradient(90deg, #1a3a2a 0%, #1e4d33 40%, #1a3a2a 100%);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #d1fae5;
+}
+
+.floor-strip.strip-in-progress {
+  background: linear-gradient(90deg, #3a3520 0%, #4d4528 40%, #3a3520 100%);
+  border-color: rgba(234, 179, 8, 0.3);
+  color: #fef3c7;
+}
+
+.floor-strip.strip-pending {
+  background: linear-gradient(90deg, #2a2a32 0%, #35353f 40%, #2a2a32 100%);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #e4e4ec;
+}
+
+.floor-strip.strip-empty {
+  background: linear-gradient(90deg, #1a1a20 0%, #222228 40%, #1a1a20 100%);
+  border-color: var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.floor-strip.strip-completed .strip-line { background: var(--green); }
+.floor-strip.strip-in-progress .strip-line { background: var(--yellow); }
+.floor-strip.strip-pending .strip-line { background: var(--accent); }
+.floor-strip.strip-empty .strip-line { background: var(--text-muted); opacity: 0.1; }
+
+.dot-completed { background: var(--green); border-color: rgba(0,0,0,0.4); }
+.dot-in-progress { background: var(--yellow); border-color: rgba(0,0,0,0.4); }
+.dot-pending { background: var(--red); border-color: rgba(0,0,0,0.4); }
+.dot-empty { background: var(--bg-hover); border-color: var(--border); }
+
+/* Hover glow per status */
+.floor-strip.strip-completed:hover {
+  border-color: var(--green);
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);
+}
+
+.floor-strip.strip-in-progress:hover {
+  border-color: var(--yellow);
+  box-shadow: 0 4px 20px rgba(234, 179, 8, 0.15);
+}
+
+.floor-strip.strip-pending:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(192, 192, 192, 0.1);
+}
+
+/* Floor plan legend */
+.floor-legend {
+  display: flex;
+  gap: 24px;
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.floor-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.floor-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.3);
 }
 
 /* Strip detail panel (slide-in) */
@@ -1832,13 +1981,30 @@ body {
     font-size: 32px;
   }
 
-  .venue-strip-tile {
-    width: 90px;
-    height: 76px;
+  .venue-floor-grid {
+    padding: 16px;
   }
 
-  .venue-strip-tile .tile-strip-label {
-    font-size: 15px;
+  .floor-strip {
+    height: 48px;
+  }
+
+  .strip-info {
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .strip-id {
+    font-size: 13px;
+  }
+
+  .strip-ref {
+    display: none;
+  }
+
+  .floor-legend {
+    flex-wrap: wrap;
+    gap: 14px;
   }
 
   .pool-matrix-grid {
