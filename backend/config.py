@@ -16,5 +16,7 @@ TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER", "")
 BASE_URL = os.getenv("BASE_URL", "http://localhost:3000")
 
+COACH_ACCESS_CODE = os.getenv("COACH_ACCESS_CODE", "5678")
+
 TOURNAMENT_NAME = "Cozmx Fall RYC/RJCC"
 TOURNAMENT_DATE = "November 22-23, 2025"

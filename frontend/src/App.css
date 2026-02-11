@@ -1968,6 +1968,158 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
+   COACH PORTAL
+   ══════════════════════════════════════════════════ */
+
+.coach-auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(192,192,192,0.04) 0%, transparent 60%),
+    var(--bg-primary);
+}
+
+.coach-auth-card {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+
+.coach-auth-card h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.coach-auth-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.coach-filters {
+  display: flex;
+  gap: 12px;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Fencer row color coding */
+.fencer-row-above td {
+  background: rgba(34, 197, 94, 0.06) !important;
+}
+
+.fencer-row-below td {
+  background: rgba(239, 68, 68, 0.06) !important;
+}
+
+/* Delta badges */
+.delta-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.delta-badge.delta-above {
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.delta-badge.delta-below {
+  background: var(--red-bg);
+  color: var(--red);
+}
+
+.delta-badge.delta-at {
+  background: var(--blue-bg);
+  color: var(--blue);
+}
+
+.delta-badge.pool-data-badge {
+  margin-left: 8px;
+  background: var(--accent-glow);
+  color: var(--accent);
+  font-size: 10px;
+}
+
+/* Confidence interval bar */
+.confidence-bar-container {
+  margin-top: 8px;
+  height: auto;
+  background: none;
+  overflow: visible;
+}
+
+.confidence-bar-track {
+  position: relative;
+  height: 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.confidence-bar-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--accent-glow);
+  border-radius: 6px;
+  transition: left 0.3s, width 0.3s;
+  border: 1px solid rgba(192, 192, 192, 0.2);
+}
+
+.confidence-bar-marker {
+  position: absolute;
+  top: -2px;
+  width: 4px;
+  height: 16px;
+  background: var(--accent);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.confidence-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Bout rows */
+.bout-row.bout-win td {
+  background: rgba(34, 197, 94, 0.04);
+}
+
+.bout-row.bout-loss td {
+  background: rgba(239, 68, 68, 0.04);
+}
+
+/* AI Insight box */
+.insight-box {
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════════════ */
 
@@ -2071,5 +2223,14 @@ body {
 
   .public-content {
     padding: 18px 16px;
+  }
+
+  .coach-filters {
+    flex-direction: column;
+    padding: 12px 16px;
+  }
+
+  .coach-auth-card {
+    padding: 28px 20px;
   }
 }

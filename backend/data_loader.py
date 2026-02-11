@@ -406,6 +406,71 @@ def get_referee_by_token(token: str) -> dict | None:
     return _referee_by_id.get(referee_id)
 
 
+def get_all_fencers() -> list[dict]:
+    return _fencers
+
+
+def get_all_pools() -> list[dict]:
+    return _pools
+
+
+def get_all_submissions_dict() -> dict[int, dict]:
+    return _submissions
+
+
+def get_pool_bouts_for_fencer(fencer_id: int) -> list[dict]:
+    """Find all approved pools containing fencer_id and return bout data."""
+    fencer = _fencer_by_id.get(fencer_id)
+    if not fencer:
+        return []
+
+    results = []
+    for pool in _pools:
+        pool_id = pool["id"]
+        sub = _submissions.get(pool_id)
+        if not sub or sub.get("status") != "approved":
+            continue
+
+        fencer_idx = None
+        for idx, pf in enumerate(pool.get("fencers", [])):
+            if pf.get("id") == fencer_id:
+                fencer_idx = idx
+                break
+
+        if fencer_idx is None:
+            continue
+
+        scores = sub.get("scores", [])
+        fencer_count = len(scores)
+        pool_fencers = pool.get("fencers", [])
+
+        bouts = []
+        for j in range(fencer_count):
+            if j == fencer_idx:
+                continue
+            my_score = scores[fencer_idx][j]
+            opp_score = scores[j][fencer_idx]
+            if my_score is None or opp_score is None:
+                continue
+            opp = pool_fencers[j] if j < len(pool_fencers) else {}
+            bouts.append({
+                "opponent_name": f"{opp.get('first_name', '')} {opp.get('last_name', '')}".strip(),
+                "opponent_rating": opp.get("rating", "U"),
+                "my_score": my_score,
+                "opp_score": opp_score,
+                "victory": my_score > opp_score,
+            })
+
+        results.append({
+            "pool_id": pool_id,
+            "pool_number": pool.get("pool_number", 0),
+            "event": pool.get("event", ""),
+            "bouts": bouts,
+        })
+
+    return results
+
+
 def get_pools_for_referee(referee_id: int) -> list[dict]:
     referee = _referee_by_id.get(referee_id)
     if not referee:

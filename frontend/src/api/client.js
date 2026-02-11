@@ -33,6 +33,16 @@ async function postMultipart(path, formData) {
   return res.json();
 }
 
+async function authRequest(path, token) {
+  const res = await fetch(`${BASE}${path}`, {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    throw new Error(`API ${res.status}: ${res.statusText}`);
+  }
+  return res.json();
+}
+
 export const api = {
   getHealth: () => request('/health'),
   getTournamentStatus: () => request('/tournament/status'),
@@ -56,4 +66,17 @@ export const api = {
   getSubmission: (poolId) => request(`/pools/${poolId}/submission`),
   approveScores: (poolId, scores, reviewedBy = 'Bout Committee') =>
     postJson(`/pools/${poolId}/approve`, { scores, reviewed_by: reviewedBy }),
+
+  // Coach endpoints
+  coachAuth: (code) => postJson('/coach/auth', { code }),
+  getCoachFencers: (token, event, club) => {
+    let path = '/coach/fencers';
+    const params = [];
+    if (event) params.push(`event=${encodeURIComponent(event)}`);
+    if (club) params.push(`club=${encodeURIComponent(club)}`);
+    if (params.length) path += `?${params.join('&')}`;
+    return authRequest(path, token);
+  },
+  getCoachFencer: (token, id) => authRequest(`/coach/fencers/${id}`, token),
+  getCoachFencerInsight: (token, id) => authRequest(`/coach/fencers/${id}/insight`, token),
 };

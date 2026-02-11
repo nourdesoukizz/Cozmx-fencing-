@@ -7,7 +7,7 @@ import uvicorn
 
 from config import PORT, UPLOADS_DIR
 from data_loader import load_data, get_referee_by_token, get_pools_for_referee, get_event_status
-from routers import tournament, pools, referees, scores
+from routers import tournament, pools, referees, scores, coach
 
 
 class ConnectionManager:
@@ -58,6 +58,7 @@ app.include_router(tournament.router)
 app.include_router(pools.router)
 app.include_router(referees.router)
 app.include_router(scores.router)
+app.include_router(coach.router)
 
 # Mount uploads directory for serving score sheet photos
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
