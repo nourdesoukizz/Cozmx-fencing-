@@ -40,6 +40,7 @@ export default function App() {
           <Route path="/public" element={<PublicPage />} />
           <Route path="/coach" element={<CoachPage />} />
           <Route path="/referee" element={<RefereePortal />} />
+          <Route path="/referee/:token" element={<RefereePortal />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </NotificationProvider>

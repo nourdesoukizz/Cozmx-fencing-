@@ -1,38 +1,56 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client';
 import { formatRefereeName } from '../../utils/formatters';
+import useSocket from '../../hooks/useSocket';
 import StatusBadge from '../shared/StatusBadge';
 import PoolUpload from './PoolUpload';
 
 export default function RefereePortal() {
   const navigate = useNavigate();
+  const { token } = useParams();
   const [pools, setPools] = useState([]);
+  const [referee, setReferee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploadingPool, setUploadingPool] = useState(null);
 
+  const isTokenMode = Boolean(token);
+
   useEffect(() => {
-    if (sessionStorage.getItem('role_referee') !== 'true') {
+    if (!isTokenMode && sessionStorage.getItem('role_referee') !== 'true') {
       navigate('/', { replace: true });
     }
-  }, [navigate]);
+  }, [navigate, isTokenMode]);
 
   const fetchPools = useCallback(async () => {
     try {
-      const data = await api.getPools();
-      setPools(data);
+      if (isTokenMode) {
+        const data = await api.getRefereeByToken(token);
+        setReferee(data.referee);
+        setPools(data.pools);
+      } else {
+        const data = await api.getPools();
+        setPools(data);
+      }
       setError(null);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isTokenMode, token]);
 
   useEffect(() => {
     fetchPools();
   }, [fetchPools]);
+
+  // WebSocket: listen for event_started to update UI live
+  useSocket(useCallback((msg) => {
+    if (msg.type === 'event_started' || msg.type === 'submission_received' || msg.type === 'scores_approved') {
+      fetchPools();
+    }
+  }, [fetchPools]));
 
   const getPoolStatus = (pool) => {
     if (pool.submission?.status === 'approved') return 'approved';
@@ -54,6 +72,15 @@ export default function RefereePortal() {
     fetchPools();
   };
 
+  const isEventStarted = (pool) => {
+    // In token mode, the backend attaches event_status to each pool
+    if (isTokenMode) {
+      return pool.event_status === 'started';
+    }
+    // In shared-code mode, assume started (backward compat)
+    return true;
+  };
+
   if (loading) {
     return <div className="loading-container">Loading pools...</div>;
   }
@@ -64,18 +91,30 @@ export default function RefereePortal() {
         pool={uploadingPool}
         onComplete={handleUploadComplete}
         onCancel={() => setUploadingPool(null)}
+        eventStarted={isEventStarted(uploadingPool)}
       />
     );
   }
+
+  const headerTitle = isTokenMode && referee
+    ? `Referee Portal — ${referee.first_name} ${referee.last_name}`
+    : 'Referee Portal';
 
   return (
     <div>
       <header className="app-header">
         <div className="app-header-left">
-          <h1>Referee Portal</h1>
-          <Link to="/" className="header-home-link">Home</Link>
+          <h1>{isTokenMode ? 'Referee Portal' : 'Referee Portal'}</h1>
+          {!isTokenMode && <Link to="/" className="header-home-link">Home</Link>}
         </div>
       </header>
+
+      {isTokenMode && referee && (
+        <div className="referee-personal-header">
+          <h2>{referee.first_name} {referee.last_name}</h2>
+          <p>Your assigned pools are shown below</p>
+        </div>
+      )}
 
       <div className="referee-portal-content">
         {error && <div className="error-container"><p>{error}</p></div>}
@@ -83,6 +122,7 @@ export default function RefereePortal() {
         <div className="referee-pool-grid">
           {pools.map((pool) => {
             const status = getPoolStatus(pool);
+            const eventStarted = isEventStarted(pool);
             return (
               <div key={pool.id} className={`referee-pool-card status-${status}`}>
                 <div className="referee-pool-header">
@@ -95,8 +135,13 @@ export default function RefereePortal() {
                   <p>{pool.fencer_count} fencers</p>
                   <p>Ref: {formatRefereeName(pool.referee)}</p>
                 </div>
+                {!eventStarted && (
+                  <div className="event-not-started-notice">
+                    Event not started yet — uploads will be enabled when the bout committee starts this event.
+                  </div>
+                )}
                 <div className="referee-pool-status">{getStatusLabel(status)}</div>
-                {status === 'needs_upload' && (
+                {status === 'needs_upload' && eventStarted && (
                   <button
                     className="upload-btn"
                     onClick={() => setUploadingPool(pool)}

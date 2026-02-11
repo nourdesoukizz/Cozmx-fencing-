@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from config import UPLOADS_DIR
 from data_loader import (
     get_pool_by_id, save_submission, get_submission,
-    write_scores_csv,
+    write_scores_csv, get_event_status,
 )
 
 router = APIRouter(prefix="/api/pools", tags=["scores"])
@@ -22,6 +22,14 @@ async def upload_pool_photo(pool_id: int, file: UploadFile = File(...)):
     pool = get_pool_by_id(pool_id)
     if not pool:
         raise HTTPException(status_code=404, detail="Pool not found")
+
+    # Gate uploads on event status
+    event_status = get_event_status(pool["event"])
+    if event_status != "started":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Event '{pool['event']}' has not been started yet.",
+        )
 
     # Save uploaded image
     UPLOADS_DIR.mkdir(parents=True, exist_ok=True)

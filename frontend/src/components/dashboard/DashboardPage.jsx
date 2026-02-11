@@ -50,7 +50,7 @@ export default function DashboardPage() {
     fetchData(true).finally(() => setLoading(false));
   }, [fetchData]);
 
-  // WebSocket: auto-refresh on score events
+  // WebSocket: auto-refresh on score events and event status changes
   useSocket(useCallback((msg) => {
     if (msg.type === 'submission_received') {
       addNotification('info', 'New Submission', `Pool ${msg.pool_id} score sheet uploaded`);
@@ -58,8 +58,35 @@ export default function DashboardPage() {
     } else if (msg.type === 'scores_approved') {
       addNotification('success', 'Scores Approved', `Pool ${msg.pool_id} scores approved`);
       fetchData();
+    } else if (msg.type === 'event_started') {
+      addNotification('success', 'Event Started', `${msg.event} has been started`);
+      fetchData();
     }
   }, [addNotification, fetchData]));
+
+  const handleStartEvent = async (eventName) => {
+    try {
+      await api.startEvent(eventName);
+      addNotification('success', 'Event Started', `${eventName} is now active`);
+      fetchData();
+    } catch (err) {
+      addNotification('error', 'Start Failed', err.message);
+    }
+  };
+
+  const handlePingReferees = async (eventName) => {
+    try {
+      const result = await api.pingReferees(eventName);
+      const skipped = (result.details || []).filter(d => d.status === 'skipped_no_phone').length;
+      addNotification(
+        'success',
+        'Referees Pinged',
+        `Sent: ${result.sent_count}, Failed: ${result.failed_count}, No phone: ${skipped}`
+      );
+    } catch (err) {
+      addNotification('error', 'Ping Failed', err.message);
+    }
+  };
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -109,8 +136,31 @@ export default function DashboardPage() {
           <div className="event-cards">
             {tournament.events?.map((ev) => (
               <div key={ev.name} className="event-card">
-                <h3>{ev.name}</h3>
+                <div className="event-card-top">
+                  <h3>{ev.name}</h3>
+                  <span className={`event-status-tag ${ev.status === 'started' ? 'started' : 'not-started'}`}>
+                    {ev.status === 'started' ? 'Started' : 'Not Started'}
+                  </span>
+                </div>
                 <p>{ev.fencer_count} fencers / {ev.pool_count} pools</p>
+                <div className="event-card-actions">
+                  {ev.status !== 'started' && (
+                    <button
+                      className="start-event-btn"
+                      onClick={() => handleStartEvent(ev.name)}
+                    >
+                      Start Event
+                    </button>
+                  )}
+                  {ev.status === 'started' && (
+                    <button
+                      className="ping-referees-btn"
+                      onClick={() => handlePingReferees(ev.name)}
+                    >
+                      Ping Referees
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

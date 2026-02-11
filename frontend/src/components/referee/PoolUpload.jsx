@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { api } from '../../api/client';
 
-export default function PoolUpload({ pool, onComplete, onCancel }) {
+export default function PoolUpload({ pool, onComplete, onCancel, eventStarted = true }) {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -49,7 +49,11 @@ export default function PoolUpload({ pool, onComplete, onCancel }) {
           <p>Strip {pool.strip_number} — {pool.fencer_count} fencers</p>
         </div>
 
-        {success ? (
+        {!eventStarted ? (
+          <div className="event-not-started-notice" style={{ marginTop: 24 }}>
+            Event not started yet — uploads will be enabled when the bout committee starts this event.
+          </div>
+        ) : success ? (
           <div className="upload-success">
             <div className="success-icon">&#10003;</div>
             <p>Score sheet uploaded successfully!</p>

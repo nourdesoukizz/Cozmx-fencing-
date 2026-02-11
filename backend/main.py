@@ -1,12 +1,12 @@
 import json
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
 from config import PORT, UPLOADS_DIR
-from data_loader import load_data
+from data_loader import load_data, get_referee_by_token, get_pools_for_referee, get_event_status
 from routers import tournament, pools, referees, scores
 
 
@@ -67,6 +67,15 @@ app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/api/referee/{token}")
+def get_referee_by_token_route(token: str):
+    referee = get_referee_by_token(token)
+    if not referee:
+        raise HTTPException(status_code=404, detail="Invalid referee link")
+    pools = get_pools_for_referee(referee["id"])
+    return {"referee": referee, "pools": pools}
 
 
 @app.websocket("/ws")

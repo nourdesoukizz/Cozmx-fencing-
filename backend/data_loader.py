@@ -1,5 +1,6 @@
 import csv
 import json
+import uuid
 from datetime import datetime
 from config import DATA_DIR, TOURNAMENT_NAME, TOURNAMENT_DATE
 
@@ -15,6 +16,13 @@ _referee_by_id: dict[int, dict] = {}
 
 # Submissions store: pool_id -> submission dict
 _submissions: dict[int, dict] = {}
+
+# Event status: event_name -> "not_started" | "started"
+_event_status: dict[str, str] = {}
+
+# Referee tokens: referee_id -> uuid token, and reverse lookup
+_referee_tokens: dict[int, str] = {}
+_token_to_referee: dict[str, int] = {}
 
 
 def _strip_row(row: dict) -> dict:
@@ -191,6 +199,64 @@ def load_data():
         },
     }
 
+    # --- Merge phone numbers from referees.csv ---
+    referees_csv_path = DATA_DIR / "referees.csv"
+    if referees_csv_path.exists():
+        phone_map: dict[str, str] = {}
+        with open(referees_csv_path, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for raw_row in reader:
+                row = _strip_row(raw_row)
+                key = f"{row.get('first_name', '').lower()} {row.get('last_name', '').lower()}"
+                phone_map[key] = row.get("phone", "")
+        for ref in _referees:
+            ref_key = f"{ref['first_name'].lower()} {ref['last_name'].lower()}"
+            ref["phone"] = phone_map.get(ref_key, "")
+
+    # --- Load or initialize event status ---
+    global _event_status
+    event_status_path = DATA_DIR / "event_status.json"
+    if event_status_path.exists():
+        with open(event_status_path, "r", encoding="utf-8") as f:
+            _event_status = json.load(f)
+    else:
+        _event_status = {ev: "not_started" for ev in events_summary}
+        with open(event_status_path, "w", encoding="utf-8") as f:
+            json.dump(_event_status, f, indent=2)
+        print(f"Created event_status.json — all events set to not_started")
+
+    # Ensure any new events get a status
+    for ev in events_summary:
+        if ev not in _event_status:
+            _event_status[ev] = "not_started"
+
+    # Attach status to each event in tournament summary
+    for ev_dict in _tournament["events"]:
+        ev_dict["status"] = _event_status.get(ev_dict["name"], "not_started")
+
+    # --- Load or initialize referee tokens ---
+    global _referee_tokens, _token_to_referee
+    tokens_path = DATA_DIR / "referee_tokens.json"
+    if tokens_path.exists():
+        with open(tokens_path, "r", encoding="utf-8") as f:
+            saved_tokens = json.load(f)
+        _referee_tokens = {int(k): v for k, v in saved_tokens.items()}
+    else:
+        _referee_tokens = {ref["id"]: str(uuid.uuid4()) for ref in _referees}
+        with open(tokens_path, "w", encoding="utf-8") as f:
+            json.dump({str(k): v for k, v in _referee_tokens.items()}, f, indent=2)
+        print(f"Created referee_tokens.json — {len(_referee_tokens)} tokens generated")
+
+    # Ensure any new referees get tokens
+    for ref in _referees:
+        if ref["id"] not in _referee_tokens:
+            _referee_tokens[ref["id"]] = str(uuid.uuid4())
+
+    # Build reverse lookup and attach token to each referee
+    _token_to_referee = {token: rid for rid, token in _referee_tokens.items()}
+    for ref in _referees:
+        ref["token"] = _referee_tokens.get(ref["id"], "")
+
     # --- Load previously saved scores ---
     load_scores()
 
@@ -310,3 +376,43 @@ def get_all_submissions() -> list[dict]:
 
 def get_submission(pool_id: int) -> dict | None:
     return _submissions.get(pool_id)
+
+
+# --- Event status functions ---
+
+def get_event_status(event_name: str) -> str:
+    return _event_status.get(event_name, "not_started")
+
+
+def set_event_status(event_name: str, status: str):
+    _event_status[event_name] = status
+    # Update the tournament events list in memory
+    for ev_dict in _tournament.get("events", []):
+        if ev_dict["name"] == event_name:
+            ev_dict["status"] = status
+            break
+    # Persist to disk
+    event_status_path = DATA_DIR / "event_status.json"
+    with open(event_status_path, "w", encoding="utf-8") as f:
+        json.dump(_event_status, f, indent=2)
+
+
+# --- Referee token functions ---
+
+def get_referee_by_token(token: str) -> dict | None:
+    referee_id = _token_to_referee.get(token)
+    if referee_id is None:
+        return None
+    return _referee_by_id.get(referee_id)
+
+
+def get_pools_for_referee(referee_id: int) -> list[dict]:
+    referee = _referee_by_id.get(referee_id)
+    if not referee:
+        return []
+    pool_ids = {a["pool_id"] for a in referee.get("assignments", [])}
+    pools = [_pool_by_id[pid] for pid in pool_ids if pid in _pool_by_id]
+    # Attach event status to each pool
+    for pool in pools:
+        pool["event_status"] = get_event_status(pool["event"])
+    return pools

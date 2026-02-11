@@ -42,6 +42,11 @@ export const api = {
   getReferees: (event) => request(`/referees${event ? `?event=${encodeURIComponent(event)}` : ''}`),
   getRefereeById: (id) => request(`/referees/${id}`),
 
+  // Event control endpoints
+  startEvent: (eventName) => postJson(`/tournament/events/${encodeURIComponent(eventName)}/start`, {}),
+  pingReferees: (eventName) => postJson(`/tournament/events/${encodeURIComponent(eventName)}/ping-referees`, {}),
+  getRefereeByToken: (token) => request(`/referee/${token}`),
+
   // Score endpoints
   uploadPoolPhoto: (poolId, file) => {
     const formData = new FormData();
