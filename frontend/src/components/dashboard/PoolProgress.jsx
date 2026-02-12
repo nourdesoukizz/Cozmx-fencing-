@@ -35,7 +35,7 @@ export default function PoolProgress({ pools, onRefresh }) {
   }, [filteredPools]);
 
   const handlePoolClick = (pool) => {
-    if (pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed') {
+    if (pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed' || pool.submission?.status === 'approved') {
       setReviewPool(pool);
     }
   };
@@ -89,7 +89,7 @@ export default function PoolProgress({ pools, onRefresh }) {
                   <PoolTable
                     key={pool.id}
                     pool={pool}
-                    onClick={pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed' ? () => handlePoolClick(pool) : undefined}
+                    onClick={pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed' || pool.submission?.status === 'approved' ? () => handlePoolClick(pool) : undefined}
                   />
                 ))}
             </div>

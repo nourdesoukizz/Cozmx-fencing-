@@ -135,7 +135,7 @@ def load_data():
             "event": event,
             "pool_number": pool_number,
             "strip_number": group["strip_number"],
-            "status": "completed",
+            "status": "not_reported",
             "referee": {
                 "first_name": group["referee_first_name"],
                 "last_name": group["referee_last_name"],

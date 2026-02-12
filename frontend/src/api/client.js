@@ -54,7 +54,10 @@ export const api = {
 
   // Event control endpoints
   startEvent: (eventName) => postJson(`/tournament/events/${encodeURIComponent(eventName)}/start`, {}),
+  stopEvent: (eventName) => postJson(`/tournament/events/${encodeURIComponent(eventName)}/stop`, {}),
   pingReferees: (eventName) => postJson(`/tournament/events/${encodeURIComponent(eventName)}/ping-referees`, {}),
+  pingReferee: (refereeId, messageType, customMessage = '') =>
+    postJson(`/referees/${refereeId}/ping`, { message_type: messageType, custom_message: customMessage }),
   getRefereeByToken: (token) => request(`/referee/${token}`),
 
   // Score endpoints

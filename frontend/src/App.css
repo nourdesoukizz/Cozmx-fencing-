@@ -1157,6 +1157,101 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
+   REFEREE PING MENU
+   ══════════════════════════════════════════════════ */
+
+.ping-ref-btn {
+  padding: 4px 12px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.ping-ref-btn:hover {
+  opacity: 0.9;
+}
+
+.ping-ref-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ping-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 100;
+  min-width: 200px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 6px 0;
+  margin-top: 4px;
+}
+
+.ping-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.ping-menu-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.ping-custom-input {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+}
+
+.ping-custom-input input {
+  flex: 1;
+  padding: 6px 10px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  outline: none;
+}
+
+.ping-custom-input input:focus {
+  border-color: var(--accent);
+}
+
+.ping-custom-send {
+  padding: 6px 12px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ping-custom-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ══════════════════════════════════════════════════
    STATUS BADGE
    ══════════════════════════════════════════════════ */
 
@@ -1189,6 +1284,11 @@ body {
 .status-badge.issue {
   background: var(--red-bg);
   color: var(--red);
+}
+
+.status-badge.not_reported {
+  background: var(--orange-bg);
+  color: var(--orange);
 }
 
 /* ══════════════════════════════════════════════════
@@ -1374,6 +1474,23 @@ body {
 @keyframes pendingPulse {
   0%, 100% { box-shadow: 0 0 12px var(--yellow-bg), inset 0 0 8px var(--yellow-bg); }
   50% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.25), inset 0 0 12px var(--yellow-bg); }
+}
+
+.pool-matrix-card.approved-editable:hover {
+  border-color: var(--green);
+  box-shadow: 0 0 8px var(--green-bg);
+}
+
+.edit-indicator {
+  margin-left: 8px;
+  padding: 1px 8px;
+  background: var(--green-bg);
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .pending-badge {
@@ -1890,6 +2007,11 @@ body {
   color: var(--green);
 }
 
+.event-status-tag.stopped {
+  background: var(--orange-bg);
+  color: var(--orange);
+}
+
 .event-card-actions {
   display: flex;
   gap: 8px;
@@ -1910,6 +2032,23 @@ body {
 }
 
 .start-event-btn:hover {
+  opacity: 0.9;
+}
+
+.stop-event-btn {
+  flex: 1;
+  padding: 8px 14px;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.stop-event-btn:hover {
   opacity: 0.9;
 }
 

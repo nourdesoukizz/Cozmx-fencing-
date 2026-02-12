@@ -1,11 +1,16 @@
 import { useState, useMemo } from 'react';
+import { api } from '../../api/client';
 import StatusBadge from '../shared/StatusBadge';
 import { formatEventShort } from '../../utils/formatters';
 
-export default function RefereePanel({ referees }) {
+export default function RefereePanel({ referees, addNotification }) {
   const [sortKey, setSortKey] = useState('last_name');
   const [sortDir, setSortDir] = useState('asc');
   const [expandedIds, setExpandedIds] = useState(new Set());
+  const [pingMenuId, setPingMenuId] = useState(null);
+  const [customMsgId, setCustomMsgId] = useState(null);
+  const [customText, setCustomText] = useState('');
+  const [pinging, setPinging] = useState(false);
 
   const handleSort = (key) => {
     if (sortKey === key) {
@@ -28,6 +33,21 @@ export default function RefereePanel({ referees }) {
       else next.add(id);
       return next;
     });
+  };
+
+  const handlePing = async (refereeId, messageType, customMessage = '') => {
+    setPinging(true);
+    try {
+      await api.pingReferee(refereeId, messageType, customMessage);
+      if (addNotification) addNotification('success', 'Ping Sent', 'SMS sent successfully');
+    } catch (err) {
+      if (addNotification) addNotification('error', 'Ping Failed', err.message);
+    } finally {
+      setPinging(false);
+      setPingMenuId(null);
+      setCustomMsgId(null);
+      setCustomText('');
+    }
   };
 
   const sorted = useMemo(() => {
@@ -78,6 +98,7 @@ export default function RefereePanel({ referees }) {
             <th className="sortable" onClick={() => handleSort('status')}>
               Status{sortIndicator('status')}
             </th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -116,10 +137,50 @@ export default function RefereePanel({ referees }) {
                     ))}
                   </td>
                   <td><StatusBadge status={ref.status} /></td>
+                  <td style={{ position: 'relative' }}>
+                    <button
+                      className="ping-ref-btn"
+                      onClick={(e) => { e.stopPropagation(); setPingMenuId(pingMenuId === ref.id ? null : ref.id); setCustomMsgId(null); setCustomText(''); }}
+                      disabled={pinging}
+                    >
+                      Ping
+                    </button>
+                    {pingMenuId === ref.id && (
+                      <div className="ping-menu">
+                        <button className="ping-menu-item" onClick={() => handlePing(ref.id, 'report_to_captain')}>
+                          Report to Captain
+                        </button>
+                        <button className="ping-menu-item" onClick={() => handlePing(ref.id, 'pool_sheet_reminder')}>
+                          Pool Sheet Reminder
+                        </button>
+                        <button className="ping-menu-item" onClick={() => setCustomMsgId(customMsgId === ref.id ? null : ref.id)}>
+                          Custom Message
+                        </button>
+                        {customMsgId === ref.id && (
+                          <div className="ping-custom-input">
+                            <input
+                              type="text"
+                              placeholder="Type message..."
+                              value={customText}
+                              onChange={(e) => setCustomText(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter' && customText.trim()) handlePing(ref.id, 'custom', customText); }}
+                            />
+                            <button
+                              className="ping-custom-send"
+                              onClick={() => { if (customText.trim()) handlePing(ref.id, 'custom', customText); }}
+                              disabled={!customText.trim()}
+                            >
+                              Send
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </td>
                 </tr>
                 {expandedIds.has(ref.id) && (
                   <tr key={`${ref.id}-exp`} className="expanded-row">
-                    <td colSpan={5}>
+                    <td colSpan={6}>
                       <div className="assignment-list">
                         {ref.assignments.map((a, i) => (
                           <div key={i} className="assignment-item">

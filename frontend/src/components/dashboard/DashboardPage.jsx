@@ -61,6 +61,9 @@ export default function DashboardPage() {
     } else if (msg.type === 'event_started') {
       addNotification('success', 'Event Started', `${msg.event} has been started`);
       fetchData();
+    } else if (msg.type === 'event_stopped') {
+      addNotification('info', 'Event Stopped', `${msg.event} has been stopped`);
+      fetchData();
     }
   }, [addNotification, fetchData]));
 
@@ -71,6 +74,16 @@ export default function DashboardPage() {
       fetchData();
     } catch (err) {
       addNotification('error', 'Start Failed', err.message);
+    }
+  };
+
+  const handleStopEvent = async (eventName) => {
+    try {
+      await api.stopEvent(eventName);
+      addNotification('info', 'Event Stopped', `${eventName} has been stopped`);
+      fetchData();
+    } catch (err) {
+      addNotification('error', 'Stop Failed', err.message);
     }
   };
 
@@ -141,13 +154,13 @@ export default function DashboardPage() {
               <div key={ev.name} className="event-card">
                 <div className="event-card-top">
                   <h3>{ev.name}</h3>
-                  <span className={`event-status-tag ${ev.status === 'started' ? 'started' : 'not-started'}`}>
-                    {ev.status === 'started' ? 'Started' : 'Not Started'}
+                  <span className={`event-status-tag ${ev.status === 'started' ? 'started' : ev.status === 'stopped' ? 'stopped' : 'not-started'}`}>
+                    {ev.status === 'started' ? 'Started' : ev.status === 'stopped' ? 'Stopped' : 'Not Started'}
                   </span>
                 </div>
                 <p>{ev.fencer_count} fencers / {ev.pool_count} pools</p>
                 <div className="event-card-actions">
-                  {ev.status !== 'started' && (
+                  {ev.status === 'not_started' && (
                     <button
                       className="start-event-btn"
                       onClick={() => handleStartEvent(ev.name)}
@@ -156,11 +169,27 @@ export default function DashboardPage() {
                     </button>
                   )}
                   {ev.status === 'started' && (
+                    <>
+                      <button
+                        className="stop-event-btn"
+                        onClick={() => handleStopEvent(ev.name)}
+                      >
+                        Stop Event
+                      </button>
+                      <button
+                        className="ping-referees-btn"
+                        onClick={() => handlePingReferees(ev.name)}
+                      >
+                        Ping Referees
+                      </button>
+                    </>
+                  )}
+                  {ev.status === 'stopped' && (
                     <button
-                      className="ping-referees-btn"
-                      onClick={() => handlePingReferees(ev.name)}
+                      className="start-event-btn"
+                      onClick={() => handleStartEvent(ev.name)}
                     >
-                      Ping Referees
+                      Restart Event
                     </button>
                   )}
                 </div>
@@ -194,7 +223,7 @@ export default function DashboardPage() {
       <div className="tab-content">
         {activeTab === 'strips' && <StripBoard pools={pools} />}
         {activeTab === 'pools' && <PoolProgress pools={pools} onRefresh={() => fetchData()} />}
-        {activeTab === 'referees' && <RefereePanel referees={referees} />}
+        {activeTab === 'referees' && <RefereePanel referees={referees} addNotification={addNotification} />}
       </div>
     </div>
   );

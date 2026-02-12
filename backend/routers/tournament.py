@@ -43,6 +43,31 @@ async def start_event(event_name: str):
     return {"status": "ok", "event": event_name, "event_status": "started"}
 
 
+@router.post("/events/{event_name}/stop")
+async def stop_event(event_name: str):
+    # Validate event exists
+    events = get_events()
+    event_names = [ev["name"] for ev in events]
+    if event_name not in event_names:
+        raise HTTPException(status_code=404, detail=f"Event '{event_name}' not found")
+
+    # Check event is currently started
+    current_status = get_event_status(event_name)
+    if current_status != "started":
+        raise HTTPException(status_code=400, detail=f"Event '{event_name}' is not currently started")
+
+    set_event_status(event_name, "stopped")
+
+    # Broadcast via WebSocket
+    from main import manager
+    await manager.broadcast({
+        "type": "event_stopped",
+        "event": event_name,
+    })
+
+    return {"status": "ok", "event": event_name, "event_status": "stopped"}
+
+
 @router.post("/events/{event_name}/ping-referees")
 async def ping_referees(event_name: str):
     # Validate event exists

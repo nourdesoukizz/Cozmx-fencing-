@@ -248,7 +248,7 @@ export default function PoolReview({ pool, onClose }) {
             onClick={handleApprove}
             disabled={hasErrors || approving}
           >
-            {approving ? 'Approving...' : 'Approve'}
+            {approving ? 'Saving...' : (submission?.status === 'approved' ? 'Save Changes' : 'Approve')}
           </button>
           <button className="reject-btn" onClick={onClose}>Cancel</button>
         </div>

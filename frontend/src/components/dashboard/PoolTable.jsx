@@ -7,15 +7,19 @@ export default function PoolTable({ pool, onClick, readOnly = false }) {
   const scores = pool.submission?.scores;
   const results = pool.submission?.results;
   const isPending = pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed';
+  const isApproved = pool.submission?.status === 'approved';
 
   return (
     <div
-      className={`pool-matrix-card ${isPending ? 'pending-glow' : ''}`}
+      className={`pool-matrix-card ${isPending ? 'pending-glow' : ''} ${isApproved && onClick ? 'approved-editable' : ''}`}
       onClick={onClick}
       style={onClick ? { cursor: 'pointer' } : {}}
     >
       <div className="pool-matrix-header">
-        <span className="pool-label">Pool {pool.pool_number}</span>
+        <span className="pool-label">
+          Pool {pool.pool_number}
+          {isApproved && onClick && <span className="edit-indicator">Edit</span>}
+        </span>
         <div className="pool-meta">
           <span>{pool.strip_number}</span>
           <span>{formatRefereeName(pool.referee)}</span>
