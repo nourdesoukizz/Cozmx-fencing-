@@ -3,11 +3,8 @@ from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
 
 from config import COACH_ACCESS_CODE, ANTHROPIC_API_KEY
-from data_loader import (
-    get_all_fencers, get_all_pools, get_all_submissions_dict,
-    get_fencer_by_id, get_pool_bouts_for_fencer,
-)
-from bayesian_model import compute_all_estimates
+from data_loader import get_fencer_by_id, get_all_fencers
+from bt_engine import BTEngine
 
 router = APIRouter(prefix="/api/coach", tags=["coach"])
 
@@ -17,9 +14,23 @@ _coach_tokens: set[str] = set()
 # Cache for AI insights: fencer_id -> insight string
 _insight_cache: dict[int, str] = {}
 
+# BT engine reference (set by main.py lifespan)
+_engine: BTEngine | None = None
+
 
 class CoachAuthRequest(BaseModel):
     code: str
+
+
+class BoutRequest(BaseModel):
+    fencer_a: str
+    fencer_b: str
+    score_a: int
+    score_b: int
+
+
+class BracketRequest(BaseModel):
+    seedings: list[str]
 
 
 def verify_coach_token(authorization: str = Header(None)) -> str:
@@ -43,27 +54,11 @@ def coach_auth(req: CoachAuthRequest):
 @router.get("/fencers")
 def get_coach_fencers(event: str = None, club: str = None,
                       _token: str = Depends(verify_coach_token)):
-    fencers = get_all_fencers()
-    pools = get_all_pools()
-    submissions = get_all_submissions_dict()
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
 
-    estimates = compute_all_estimates(fencers, pools, submissions)
-
-    results = []
-    for f in fencers:
-        fid = f["id"]
-        analysis = estimates.get(fid, {})
-
-        entry = {
-            "id": fid,
-            "first_name": f.get("first_name", ""),
-            "last_name": f.get("last_name", ""),
-            "club": f.get("club", ""),
-            "rating": f.get("rating", ""),
-            "event": f.get("event", ""),
-            **analysis,
-        }
-        results.append(entry)
+    state = _engine.get_state()
+    results = state["fencers"]
 
     # Apply filters
     if event:
@@ -74,29 +69,119 @@ def get_coach_fencers(event: str = None, club: str = None,
     return {"fencers": results, "total": len(results)}
 
 
+@router.get("/state")
+def get_coach_state(_token: str = Depends(verify_coach_token)):
+    """Full engine state: all fencers + strengths + ranks + win_probs + bout count."""
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+    return _engine.get_state()
+
+
+@router.get("/trajectory")
+def get_coach_trajectory(fencer: str = None,
+                         _token: str = Depends(verify_coach_token)):
+    """Probability trajectory history for chart rendering."""
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+    return {"trajectory": _engine.get_trajectory(fencer)}
+
+
+@router.get("/pairwise")
+def get_coach_pairwise(a: str, b: str,
+                       _token: str = Depends(verify_coach_token)):
+    """Pairwise win probability + head-to-head record."""
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+
+    # Try to find fencers by partial match
+    name_a = _engine.find_fencer(a)
+    name_b = _engine.find_fencer(b)
+
+    if not name_a:
+        raise HTTPException(status_code=404, detail=f"Fencer not found: {a}")
+    if not name_b:
+        raise HTTPException(status_code=404, detail=f"Fencer not found: {b}")
+
+    return _engine.get_pairwise(name_a, name_b)
+
+
+@router.post("/bout")
+def add_coach_bout(req: BoutRequest,
+                   _token: str = Depends(verify_coach_token)):
+    """Add a new bout, refit all strengths, return updated state."""
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+
+    # Validate fencer names
+    name_a = _engine.find_fencer(req.fencer_a)
+    name_b = _engine.find_fencer(req.fencer_b)
+
+    if not name_a:
+        name_a = req.fencer_a
+    if not name_b:
+        name_b = req.fencer_b
+
+    if name_a == name_b:
+        raise HTTPException(status_code=400, detail="Cannot have a bout with the same fencer")
+
+    if req.score_a < 0 or req.score_b < 0:
+        raise HTTPException(status_code=400, detail="Scores must be non-negative")
+
+    result = _engine.add_bout(name_a, name_b, req.score_a, req.score_b)
+    return result
+
+
+@router.post("/bracket")
+def set_coach_bracket(req: BracketRequest,
+                      _token: str = Depends(verify_coach_token)):
+    """Set DE bracket seedings."""
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+    _engine.set_bracket(req.seedings)
+    return {"status": "ok", "bracket_size": len(req.seedings)}
+
+
+@router.get("/simulate")
+def get_coach_simulate(n_sims: int = 10000,
+                       _token: str = Depends(verify_coach_token)):
+    """Monte Carlo DE simulation results."""
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+    return _engine.simulate_de(n_sims)
+
+
+@router.get("/bouts")
+def get_coach_bouts(_token: str = Depends(verify_coach_token)):
+    """All bouts in reverse chronological order."""
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+    return {"bouts": _engine.get_all_bouts()}
+
+
+@router.get("/fencer-names")
+def get_fencer_names(_token: str = Depends(verify_coach_token)):
+    """All fencer names for autocomplete."""
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+    return {"names": _engine.get_fencer_names()}
+
+
 @router.get("/fencers/{fencer_id}")
 def get_coach_fencer(fencer_id: int,
                      _token: str = Depends(verify_coach_token)):
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+
     fencer = get_fencer_by_id(fencer_id)
     if not fencer:
         raise HTTPException(status_code=404, detail="Fencer not found")
 
-    fencers = get_all_fencers()
-    pools = get_all_pools()
-    submissions = get_all_submissions_dict()
+    name = f"{fencer.get('first_name', '')} {fencer.get('last_name', '')}".strip()
+    detail = _engine.get_fencer_detail(name)
+    if not detail:
+        raise HTTPException(status_code=404, detail="Fencer not found in engine")
 
-    estimates = compute_all_estimates(fencers, pools, submissions)
-    analysis = estimates.get(fencer_id, {})
-
-    return {
-        "id": fencer_id,
-        "first_name": fencer.get("first_name", ""),
-        "last_name": fencer.get("last_name", ""),
-        "club": fencer.get("club", ""),
-        "rating": fencer.get("rating", ""),
-        "event": fencer.get("event", ""),
-        **analysis,
-    }
+    return detail
 
 
 @router.get("/fencers/{fencer_id}/insight")
@@ -105,53 +190,51 @@ async def get_coach_fencer_insight(fencer_id: int,
     if fencer_id in _insight_cache:
         return {"insight": _insight_cache[fencer_id]}
 
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+
     fencer = get_fencer_by_id(fencer_id)
     if not fencer:
         raise HTTPException(status_code=404, detail="Fencer not found")
 
-    fencers = get_all_fencers()
-    pools = get_all_pools()
-    submissions = get_all_submissions_dict()
-    estimates = compute_all_estimates(fencers, pools, submissions)
-    analysis = estimates.get(fencer_id, {})
+    name = f"{fencer.get('first_name', '')} {fencer.get('last_name', '')}".strip()
+    detail = _engine.get_fencer_detail(name)
 
-    if not analysis.get("has_pool_data"):
-        return {"insight": "No pool data available yet for this fencer."}
+    if not detail or not detail.get("has_bouts"):
+        return {"insight": "No bout data available yet for this fencer."}
 
     if not ANTHROPIC_API_KEY:
         return {"insight": "AI insights unavailable (no API key configured)."}
 
     # Build context for AI
-    name = f"{fencer.get('first_name', '')} {fencer.get('last_name', '')}".strip()
-    rating = fencer.get("rating", "U")
-    prior = analysis.get("prior_mean", 0)
-    posterior = analysis.get("posterior_mean", 0)
-    delta = analysis.get("delta_label", "")
-    perf = analysis.get("performance_label", "")
-    bouts = analysis.get("bout_details", [])
+    rating = detail.get("rating", "U")
+    strength = detail.get("strength", 1.0)
+    prior = detail.get("prior_strength", 1.0)
+    rank = detail.get("rank", 0)
+    win_prob = detail.get("win_prob", 0)
+    wins = detail.get("wins", 0)
+    losses = detail.get("losses", 0)
+    bouts = detail.get("bout_details", [])
 
     bout_lines = []
     for b in bouts:
         result = "W" if b["victory"] else "L"
+        upset = " [UPSET]" if b.get("is_upset") else ""
         bout_lines.append(
-            f"  vs {b['opponent_name']} ({b['opponent_rating']}): {b['my_score']}-{b['opp_score']} [{result}]"
+            f"  vs {b['opponent_name']} ({b['opponent_rating']}, "
+            f"strength={b['opponent_strength']:.1f}): "
+            f"{b['my_score']}-{b['opp_score']} [{result}]{upset}"
         )
     bout_text = "\n".join(bout_lines) if bout_lines else "  No bouts"
 
-    pool_lines = []
-    for ps in analysis.get("pool_summaries", []):
-        pool_lines.append(
-            f"  Pool {ps['pool_number']}: {ps['victories']}V/{ps['bouts']}B, "
-            f"TS={ps['ts']} TR={ps['tr']} Ind={ps['indicator']} Place={ps['place']}"
-        )
-    pool_text = "\n".join(pool_lines) if pool_lines else "  No pool data"
-
     prompt = (
-        f"You are a fencing coach's analytics assistant. Give a 2-3 sentence performance insight "
-        f"for this fencer based on their pool results. Be specific about strengths and areas to watch.\n\n"
+        f"You are a fencing coach's analytics assistant using a Bradley-Terry model. "
+        f"Give a 2-3 sentence performance insight for this fencer. "
+        f"Be specific about strengths, notable wins/upsets, and tactical patterns.\n\n"
         f"Fencer: {name}\nRating: {rating}\n"
-        f"Prior skill: {prior:.2f} | Posterior: {posterior:.2f} | Delta: {delta} | Level: {perf}\n"
-        f"Pool results:\n{pool_text}\n"
+        f"BT Strength: {strength:.2f} (prior: {prior:.2f}) | "
+        f"Rank: {rank} | Win Prob: {win_prob:.1f}% | "
+        f"Record: {wins}W-{losses}L\n"
         f"Bout details:\n{bout_text}"
     )
 

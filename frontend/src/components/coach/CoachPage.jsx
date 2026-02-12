@@ -4,6 +4,13 @@ import { api } from '../../api/client';
 import CoachAuth from './CoachAuth';
 import FencerList from './FencerList';
 import FencerDetailCard from './FencerDetailCard';
+import TrajectoryChart from './TrajectoryChart';
+import BoutFeed from './BoutFeed';
+import BoutInput from './BoutInput';
+import MatchupLookup from './MatchupLookup';
+import DEBracket from './DEBracket';
+
+const TABS = ['Dashboard', 'Bouts', 'Input', 'Matchup', 'Bracket'];
 
 export default function CoachPage() {
   const navigate = useNavigate();
@@ -14,6 +21,9 @@ export default function CoachPage() {
   const [selectedFencer, setSelectedFencer] = useState(null);
   const [eventFilter, setEventFilter] = useState('');
   const [clubFilter, setClubFilter] = useState('');
+  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [boutCount, setBoutCount] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [autoAuthDone, setAutoAuthDone] = useState(false);
 
@@ -33,26 +43,24 @@ export default function CoachPage() {
           localStorage.setItem('coach_token', data.token);
           setToken(data.token);
         })
-        .catch(() => {
-          // Auto-auth failed, user will see the manual auth form
-        });
+        .catch(() => {});
     }
   }, [token, autoAuthDone]);
 
   useEffect(() => {
     if (!token) return;
-    fetchFencers();
+    fetchState();
   }, [token]);
 
-  const fetchFencers = async () => {
+  const fetchState = async () => {
     setLoading(true);
     setError('');
     try {
-      const data = await api.getCoachFencers(token);
+      const data = await api.getCoachState(token);
       setFencers(data.fencers || []);
+      setBoutCount(data.bout_count || 0);
     } catch (err) {
       if (err.message.includes('401')) {
-        // Token expired or invalid
         localStorage.removeItem('coach_token');
         setToken('');
         setError('Session expired. Please re-authenticate.');
@@ -72,6 +80,11 @@ export default function CoachPage() {
     localStorage.removeItem('coach_token');
     setToken('');
     setFencers([]);
+  };
+
+  const handleBoutAdded = () => {
+    setRefreshKey(k => k + 1);
+    fetchState();
   };
 
   // Derive unique events and clubs for filter dropdowns
@@ -104,7 +117,7 @@ export default function CoachPage() {
     return <CoachAuth onAuth={handleAuth} />;
   }
 
-  const poolDataCount = fencers.filter(f => f.has_pool_data).length;
+  const withBouts = fencers.filter(f => f.has_bouts).length;
 
   return (
     <div>
@@ -118,7 +131,7 @@ export default function CoachPage() {
           <Link to="/" className="header-home-link">Home</Link>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button className="refresh-btn" onClick={fetchFencers} disabled={loading}>
+          <button className="refresh-btn" onClick={fetchState} disabled={loading}>
             {loading ? 'Refreshing...' : 'Refresh'}
           </button>
           <button className="header-home-link" onClick={handleLogout}>Logout</button>
@@ -127,15 +140,19 @@ export default function CoachPage() {
 
       {/* Sub-header with stats */}
       <div className="tournament-header">
-        <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>Coach Analytics</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>Coach Analytics — Bradley-Terry Engine</h2>
         <div className="referee-stats">
           <div className="stat-card">
             <div className="label">Fencers</div>
             <div className="value">{fencers.length}</div>
           </div>
           <div className="stat-card">
-            <div className="label">With Pool Data</div>
-            <div className="value">{poolDataCount}</div>
+            <div className="label">With Bout Data</div>
+            <div className="value">{withBouts}</div>
+          </div>
+          <div className="stat-card">
+            <div className="label">Bouts</div>
+            <div className="value">{boutCount}</div>
           </div>
           <div className="stat-card">
             <div className="label">Events</div>
@@ -144,46 +161,87 @@ export default function CoachPage() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="coach-filters">
-        <select
-          className="filter-select"
-          value={eventFilter}
-          onChange={(e) => setEventFilter(e.target.value)}
-        >
-          <option value="">All Events</option>
-          {events.map(ev => (
-            <option key={ev} value={ev}>{ev}</option>
-          ))}
-        </select>
-        <select
-          className="filter-select"
-          value={clubFilter}
-          onChange={(e) => setClubFilter(e.target.value)}
-        >
-          <option value="">All Clubs</option>
-          {clubs.map(c => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
+      {/* Tab bar */}
+      <div className="coach-tabs">
+        {TABS.map(tab => (
+          <button
+            key={tab}
+            className={`coach-tab ${activeTab === tab ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
+
+      {/* Filters (visible on Dashboard tab) */}
+      {activeTab === 'Dashboard' && (
+        <div className="coach-filters">
+          <select
+            className="filter-select"
+            value={eventFilter}
+            onChange={(e) => setEventFilter(e.target.value)}
+          >
+            <option value="">All Events</option>
+            {events.map(ev => (
+              <option key={ev} value={ev}>{ev}</option>
+            ))}
+          </select>
+          <select
+            className="filter-select"
+            value={clubFilter}
+            onChange={(e) => setClubFilter(e.target.value)}
+          >
+            <option value="">All Clubs</option>
+            {clubs.map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Main content */}
       <div className="tab-content">
         {error && (
           <div className="error-container">
             <p>{error}</p>
-            <button onClick={fetchFencers}>Retry</button>
+            <button onClick={fetchState}>Retry</button>
           </div>
         )}
 
-        {loading && !fencers.length ? (
-          <div className="loading-container">Loading fencer data...</div>
-        ) : (
-          <FencerList
-            fencers={filteredFencers}
-            onSelectFencer={setSelectedFencer}
-          />
+        {activeTab === 'Dashboard' && (
+          <>
+            <TrajectoryChart token={token} eventFilter={eventFilter} clubFilter={clubFilter} />
+            {loading && !fencers.length ? (
+              <div className="loading-container">Loading fencer data...</div>
+            ) : (
+              <FencerList
+                fencers={filteredFencers}
+                onSelectFencer={setSelectedFencer}
+              />
+            )}
+          </>
+        )}
+
+        {activeTab === 'Bouts' && (
+          <BoutFeed token={token} onRefresh={refreshKey} />
+        )}
+
+        {activeTab === 'Input' && (
+          <>
+            <BoutInput token={token} onBoutAdded={handleBoutAdded} />
+            <div style={{ marginTop: 24 }}>
+              <BoutFeed token={token} onRefresh={refreshKey} />
+            </div>
+          </>
+        )}
+
+        {activeTab === 'Matchup' && (
+          <MatchupLookup token={token} />
+        )}
+
+        {activeTab === 'Bracket' && (
+          <DEBracket token={token} />
         )}
       </div>
 

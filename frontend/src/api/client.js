@@ -43,6 +43,22 @@ async function authRequest(path, token) {
   return res.json();
 }
 
+async function authPostJson(path, token, body) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.detail?.message || data.detail || `API ${res.status}: ${res.statusText}`);
+  }
+  return res.json();
+}
+
 export const api = {
   getHealth: () => request('/health'),
   getTournamentStatus: () => request('/tournament/status'),
@@ -82,4 +98,22 @@ export const api = {
   },
   getCoachFencer: (token, id) => authRequest(`/coach/fencers/${id}`, token),
   getCoachFencerInsight: (token, id) => authRequest(`/coach/fencers/${id}/insight`, token),
+
+  // New BT engine endpoints
+  getCoachState: (token) => authRequest('/coach/state', token),
+  getCoachTrajectory: (token, fencer) => {
+    let path = '/coach/trajectory';
+    if (fencer) path += `?fencer=${encodeURIComponent(fencer)}`;
+    return authRequest(path, token);
+  },
+  getCoachPairwise: (token, a, b) =>
+    authRequest(`/coach/pairwise?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`, token),
+  addCoachBout: (token, boutData) =>
+    authPostJson('/coach/bout', token, boutData),
+  setCoachBracket: (token, seedings) =>
+    authPostJson('/coach/bracket', token, { seedings }),
+  getCoachSimulate: (token, nSims) =>
+    authRequest(`/coach/simulate${nSims ? `?n_sims=${nSims}` : ''}`, token),
+  getCoachBouts: (token) => authRequest('/coach/bouts', token),
+  getCoachFencerNames: (token) => authRequest('/coach/fencer-names', token),
 };

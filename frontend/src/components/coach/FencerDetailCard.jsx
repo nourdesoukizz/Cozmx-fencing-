@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { api } from '../../api/client';
 
 export default function FencerDetailCard({ fencer, token, onClose }) {
   const [detail, setDetail] = useState(null);
+  const [trajectory, setTrajectory] = useState([]);
   const [insight, setInsight] = useState(null);
   const [insightLoading, setInsightLoading] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -10,32 +12,49 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
   useEffect(() => {
     if (!fencer) return;
     setLoading(true);
-    api.getCoachFencer(token, fencer.id)
-      .then(data => { setDetail(data); setLoading(false); })
+    setInsight(null);
+
+    const fencerId = fencer.id;
+    const fencerName = fencer.name || `${fencer.first_name} ${fencer.last_name}`.trim();
+
+    // Fetch detail and trajectory in parallel
+    Promise.all([
+      fencerId ? api.getCoachFencer(token, fencerId) : Promise.resolve(null),
+      api.getCoachTrajectory(token, fencerName),
+    ])
+      .then(([detailData, trajData]) => {
+        if (detailData) setDetail(detailData);
+        setTrajectory(trajData?.trajectory || []);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, [fencer, token]);
 
   const loadInsight = () => {
-    if (!detail?.has_pool_data || insightLoading) return;
+    const fencerId = detail?.id || fencer?.id;
+    if (!fencerId || insightLoading) return;
     setInsightLoading(true);
-    api.getCoachFencerInsight(token, fencer.id)
+    api.getCoachFencerInsight(token, fencerId)
       .then(data => { setInsight(data.insight); setInsightLoading(false); })
       .catch(() => { setInsight('Unable to load insight.'); setInsightLoading(false); });
   };
 
   if (!fencer) return null;
   const d = detail || fencer;
+  const name = d.name || `${d.first_name || ''} ${d.last_name || ''}`.trim();
 
-  const ciLow = d.credible_interval?.[0] ?? 0;
-  const ciHigh = d.credible_interval?.[1] ?? 5;
-  const ciLowPct = Math.max(0, Math.min(100, (ciLow / 5) * 100));
-  const ciHighPct = Math.max(0, Math.min(100, (ciHigh / 5) * 100));
-  const posteriorPct = Math.max(0, Math.min(100, ((d.posterior_mean ?? 0) / 5) * 100));
+  // Mini trajectory chart data
+  const chartData = trajectory.map((t, i) => ({
+    index: i + 1,
+    strength: t.strength,
+    win_prob: t.win_prob,
+    label: t.bout_label,
+  }));
 
   return (
     <>
       <div className="strip-detail-overlay" onClick={onClose} />
-      <div className="strip-detail-panel" style={{ width: 440 }}>
+      <div className="strip-detail-panel" style={{ width: 460 }}>
         <button className="strip-detail-close" onClick={onClose}>&times;</button>
 
         {loading ? (
@@ -43,68 +62,79 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
         ) : (
           <>
             {/* Header */}
-            <h3>{d.first_name} {d.last_name}</h3>
+            <h3>{name}</h3>
             <div className="strip-detail-meta">
               <p>{d.club || 'No club'} &middot; {d.event}</p>
               <p>Rating: {d.rating || 'U'}</p>
             </div>
 
-            {/* Prior vs Posterior */}
+            {/* Strength / Rank / Win% cards */}
             <div className="strip-detail-section" style={{ marginBottom: 20 }}>
-              <h4>Skill Estimate</h4>
+              <h4>Bradley-Terry Estimate</h4>
               <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
                 <div className="stat-card" style={{ flex: 1 }}>
-                  <div className="label">Prior</div>
-                  <div className="value">{d.prior_mean?.toFixed(2)}</div>
+                  <div className="label">Strength</div>
+                  <div className="value">{d.strength?.toFixed(2) ?? '\u2014'}</div>
                 </div>
                 <div className="stat-card" style={{ flex: 1 }}>
-                  <div className="label">Posterior</div>
-                  <div className="value">{d.posterior_mean?.toFixed(2)}</div>
+                  <div className="label">Rank</div>
+                  <div className="value">#{d.rank ?? '\u2014'}</div>
                 </div>
                 <div className="stat-card" style={{ flex: 1 }}>
-                  <div className="label">Delta</div>
+                  <div className="label">Win%</div>
                   <div className="value">
                     <span className={`delta-badge ${
-                      d.delta_label === 'Above rating' ? 'delta-above' :
-                      d.delta_label === 'Below rating' ? 'delta-below' : 'delta-at'
+                      (d.win_prob ?? 0) > 10 ? 'delta-above' :
+                      (d.win_prob ?? 0) > 3 ? 'delta-at' : 'delta-below'
                     }`}>
-                      {d.delta_value > 0 ? '+' : ''}{d.delta_value?.toFixed(2)}
+                      {d.win_prob?.toFixed(1) ?? '0'}%
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="label" style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>
-                {d.performance_label} &middot; {d.delta_label}
+              <div style={{ display: 'flex', gap: 16 }}>
+                <div className="stat-card" style={{ flex: 1 }}>
+                  <div className="label">Record</div>
+                  <div className="value">{d.wins ?? 0}W-{d.losses ?? 0}L</div>
+                </div>
+                <div className="stat-card" style={{ flex: 1 }}>
+                  <div className="label">Touch Diff</div>
+                  <div className="value" style={{
+                    color: (d.td ?? 0) > 0 ? 'var(--green)' : (d.td ?? 0) < 0 ? 'var(--red)' : 'inherit'
+                  }}>
+                    {(d.td ?? 0) > 0 ? '+' : ''}{d.td ?? 0}
+                  </div>
+                </div>
+                <div className="stat-card" style={{ flex: 1 }}>
+                  <div className="label">Prior</div>
+                  <div className="value">{d.prior_strength?.toFixed(2) ?? d.strength?.toFixed(2) ?? '\u2014'}</div>
+                </div>
               </div>
             </div>
 
-            {/* Confidence Interval Bar */}
-            <div className="strip-detail-section" style={{ marginBottom: 20 }}>
-              <h4>80% Confidence Interval</h4>
-              <div className="confidence-bar-container">
-                <div className="confidence-bar-track">
-                  <div
-                    className="confidence-bar-fill"
-                    style={{ left: `${ciLowPct}%`, width: `${ciHighPct - ciLowPct}%` }}
-                  />
-                  <div
-                    className="confidence-bar-marker"
-                    style={{ left: `${posteriorPct}%` }}
-                  />
-                </div>
-                <div className="confidence-bar-labels">
-                  <span>0</span>
-                  <span>1</span>
-                  <span>2</span>
-                  <span>3</span>
-                  <span>4</span>
-                  <span>5</span>
-                </div>
+            {/* Mini Trajectory Chart */}
+            {chartData.length > 0 && (
+              <div className="strip-detail-section" style={{ marginBottom: 20 }}>
+                <h4>Strength Trajectory</h4>
+                <ResponsiveContainer width="100%" height={150}>
+                  <LineChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
+                    <XAxis dataKey="index" stroke="var(--text-muted)" tick={{ fontSize: 10 }} />
+                    <YAxis stroke="var(--text-muted)" tick={{ fontSize: 10 }} domain={['auto', 'auto']} />
+                    <Tooltip
+                      contentStyle={{
+                        background: 'var(--bg-card)',
+                        border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: 11,
+                      }}
+                      labelFormatter={(val, payload) => payload?.[0]?.payload?.label || `Bout ${val}`}
+                      formatter={(val) => [val.toFixed(2), 'Strength']}
+                    />
+                    <Line type="monotone" dataKey="strength" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-                [{ciLow.toFixed(2)}, {ciHigh.toFixed(2)}]
-              </div>
-            </div>
+            )}
 
             {/* Pool Summary */}
             {d.pool_summaries?.length > 0 && (
@@ -112,12 +142,10 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
                 <h4>Pool Results</h4>
                 {d.pool_summaries.map((ps, i) => (
                   <div key={i} className="assignment-item" style={{ marginBottom: 8 }}>
-                    <span className="pool-label">Pool {ps.pool_number}</span>
-                    <span className="event-label">{ps.event}</span>
+                    <span className="pool-label">{ps.source}</span>
                     <span style={{ marginLeft: 'auto', fontSize: 13 }}>
                       {ps.victories}V/{ps.bouts}B &middot; TS {ps.ts} TR {ps.tr} &middot;
-                      Ind {ps.indicator > 0 ? '+' : ''}{ps.indicator} &middot;
-                      Place {ps.place}
+                      Ind {ps.indicator > 0 ? '+' : ''}{ps.indicator}
                     </span>
                   </div>
                 ))}
@@ -140,7 +168,10 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
                   <tbody>
                     {d.bout_details.map((b, i) => (
                       <tr key={i} className={`bout-row ${b.victory ? 'bout-win' : 'bout-loss'}`}>
-                        <td>{b.opponent_name}</td>
+                        <td>
+                          {b.opponent_name}
+                          {b.is_upset && <span className="upset-badge">UPSET</span>}
+                        </td>
                         <td>{b.opponent_rating || 'U'}</td>
                         <td>{b.my_score}-{b.opp_score}</td>
                         <td>
@@ -156,7 +187,7 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
             )}
 
             {/* AI Insight */}
-            {d.has_pool_data && (
+            {d.has_bouts && (
               <div className="strip-detail-section">
                 <h4>AI Performance Insight</h4>
                 {insight ? (

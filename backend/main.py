@@ -5,8 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
-from config import PORT, UPLOADS_DIR
+from config import PORT, UPLOADS_DIR, DATA_DIR
 from data_loader import load_data, get_referee_by_token, get_pools_for_referee, get_event_status
+from data_loader import get_all_fencers, get_all_pools, get_all_submissions_dict
+from bt_engine import BTEngine
 from routers import tournament, pools, referees, scores, coach
 
 
@@ -42,6 +44,10 @@ manager = ConnectionManager()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     load_data()
+    # Initialize Bradley-Terry engine
+    engine = BTEngine(DATA_DIR)
+    engine.initialize(get_all_fencers(), get_all_pools(), get_all_submissions_dict())
+    coach._engine = engine
     yield
 
 

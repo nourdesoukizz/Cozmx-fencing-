@@ -59,7 +59,7 @@ FenceFlow is a web application with four interfaces serving four user types:
 | Real-time Updates | WebSockets (Socket.io) | Live dashboard, live bracket, live coach analytics, live spectator view |
 | SMS Notifications | Twilio API | Industry standard, free trial credit, simple API |
 | AI / OCR | Claude API (Vision + Text) | Pool sheet extraction, anomaly detection, performance insights |
-| Bayesian Model | Custom implementation (Python) | Posterior skill estimation with live updating |
+| Performance Model | Bradley-Terry engine (Python) | Touch-level strength estimation with MM algorithm, trajectory tracking, Monte Carlo DE simulation |
 | Hosting | Local machine for demo (deployable to any Python host) | Simplicity for hackathon demo |
 
 ---
