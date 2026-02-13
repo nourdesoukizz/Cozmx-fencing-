@@ -10,7 +10,7 @@ from data_loader import load_data, get_referee_by_token, get_pools_for_referee, 
 from data_loader import get_all_fencers, get_all_pools, get_all_submissions_dict
 from bt_engine import BTEngine
 from telegram_bot import start_polling as start_telegram_bot, stop_polling as stop_telegram_bot
-from routers import tournament, pools, referees, scores, coach, agent as agent_router, announcer as announcer_router
+from routers import tournament, pools, referees, scores, coach, agent as agent_router, announcer as announcer_router, narrator as narrator_router
 
 
 class ConnectionManager:
@@ -75,6 +75,7 @@ app.include_router(scores.router)
 app.include_router(coach.router)
 app.include_router(agent_router.router)
 app.include_router(announcer_router.router)
+app.include_router(narrator_router.router)
 
 # Mount uploads directory for serving score sheet photos
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)

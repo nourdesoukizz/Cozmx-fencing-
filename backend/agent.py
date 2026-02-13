@@ -266,6 +266,10 @@ class TournamentAgent:
                 from announcer import announcer as ann
                 await ann.generate("all_pools_complete", {"event_name": event_name, "pool_count": len(event_pools)})
 
+                # Trigger narrator commentary
+                from narrator import narrator as narr
+                await narr.generate("all_pools_complete", {"event_name": event_name, "pool_count": len(event_pools)})
+
     async def _do_initial_ping(self, event_name: str):
         from data_loader import get_referees
         from telegram_service import send_telegram
@@ -359,6 +363,15 @@ class TournamentAgent:
         # Trigger PA announcement
         from announcer import announcer as ann
         await ann.generate("pool_approved", {"event_name": pool["event"], "pool_number": pool["pool_number"]})
+
+        # Trigger narrator commentary with rich context
+        from narrator import narrator as narr
+        await narr.generate("pool_approved", {
+            "event_name": pool["event"],
+            "pool_number": pool["pool_number"],
+            "results": results,
+            "fencers": pool.get("fencers", []),
+        })
 
     async def _reping_referees(self, event_name: str, event_pools: list[dict], tracked: dict):
         from data_loader import get_referees, get_submission

@@ -2045,6 +2045,499 @@ body {
   font-size: 15px;
 }
 
+/* ── Announcement Banner ── */
+
+.announcement-banner {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 51, 234, 0.12));
+  border-bottom: 1px solid rgba(59, 130, 246, 0.25);
+  padding: 10px 20px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.announcement-banner-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  animation: bannerFadeIn 0.5s ease;
+}
+
+@keyframes bannerFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Progress Section ── */
+
+.public-progress-section {
+  padding: 16px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.event-progress-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+}
+
+.event-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.event-progress-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.event-progress-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.event-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.event-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--green);
+  transition: width 0.4s ease;
+}
+
+.event-progress-fill.in-progress {
+  background: var(--blue);
+}
+
+.event-progress-fill.complete {
+  background: var(--green);
+}
+
+/* ── Fencer Search ── */
+
+.fencer-search {
+  padding: 0 28px 16px;
+  position: relative;
+}
+
+.fencer-search-input {
+  width: 100%;
+  padding: 10px 14px 10px 36px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.fencer-search-input:focus {
+  border-color: var(--accent);
+}
+
+.fencer-search-icon {
+  position: absolute;
+  left: 40px;
+  top: 11px;
+  font-size: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.fencer-search-dropdown {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  top: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 40;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.fencer-search-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+.fencer-search-item:last-child {
+  border-bottom: none;
+}
+
+.fencer-search-item:hover {
+  background: var(--bg-hover);
+}
+
+.fencer-search-item-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.fencer-search-item-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.fencer-result-card {
+  margin: 0 28px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.fencer-result-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.fencer-result-card-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.fencer-result-card-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.fencer-result-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.fencer-result-stat {
+  text-align: center;
+}
+
+.fencer-result-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.fencer-result-stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.fencer-result-pools {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.fencer-result-pools h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.fencer-result-pool-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.fencer-result-pool-row:last-child {
+  border-bottom: none;
+}
+
+/* ── Public Tab Bar ── */
+
+.public-tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  background: var(--bg-secondary);
+}
+
+.public-tab-btn {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.public-tab-btn:hover {
+  color: var(--text-secondary);
+}
+
+.public-tab-btn.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent);
+}
+
+.public-tab-content {
+  padding: 20px 28px;
+}
+
+/* ── Leaderboard Table ── */
+
+.leaderboard-event-section {
+  margin-bottom: 24px;
+}
+
+.leaderboard-event-section h3 {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.leaderboard-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.leaderboard-table th.num-col {
+  text-align: center;
+}
+
+.leaderboard-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+}
+
+.leaderboard-table td.num-col {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.leaderboard-table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.leaderboard-rank {
+  font-weight: 800;
+  color: var(--text-primary);
+  width: 32px;
+  text-align: center;
+}
+
+.leaderboard-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.leaderboard-club {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.leaderboard-indicator {
+  font-weight: 700;
+}
+
+.leaderboard-indicator.positive {
+  color: var(--green);
+}
+
+.leaderboard-indicator.negative {
+  color: var(--red);
+}
+
+.leaderboard-indicator.zero {
+  color: var(--text-muted);
+}
+
+/* ── Pace Timeline ── */
+
+.pace-timeline {
+  position: relative;
+  padding: 8px 0 8px 24px;
+}
+
+.timeline-event-group {
+  margin-bottom: 20px;
+}
+
+.timeline-event-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-left: 20px;
+}
+
+.timeline-item {
+  position: relative;
+  padding: 8px 0 8px 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -5px;
+  top: 12px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-primary);
+  z-index: 1;
+}
+
+.timeline-dot.dot-started {
+  background: var(--green);
+}
+
+.timeline-dot.dot-approved {
+  background: var(--blue);
+}
+
+.timeline-dot.dot-complete {
+  background: var(--accent);
+}
+
+.timeline-dot.dot-stopped {
+  background: var(--orange);
+}
+
+.timeline-connector {
+  position: absolute;
+  left: -1px;
+  top: 22px;
+  bottom: -8px;
+  width: 2px;
+  background: var(--border);
+}
+
+.timeline-text {
+  font-weight: 600;
+}
+
+.timeline-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ── Narrator Feed ── */
+
+.narrator-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.narrator-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  animation: narratorSlideIn 0.3s ease;
+}
+
+@keyframes narratorSlideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.narrator-card-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.narrator-card-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ── Live Feed Tab Layout ── */
+
+.live-feed-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.live-feed-section h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
 /* ══════════════════════════════════════════════════
    EVENT CONTROLS — Start / Ping / Status
    ══════════════════════════════════════════════════ */
@@ -2431,6 +2924,48 @@ body {
 
   .public-content {
     padding: 18px 16px;
+  }
+
+  .public-progress-section {
+    padding: 12px 16px;
+  }
+
+  .fencer-search {
+    padding: 0 16px 12px;
+  }
+
+  .fencer-search-icon {
+    left: 28px;
+  }
+
+  .fencer-search-dropdown {
+    left: 16px;
+    right: 16px;
+  }
+
+  .fencer-result-card {
+    margin: 0 16px 12px;
+  }
+
+  .public-tab-bar {
+    padding: 0 16px;
+  }
+
+  .public-tab-btn {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  .public-tab-content {
+    padding: 16px;
+  }
+
+  .leaderboard-table .hide-mobile {
+    display: none;
+  }
+
+  .fencer-result-stats {
+    gap: 12px;
   }
 
   .coach-filters {

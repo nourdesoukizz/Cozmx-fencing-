@@ -45,6 +45,10 @@ async def start_event(event_name: str):
     from announcer import announcer
     await announcer.generate("event_started", {"event_name": event_name})
 
+    # Trigger narrator commentary
+    from narrator import narrator
+    await narrator.generate("event_started", {"event_name": event_name})
+
     return {"status": "ok", "event": event_name, "event_status": "started"}
 
 
@@ -73,6 +77,10 @@ async def stop_event(event_name: str):
     # Trigger PA announcement
     from announcer import announcer
     await announcer.generate("event_stopped", {"event_name": event_name})
+
+    # Trigger narrator commentary
+    from narrator import narrator
+    await narrator.generate("event_stopped", {"event_name": event_name})
 
     return {"status": "ok", "event": event_name, "event_status": "stopped"}
 

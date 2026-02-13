@@ -141,4 +141,13 @@ async def approve_pool_scores(pool_id: int, body: ApproveRequest):
     from announcer import announcer
     await announcer.generate("pool_approved", {"event_name": pool["event"], "pool_number": pool["pool_number"]})
 
+    # Trigger narrator commentary with rich context
+    from narrator import narrator
+    await narrator.generate("pool_approved", {
+        "event_name": pool["event"],
+        "pool_number": pool["pool_number"],
+        "results": results,
+        "fencers": pool.get("fencers", []),
+    })
+
     return {"status": "ok", "pool_id": pool_id, "results": results}

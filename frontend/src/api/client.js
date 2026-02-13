@@ -133,4 +133,7 @@ export const api = {
   polishAnnouncement: (text) => postJson('/announcer/polish', { text }),
   markAnnounced: (id) => postJson('/announcer/mark-announced', { id }),
   dismissAnnouncement: (id) => postJson('/announcer/dismiss', { id }),
+
+  // Narrator endpoints
+  getNarratorFeed: (limit = 50, offset = 0) => request(`/narrator/feed?limit=${limit}&offset=${offset}`),
 };
