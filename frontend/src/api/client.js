@@ -74,6 +74,9 @@ export const api = {
   pingReferees: (eventName) => postJson(`/tournament/events/${encodeURIComponent(eventName)}/ping-referees`, {}),
   pingReferee: (refereeId, messageType, customMessage = '') =>
     postJson(`/referees/${refereeId}/ping`, { message_type: messageType, custom_message: customMessage }),
+  batchPingReferees: (refereeIds, messageType, customMessage = '') =>
+    postJson('/referees/batch-ping', { referee_ids: refereeIds, message_type: messageType, custom_message: customMessage }),
+  getTelegramLink: (refereeId) => request(`/referees/${refereeId}/telegram-link`),
   getRefereeByToken: (token) => request(`/referee/${token}`),
 
   // Score endpoints
@@ -116,4 +119,18 @@ export const api = {
     authRequest(`/coach/simulate${nSims ? `?n_sims=${nSims}` : ''}`, token),
   getCoachBouts: (token) => authRequest('/coach/bouts', token),
   getCoachFencerNames: (token) => authRequest('/coach/fencer-names', token),
+
+  // Agent endpoints
+  getAgentStatus: () => request('/agent/status'),
+  getAgentLog: (limit = 50, offset = 0) => request(`/agent/log?limit=${limit}&offset=${offset}`),
+  getAgentPending: () => request('/agent/pending'),
+  enableAgent: () => postJson('/agent/enable', {}),
+  disableAgent: () => postJson('/agent/disable', {}),
+  updateAgentConfig: (config) => postJson('/agent/config', config),
+
+  // Announcer endpoints
+  getAnnouncements: (limit = 50, offset = 0) => request(`/announcer/list?limit=${limit}&offset=${offset}`),
+  polishAnnouncement: (text) => postJson('/announcer/polish', { text }),
+  markAnnounced: (id) => postJson('/announcer/mark-announced', { id }),
+  dismissAnnouncement: (id) => postJson('/announcer/dismiss', { id }),
 };

@@ -1,0 +1,76 @@
+{
+  "enabled": false,
+  "config": {
+    "confidence_threshold": 0.95,
+    "ping_interval_minutes": 30,
+    "max_pings": 2,
+    "tick_interval_seconds": 30
+  },
+  "tracked_events": {
+    "Cadet Men Saber": {
+      "initial_ping_sent": true,
+      "initial_ping_at": "2026-02-12T18:58:32.265395",
+      "flagged_pool_ids": [],
+      "referee_pings": {}
+    },
+    "Y-14 Women Foil": {
+      "initial_ping_sent": true,
+      "initial_ping_at": "2026-02-12T18:58:33.659699",
+      "flagged_pool_ids": [],
+      "referee_pings": {
+        "11": {
+          "ping_count": 1,
+          "last_ping_at": "2026-02-12T18:58:33.661379"
+        }
+      }
+    }
+  },
+  "action_log": [
+    {
+      "timestamp": "2026-02-12T18:58:17.822157",
+      "action": "agent_resumed",
+      "message": "Agent enabled by committee"
+    },
+    {
+      "timestamp": "2026-02-12T18:58:32.262452",
+      "action": "initial_ping",
+      "event": "Cadet Men Saber",
+      "sent": 0,
+      "skipped": 7,
+      "message": "Pinged 0 referees for Cadet Men Saber (7 not registered)"
+    },
+    {
+      "timestamp": "2026-02-12T18:58:33.657132",
+      "action": "initial_ping",
+      "event": "Y-14 Women Foil",
+      "sent": 2,
+      "skipped": 9,
+      "message": "Pinged 2 referees for Y-14 Women Foil (9 not registered)"
+    },
+    {
+      "timestamp": "2026-02-12T18:58:34.710208",
+      "action": "ping_referee",
+      "event": "Y-14 Women Foil",
+      "referee_id": 11,
+      "referee_name": "James Vaughan",
+      "ping_count": 1,
+      "pools": "7",
+      "message": "Re-pinged James (ping #1) for pool(s) 7"
+    },
+    {
+      "timestamp": "2026-02-12T18:59:19.153824",
+      "action": "agent_paused",
+      "message": "Agent paused by committee"
+    },
+    {
+      "timestamp": "2026-02-12T20:22:17.465771",
+      "action": "config_changed",
+      "changes": {
+        "confidence_threshold": 0.95,
+        "ping_interval_minutes": 30,
+        "max_pings": 2,
+        "tick_interval_seconds": 30
+      }
+    }
+  ]
+}

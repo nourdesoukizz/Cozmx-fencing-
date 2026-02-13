@@ -9,7 +9,8 @@ from config import PORT, UPLOADS_DIR, DATA_DIR
 from data_loader import load_data, get_referee_by_token, get_pools_for_referee, get_event_status
 from data_loader import get_all_fencers, get_all_pools, get_all_submissions_dict
 from bt_engine import BTEngine
-from routers import tournament, pools, referees, scores, coach
+from telegram_bot import start_polling as start_telegram_bot, stop_polling as stop_telegram_bot
+from routers import tournament, pools, referees, scores, coach, agent as agent_router, announcer as announcer_router
 
 
 class ConnectionManager:
@@ -48,7 +49,14 @@ async def lifespan(app: FastAPI):
     engine = BTEngine(DATA_DIR)
     engine.initialize(get_all_fencers(), get_all_pools(), get_all_submissions_dict())
     coach._engine = engine
+    # Start Telegram bot polling in background thread
+    start_telegram_bot()
+    # Start tournament agent background task
+    from agent import agent as tournament_agent
+    tournament_agent.start_background()
     yield
+    await tournament_agent.stop_background()
+    stop_telegram_bot()
 
 
 app = FastAPI(title="FenceFlow API", lifespan=lifespan)
@@ -65,6 +73,8 @@ app.include_router(pools.router)
 app.include_router(referees.router)
 app.include_router(scores.router)
 app.include_router(coach.router)
+app.include_router(agent_router.router)
+app.include_router(announcer_router.router)
 
 # Mount uploads directory for serving score sheet photos
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)

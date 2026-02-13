@@ -137,4 +137,8 @@ async def approve_pool_scores(pool_id: int, body: ApproveRequest):
         "status": "approved",
     })
 
+    # Trigger PA announcement
+    from announcer import announcer
+    await announcer.generate("pool_approved", {"event_name": pool["event"], "pool_number": pool["pool_number"]})
+
     return {"status": "ok", "pool_id": pool_id, "results": results}

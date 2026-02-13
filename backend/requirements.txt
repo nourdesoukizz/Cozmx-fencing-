@@ -3,4 +3,4 @@ uvicorn
 python-dotenv
 anthropic
 python-multipart
-twilio
+httpx

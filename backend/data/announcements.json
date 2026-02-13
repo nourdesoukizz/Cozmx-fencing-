@@ -1,0 +1,22 @@
+[
+  {
+    "id": "4ef8c80b-605a-4d13-b237-093bfdc6da1f",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Hello, welcome to the Cozmx Fall RYC/RJCC Tournament",
+    "polished_text": "Welcome to the Cozmx Fall RYC/RJCC Tournament.",
+    "status": "announced",
+    "created_at": "2026-02-12T20:36:28.125473",
+    "announced_at": "2026-02-12T20:36:36.857884"
+  },
+  {
+    "id": "012bb484-1b03-4001-b0e5-b25a05ae5de2",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Welcome to the Cozmx Fall RYC/RJCC Tournament.",
+    "polished_text": "Welcome to the Cozmx Fall RYC/RJCC Tournament. We're delighted to have you here today for an exciting day of competition.",
+    "status": "announced",
+    "created_at": "2026-02-12T20:36:56.485360",
+    "announced_at": "2026-02-12T20:37:07.179319"
+  }
+]

@@ -471,6 +471,75 @@ body {
   padding: 24px 28px;
 }
 
+/* ── Agent Sidebar Layout ── */
+.dashboard-body {
+  display: flex;
+  min-height: 0;
+}
+
+.dashboard-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-sidebar {
+  width: 420px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  max-height: calc(100vh - 200px);
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.sidebar-section-grow {
+  flex: 1;
+}
+
+.sidebar-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+  cursor: pointer;
+}
+
+.sidebar-section-content {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-body {
+    flex-direction: column;
+  }
+  .agent-sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    max-height: 500px;
+  }
+}
+
 /* ══════════════════════════════════════════════════
    VENUE FLOOR PLAN — Realistic Fencing Strips
    ══════════════════════════════════════════════════ */

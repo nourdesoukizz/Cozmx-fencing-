@@ -7,6 +7,8 @@ import StatusBadge from '../shared/StatusBadge';
 import StripBoard from './StripBoard';
 import PoolProgress from './PoolProgress';
 import RefereePanel from './RefereePanel';
+import AgentPanel from './AgentPanel';
+import AnnouncerPanel from './AnnouncerPanel';
 
 const TABS = [
   { key: 'strips', label: 'Venue Map' },
@@ -22,6 +24,7 @@ export default function DashboardPage() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('strips');
   const [refreshing, setRefreshing] = useState(false);
+  const [agentCollapsed, setAgentCollapsed] = useState(false);
 
   const { addNotification } = useNotification();
 
@@ -64,6 +67,22 @@ export default function DashboardPage() {
     } else if (msg.type === 'event_stopped') {
       addNotification('info', 'Event Stopped', `${msg.event} has been stopped`);
       fetchData();
+    } else if (msg.type === 'agent_action') {
+      const entry = msg.entry || {};
+      if (entry.action === 'auto_approve') {
+        addNotification('success', 'Agent Auto-Approved', entry.message || `Pool auto-approved`);
+        fetchData();
+      } else if (entry.action === 'auto_stop') {
+        addNotification('info', 'Agent Completed Event', entry.message || `Event auto-stopped`);
+        fetchData();
+      } else if (entry.action === 'flag_for_review') {
+        addNotification('warning', 'Needs Review', entry.message || entry.reason || 'Pool flagged');
+      }
+      // Refresh agent panel if it's mounted
+      if (window._agentPanelRefresh) window._agentPanelRefresh();
+    } else if (msg.type === 'announcement_suggestion') {
+      addNotification('info', 'New Announcement', 'A new announcement suggestion is ready');
+      if (window._announcerPanelRefresh) window._announcerPanelRefresh();
     }
   }, [addNotification, fetchData]));
 
@@ -90,11 +109,11 @@ export default function DashboardPage() {
   const handlePingReferees = async (eventName) => {
     try {
       const result = await api.pingReferees(eventName);
-      const skipped = (result.details || []).filter(d => d.status === 'skipped_no_phone').length;
+      const skipped = result.skipped_count || 0;
       addNotification(
         'success',
         'Referees Pinged',
-        `Sent: ${result.sent_count}, Failed: ${result.failed_count}, No phone: ${skipped}`
+        `Sent: ${result.sent_count}, Failed: ${result.failed_count}, Not registered: ${skipped}`
       );
     } catch (err) {
       addNotification('error', 'Ping Failed', err.message);
@@ -206,24 +225,51 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Tab Bar */}
-      <div className="tab-bar">
-        {TABS.map((tab) => (
-          <button
-            key={tab.key}
-            className={`tab-btn ${activeTab === tab.key ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <div className="dashboard-body">
+        <div className="dashboard-main">
+          {/* Tab Bar */}
+          <div className="tab-bar">
+            {TABS.map((tab) => (
+              <button
+                key={tab.key}
+                className={`tab-btn ${activeTab === tab.key ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-      {/* Tab Content */}
-      <div className="tab-content">
-        {activeTab === 'strips' && <StripBoard pools={pools} />}
-        {activeTab === 'pools' && <PoolProgress pools={pools} onRefresh={() => fetchData()} />}
-        {activeTab === 'referees' && <RefereePanel referees={referees} addNotification={addNotification} />}
+          {/* Tab Content */}
+          <div className="tab-content">
+            {activeTab === 'strips' && <StripBoard pools={pools} />}
+            {activeTab === 'pools' && <PoolProgress pools={pools} onRefresh={() => fetchData()} />}
+            {activeTab === 'referees' && <RefereePanel referees={referees} addNotification={addNotification} />}
+          </div>
+        </div>
+
+        <aside className="agent-sidebar">
+          <div className="sidebar-section">
+            <div className="sidebar-section-header" onClick={() => setAgentCollapsed(!agentCollapsed)}>
+              <span style={{ fontWeight: 700, fontSize: 14 }}>Agent</span>
+              <span style={{ color: 'var(--text-muted)' }}>{agentCollapsed ? '+' : '-'}</span>
+            </div>
+            {!agentCollapsed && (
+              <div className="sidebar-section-content">
+                <AgentPanel addNotification={addNotification} />
+              </div>
+            )}
+          </div>
+          <div className="sidebar-divider" />
+          <div className="sidebar-section sidebar-section-grow">
+            <div className="sidebar-section-header">
+              <span style={{ fontWeight: 700, fontSize: 14 }}>Announcer</span>
+            </div>
+            <div className="sidebar-section-content">
+              <AnnouncerPanel addNotification={addNotification} />
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
