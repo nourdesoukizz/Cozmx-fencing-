@@ -9,11 +9,13 @@ import PoolProgress from './PoolProgress';
 import RefereePanel from './RefereePanel';
 import AgentPanel from './AgentPanel';
 import AnnouncerPanel from './AnnouncerPanel';
+import DEManagement from './DEManagement';
 
 const TABS = [
   { key: 'strips', label: 'Venue Map' },
   { key: 'pools', label: 'Pool Progress' },
   { key: 'referees', label: 'Referees' },
+  { key: 'de', label: 'Direct Elimination' },
 ];
 
 export default function DashboardPage() {
@@ -83,6 +85,15 @@ export default function DashboardPage() {
     } else if (msg.type === 'announcement_suggestion') {
       addNotification('info', 'New Announcement', 'A new announcement suggestion is ready');
       if (window._announcerPanelRefresh) window._announcerPanelRefresh();
+    } else if (msg.type === 'de_bracket_created') {
+      addNotification('success', 'DE Bracket Created', `${msg.event} bracket created`);
+      fetchData();
+    } else if (msg.type === 'de_bout_completed') {
+      addNotification('info', 'DE Bout Completed', `${msg.winner} wins ${msg.score} in ${msg.round_name}`);
+      fetchData();
+    } else if (msg.type === 'de_bracket_completed') {
+      addNotification('success', 'DE Complete', `${msg.event} champion: ${msg.champion}`);
+      fetchData();
     }
   }, [addNotification, fetchData]));
 
@@ -245,6 +256,7 @@ export default function DashboardPage() {
             {activeTab === 'strips' && <StripBoard pools={pools} />}
             {activeTab === 'pools' && <PoolProgress pools={pools} onRefresh={() => fetchData()} />}
             {activeTab === 'referees' && <RefereePanel referees={referees} addNotification={addNotification} />}
+            {activeTab === 'de' && <DEManagement pools={pools} referees={referees} addNotification={addNotification} onRefresh={() => fetchData()} />}
           </div>
         </div>
 

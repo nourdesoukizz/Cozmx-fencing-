@@ -136,4 +136,17 @@ export const api = {
 
   // Narrator endpoints
   getNarratorFeed: (limit = 50, offset = 0) => request(`/narrator/feed?limit=${limit}&offset=${offset}`),
+
+  // DE endpoints
+  getDESeedings: (eventName) => request(`/de/seedings/${encodeURIComponent(eventName)}`),
+  createDEBracket: (eventName) => postJson(`/de/bracket/${encodeURIComponent(eventName)}/create`, {}),
+  getDEBracket: (eventName) => request(`/de/bracket/${encodeURIComponent(eventName)}`),
+  getAllDEBrackets: () => request('/de/brackets'),
+  deleteDEBracket: (eventName) => {
+    return fetch(`${BASE}/de/bracket/${encodeURIComponent(eventName)}`, { method: 'DELETE' })
+      .then(res => { if (!res.ok) throw new Error(`API ${res.status}`); return res.json(); });
+  },
+  assignDEReferee: (eventName, body) => postJson(`/de/bracket/${encodeURIComponent(eventName)}/assign`, body),
+  reportDEBout: (eventName, body) => postJson(`/de/bracket/${encodeURIComponent(eventName)}/report`, body),
+  getRefereeDEBouts: (refereeId) => request(`/de/referee-bouts/${refereeId}`),
 };

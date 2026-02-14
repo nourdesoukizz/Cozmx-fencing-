@@ -471,6 +471,64 @@ def get_pool_bouts_for_fencer(fencer_id: int) -> list[dict]:
     return results
 
 
+def get_pool_leaderboard(event_name: str) -> list[dict]:
+    """Aggregate approved pool results for an event and return seeded fencer list.
+
+    Sorts by: victories desc → indicator desc → touches scored desc.
+    Returns list of dicts with fencer info + pool stats.
+    """
+    event_pools = [p for p in _pools if p["event"].lower() == event_name.lower()]
+    if not event_pools:
+        return []
+
+    # Aggregate stats per fencer_id
+    fencer_stats: dict[int, dict] = {}
+
+    for pool in event_pools:
+        pool_id = pool["id"]
+        sub = _submissions.get(pool_id)
+        if not sub or sub.get("status") != "approved":
+            continue
+
+        results = sub.get("results", [])
+        pool_fencers = pool.get("fencers", [])
+
+        for i, r in enumerate(results):
+            fencer = pool_fencers[i] if i < len(pool_fencers) else None
+            if not fencer or not fencer.get("id"):
+                continue
+
+            fid = fencer["id"]
+            v = r.get("V", 0)
+            ts = r.get("TS", 0)
+            tr = r.get("TR", 0)
+
+            if fid not in fencer_stats:
+                fencer_stats[fid] = {
+                    "fencer_id": fid,
+                    "first_name": fencer.get("first_name", ""),
+                    "last_name": fencer.get("last_name", ""),
+                    "club": fencer.get("club", ""),
+                    "rating": fencer.get("rating", ""),
+                    "V": 0, "TS": 0, "TR": 0,
+                }
+            fencer_stats[fid]["V"] += v
+            fencer_stats[fid]["TS"] += ts
+            fencer_stats[fid]["TR"] += tr
+
+    # Compute indicator and sort
+    ranked = list(fencer_stats.values())
+    for f in ranked:
+        f["indicator"] = f["TS"] - f["TR"]
+
+    ranked.sort(key=lambda f: (-f["V"], -f["indicator"], -f["TS"]))
+
+    for i, f in enumerate(ranked):
+        f["rank"] = i + 1
+
+    return ranked
+
+
 def get_pools_for_referee(referee_id: int) -> list[dict]:
     referee = _referee_by_id.get(referee_id)
     if not referee:

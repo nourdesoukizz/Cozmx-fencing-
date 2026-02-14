@@ -21,6 +21,8 @@ RAW_TEMPLATES = {
     "event_stopped": "The {event_name} event has concluded.",
     "pool_approved": "Pool {pool_number} results for {event_name} have been approved.",
     "all_pools_complete": "All {pool_count} pools for {event_name} are complete.",
+    "de_bout_completed": "{winner_name} defeats {loser_name} {score} in the {round_name} of {event_name}.",
+    "de_event_completed": "The {event_name} Direct Elimination is complete. Champion: {champion_name}.",
 }
 
 

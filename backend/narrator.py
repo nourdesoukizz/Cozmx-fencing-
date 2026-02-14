@@ -21,6 +21,8 @@ FALLBACK_TEMPLATES = {
     "event_stopped": "That's a wrap for {event_name}! What a competition.",
     "pool_approved": "Pool {pool_number} results are in for {event_name}!",
     "all_pools_complete": "All {pool_count} pools for {event_name} are done — every bout counted!",
+    "de_bout_completed": "{winner_name} (#{winner_seed}) takes down {loser_name} (#{loser_seed}) {score} in the {round_name} of {event_name}!",
+    "de_event_completed": "{champion_name} wins the {event_name}! What a performance!",
 }
 
 
@@ -84,6 +86,29 @@ class NarratorService:
             prompt = (
                 f"All {context.get('pool_count', '')} pools for {context.get('event_name', '')} "
                 f"are complete. Write 1-2 celebratory sentences."
+            )
+        elif trigger == "de_bout_completed":
+            winner_seed = context.get("winner_seed", "")
+            loser_seed = context.get("loser_seed", "")
+            upset = ""
+            if winner_seed and loser_seed:
+                try:
+                    if int(winner_seed) > int(loser_seed):
+                        upset = " This is an upset!"
+                except (ValueError, TypeError):
+                    pass
+            prompt = (
+                f"DE {context.get('round_name', '')} result in {context.get('event_name', '')}: "
+                f"#{winner_seed} {context.get('winner_name', '')} beat "
+                f"#{loser_seed} {context.get('loser_name', '')} {context.get('score', '')}.{upset} "
+                f"Write 1-2 sentences of exciting commentary."
+            )
+        elif trigger == "de_event_completed":
+            prompt = (
+                f"{context.get('champion_name', '')} (seed #{context.get('champion_seed', '')}) "
+                f"has won the {context.get('event_name', '')} DE, defeating "
+                f"{context.get('runner_up_name', '')} (seed #{context.get('runner_up_seed', '')}) "
+                f"{context.get('score', '')} in the final. Write 1-2 celebratory sentences."
             )
         else:
             prompt = f"Tournament update: {trigger}. Write 1-2 casual sentences."

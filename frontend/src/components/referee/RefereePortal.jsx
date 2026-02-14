@@ -5,6 +5,7 @@ import { formatRefereeName } from '../../utils/formatters';
 import useSocket from '../../hooks/useSocket';
 import StatusBadge from '../shared/StatusBadge';
 import PoolUpload from './PoolUpload';
+import DEScoreForm from './DEScoreForm';
 
 export default function RefereePortal() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function RefereePortal() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploadingPool, setUploadingPool] = useState(null);
+  const [deBouts, setDeBouts] = useState([]);
+  const [activeDEBout, setActiveDEBout] = useState(null);
 
   const isTokenMode = Boolean(token);
 
@@ -29,6 +32,15 @@ export default function RefereePortal() {
         const data = await api.getRefereeByToken(token);
         setReferee(data.referee);
         setPools(data.pools);
+        // Fetch DE bouts for this referee
+        if (data.referee?.id) {
+          try {
+            const deData = await api.getRefereeDEBouts(data.referee.id);
+            setDeBouts(deData.bouts || []);
+          } catch {
+            // DE bouts may not exist yet
+          }
+        }
       } else {
         const data = await api.getPools();
         setPools(data);
@@ -48,6 +60,8 @@ export default function RefereePortal() {
   // WebSocket: listen for event_started to update UI live
   useSocket(useCallback((msg) => {
     if (msg.type === 'event_started' || msg.type === 'submission_received' || msg.type === 'scores_approved') {
+      fetchPools();
+    } else if (msg.type === 'de_referee_assigned' || msg.type === 'de_bout_completed') {
       fetchPools();
     }
   }, [fetchPools]));
@@ -83,6 +97,17 @@ export default function RefereePortal() {
 
   if (loading) {
     return <div className="loading-container">Loading pools...</div>;
+  }
+
+  if (activeDEBout) {
+    return (
+      <DEScoreForm
+        bout={activeDEBout}
+        eventName={activeDEBout.event}
+        onComplete={() => { setActiveDEBout(null); fetchPools(); }}
+        onCancel={() => setActiveDEBout(null)}
+      />
+    );
   }
 
   if (uploadingPool) {
@@ -160,7 +185,45 @@ export default function RefereePortal() {
           })}
         </div>
 
-        {pools.length === 0 && (
+        {/* DE Bouts Section */}
+        {deBouts.length > 0 && (
+          <div>
+            <div className="de-section-title">Your DE Bouts</div>
+            {deBouts.map((bout) => (
+              <div key={bout.bout_id} className="de-bout-card">
+                <div className="bout-header">
+                  <span className="bout-event">{bout.event}</span>
+                  <span className="bout-round">{bout.round_name}</span>
+                </div>
+                <div className="de-bout-matchup">
+                  <span className="seed-tag">#{bout.top_fencer?.seed} </span>
+                  {bout.top_fencer?.first_name} {bout.top_fencer?.last_name}
+                  {' vs '}
+                  <span className="seed-tag">#{bout.bottom_fencer?.seed} </span>
+                  {bout.bottom_fencer?.first_name} {bout.bottom_fencer?.last_name}
+                </div>
+                {bout.strip_number && (
+                  <div className="bout-strip">Strip {bout.strip_number}</div>
+                )}
+                {bout.status === 'pending' && bout.top_fencer && bout.bottom_fencer ? (
+                  <button className="report-btn" onClick={() => setActiveDEBout(bout)}>
+                    Report Result
+                  </button>
+                ) : bout.status === 'completed' ? (
+                  <div className="bout-completed-tag">
+                    Completed {bout.top_score}-{bout.bottom_score}
+                  </div>
+                ) : (
+                  <div style={{ color: 'var(--text-muted)', fontSize: 12, textAlign: 'center' }}>
+                    Waiting for fencers
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {pools.length === 0 && deBouts.length === 0 && (
           <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 32 }}>
             No pools found.
           </p>

@@ -8,12 +8,14 @@ import EventLeaderboard from './EventLeaderboard';
 import FencerSearchPanel from './FencerSearchPanel';
 import PaceTimeline from './PaceTimeline';
 import NarratorFeed from './NarratorFeed';
+import Bracket from '../shared/Bracket';
 
 export default function PublicPage() {
   const [pools, setPools] = useState([]);
   const [tournament, setTournament] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [narratorFeed, setNarratorFeed] = useState([]);
+  const [brackets, setBrackets] = useState([]);
   const [activeTab, setActiveTab] = useState('leaderboards');
   const [loading, setLoading] = useState(true);
 
@@ -53,10 +55,19 @@ export default function PublicPage() {
     }
   }, []);
 
+  const fetchBrackets = useCallback(async () => {
+    try {
+      const data = await api.getAllDEBrackets();
+      setBrackets(data.brackets || []);
+    } catch {
+      // silent fail
+    }
+  }, []);
+
   useEffect(() => {
-    Promise.all([fetchPools(), fetchTournament(), fetchAnnouncements(), fetchNarrator()])
+    Promise.all([fetchPools(), fetchTournament(), fetchAnnouncements(), fetchNarrator(), fetchBrackets()])
       .finally(() => setLoading(false));
-  }, [fetchPools, fetchTournament, fetchAnnouncements, fetchNarrator]);
+  }, [fetchPools, fetchTournament, fetchAnnouncements, fetchNarrator, fetchBrackets]);
 
   // WebSocket handlers
   useSocket(useCallback((msg) => {
@@ -71,8 +82,11 @@ export default function PublicPage() {
       fetchAnnouncements();
     } else if (msg.type === 'narrator_update' && msg.entry) {
       setNarratorFeed((prev) => [msg.entry, ...prev]);
+    } else if (msg.type === 'de_bracket_created' || msg.type === 'de_bout_completed' || msg.type === 'de_bracket_completed') {
+      fetchBrackets();
+      fetchNarrator();
     }
-  }, [fetchPools, fetchTournament, fetchAnnouncements, fetchNarrator]));
+  }, [fetchPools, fetchTournament, fetchAnnouncements, fetchNarrator, fetchBrackets]));
 
   // Compute event progress
   const events = tournament?.events || [];
@@ -170,6 +184,12 @@ export default function PublicPage() {
           Pool Results
         </button>
         <button
+          className={`public-tab-btn ${activeTab === 'de' ? 'active' : ''}`}
+          onClick={() => setActiveTab('de')}
+        >
+          DE Brackets
+        </button>
+        <button
           className={`public-tab-btn ${activeTab === 'feed' ? 'active' : ''}`}
           onClick={() => setActiveTab('feed')}
         >
@@ -203,6 +223,46 @@ export default function PublicPage() {
                         <PoolTable key={pool.id} pool={pool} readOnly />
                       ))}
                   </div>
+                </div>
+              ))
+            )}
+          </>
+        )}
+
+        {activeTab === 'de' && (
+          <>
+            {brackets.length === 0 ? (
+              <div className="no-data-message">
+                No DE brackets yet. Brackets will appear here once pool rounds are complete.
+              </div>
+            ) : (
+              brackets.map((b) => (
+                <div key={b.event} style={{ marginBottom: 32 }}>
+                  <h3 style={{ marginBottom: 8 }}>
+                    {b.event}
+                    <span className={`event-status-tag ${b.status === 'completed' ? 'stopped' : 'started'}`} style={{ marginLeft: 8 }}>
+                      {b.status === 'completed' ? 'Complete' : 'In Progress'}
+                    </span>
+                  </h3>
+                  <Bracket bracket={b} />
+                  {b.status === 'completed' && b.final_standings?.length > 0 && (
+                    <table className="de-standings-table">
+                      <thead>
+                        <tr><th>Place</th><th>Fencer</th><th>Seed</th></tr>
+                      </thead>
+                      <tbody>
+                        {b.final_standings.map((s, i) => (
+                          <tr key={i}>
+                            <td className={s.place === 1 ? 'gold' : s.place === 2 ? 'silver' : s.place <= 3 ? 'bronze' : ''}>
+                              {s.place === 1 ? '1st' : s.place === 2 ? '2nd' : `T${s.place}`}
+                            </td>
+                            <td>{s.first_name} {s.last_name}</td>
+                            <td>#{s.seed}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               ))
             )}
