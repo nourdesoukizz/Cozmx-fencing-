@@ -1710,6 +1710,102 @@ body {
   border-color: var(--accent);
 }
 
+/* Low-confidence / problematic cell highlight */
+.edit-cell.cell-low-confidence {
+  background: var(--red-bg, rgba(239, 68, 68, 0.15));
+}
+
+.edit-cell.cell-low-confidence input {
+  border-color: var(--red, #ef4444);
+  background: var(--red-bg, rgba(239, 68, 68, 0.15));
+}
+
+/* Referee review section */
+.referee-review-section {
+  padding: 16px;
+}
+
+.referee-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attention-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--red-bg, rgba(239, 68, 68, 0.15));
+  color: var(--red, #ef4444);
+}
+
+.referee-review-grid {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 16px;
+}
+
+.referee-review-grid .matrix-table.editable td.edit-cell input {
+  width: 44px;
+  height: 44px;
+  font-size: 16px; /* prevent iOS zoom */
+}
+
+.referee-review-actions {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-primary, #fff);
+  padding: 12px 0;
+  display: flex;
+  gap: 12px;
+}
+
+.referee-review-actions .submit-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--accent, #3b82f6);
+  color: #fff;
+}
+
+.referee-review-actions .submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.referee-review-actions .submit-btn.submitting {
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .referee-review-section {
+    padding: 12px 8px;
+  }
+  .referee-review-grid .matrix-table.editable td.edit-cell input {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  .referee-review-grid .matrix-table th.row-header {
+    font-size: 11px;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .confidence-bar {
   margin-top: 12px;
   font-size: 12px;

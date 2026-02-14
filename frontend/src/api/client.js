@@ -88,6 +88,8 @@ export const api = {
   getSubmission: (poolId) => request(`/pools/${poolId}/submission`),
   approveScores: (poolId, scores, reviewedBy = 'Bout Committee') =>
     postJson(`/pools/${poolId}/approve`, { scores, reviewed_by: reviewedBy }),
+  refereeEditScores: (poolId, scores) =>
+    postJson(`/pools/${poolId}/referee-edit`, { scores }),
 
   // Coach endpoints
   coachAuth: (code) => postJson('/coach/auth', { code }),

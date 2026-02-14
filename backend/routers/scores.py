@@ -12,6 +12,10 @@ from data_loader import (
 router = APIRouter(prefix="/api/pools", tags=["scores"])
 
 
+class RefereeEditRequest(BaseModel):
+    scores: list[list[int | None]]
+
+
 class ApproveRequest(BaseModel):
     scores: list[list[int | None]]
     reviewed_by: str = "Bout Committee"
@@ -60,12 +64,15 @@ async def upload_pool_photo(pool_id: int, file: UploadFile = File(...)):
         anomalies = [{"level": "warning", "message": f"OCR failed: {exc}"}]
         ocr_status = "ocr_failed"
 
+    cell_confidence = ocr_result.get("cell_confidence", None) if ocr_status != "ocr_failed" else None
+
     submission = {
         "pool_id": pool_id,
         "status": ocr_status,
         "scores": scores,
         "anomalies": anomalies,
         "confidence": confidence,
+        "cell_confidence": cell_confidence,
         "photo_path": photo_path,
         "submitted_at": datetime.now().isoformat(),
         "reviewed_at": "",
@@ -151,3 +158,39 @@ async def approve_pool_scores(pool_id: int, body: ApproveRequest):
     })
 
     return {"status": "ok", "pool_id": pool_id, "results": results}
+
+
+@router.post("/{pool_id}/referee-edit")
+async def referee_edit_scores(pool_id: int, body: RefereeEditRequest):
+    pool = get_pool_by_id(pool_id)
+    if not pool:
+        raise HTTPException(status_code=404, detail="Pool not found")
+
+    existing = get_submission(pool_id)
+    if not existing:
+        raise HTTPException(status_code=400, detail="No submission to edit")
+
+    if existing.get("status") == "approved":
+        raise HTTPException(status_code=400, detail="Cannot edit after committee approval")
+
+    # Re-validate edited scores
+    from ocr_service import validate_scores
+    fencers = pool.get("fencers", [])
+    anomalies = validate_scores(body.scores, fencers)
+
+    existing["scores"] = body.scores
+    existing["anomalies"] = anomalies
+    existing["cell_confidence"] = None  # Clear since referee manually edited
+    existing["status"] = "pending_review"
+
+    save_submission(pool_id, existing)
+
+    # Broadcast via WebSocket
+    from main import manager
+    await manager.broadcast({
+        "type": "submission_updated",
+        "pool_id": pool_id,
+        "status": "pending_review",
+    })
+
+    return {"status": "ok", "pool_id": pool_id, "submission": existing}

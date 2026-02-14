@@ -41,12 +41,14 @@ Extract the {n}x{n} score matrix from the sheet. The matrix is a round-robin gri
 Return ONLY a JSON object with this exact format:
 {{
   "scores": [[null, 5, 3, ...], [2, null, 5, ...], ...],
-  "confidence": 0.95
+  "confidence": 0.95,
+  "cell_confidence": [[null, 0.95, 0.3, ...], [0.9, null, 0.88, ...], ...]
 }}
 
 Where:
 - "scores" is a {n}x{n} array. Use null for diagonal cells.
-- "confidence" is your confidence level (0.0-1.0) in the accuracy of the extraction.
+- "confidence" is your overall confidence level (0.0-1.0) in the accuracy of the extraction.
+- "cell_confidence" is a {n}x{n} array mirroring the scores matrix. Use null for diagonal cells. For each score cell, provide your confidence (0.0-1.0) in that specific cell's accuracy. Use lower confidence for smudged, unclear, or ambiguous digits.
 
 Important:
 - Each inner array must have exactly {n} elements.
@@ -56,7 +58,7 @@ Important:
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     message = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=1024,
+        max_tokens=2048,
         messages=[
             {
                 "role": "user",
@@ -94,7 +96,15 @@ Important:
         if len(row) != n:
             raise ValueError(f"Row {i} has {len(row)} columns, expected {n}")
 
-    return {"scores": scores, "confidence": confidence}
+    # Extract and validate cell_confidence matrix
+    cell_confidence = result.get("cell_confidence", None)
+    if cell_confidence is not None:
+        if (not isinstance(cell_confidence, list)
+                or len(cell_confidence) != n
+                or any(not isinstance(r, list) or len(r) != n for r in cell_confidence)):
+            cell_confidence = None
+
+    return {"scores": scores, "confidence": confidence, "cell_confidence": cell_confidence}
 
 
 def validate_scores(matrix: list[list[int | None]], fencers: list[dict]) -> list[dict]:

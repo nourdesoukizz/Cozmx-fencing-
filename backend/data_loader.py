@@ -322,6 +322,7 @@ def load_scores():
                 "scores": json.loads(row.get("scores_json", "[]")),
                 "anomalies": json.loads(row.get("anomalies_json", "[]")),
                 "confidence": float(row.get("confidence", 0)),
+                "cell_confidence": json.loads(row.get("cell_confidence_json", "null")),
                 "photo_path": row.get("photo_path", ""),
                 "submitted_at": row.get("submitted_at", ""),
                 "reviewed_at": row.get("reviewed_at", ""),
@@ -349,7 +350,8 @@ def write_scores_csv():
     scores_path = DATA_DIR / "pool_scores.csv"
     fieldnames = [
         "pool_id", "status", "scores_json", "anomalies_json",
-        "confidence", "photo_path", "submitted_at", "reviewed_at", "reviewed_by",
+        "confidence", "cell_confidence_json",
+        "photo_path", "submitted_at", "reviewed_at", "reviewed_by",
     ]
     approved = {pid: sub for pid, sub in _submissions.items() if sub.get("status") == "approved"}
     with open(scores_path, "w", newline="", encoding="utf-8") as f:
@@ -363,6 +365,7 @@ def write_scores_csv():
                 "scores_json": json.dumps(sub.get("scores", [])),
                 "anomalies_json": json.dumps(sub.get("anomalies", [])),
                 "confidence": sub.get("confidence", 0),
+                "cell_confidence_json": json.dumps(sub.get("cell_confidence")),
                 "photo_path": sub.get("photo_path", ""),
                 "submitted_at": sub.get("submitted_at", ""),
                 "reviewed_at": sub.get("reviewed_at", ""),
