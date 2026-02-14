@@ -18,6 +18,7 @@ export default function PublicPage() {
   const [brackets, setBrackets] = useState([]);
   const [activeTab, setActiveTab] = useState('leaderboards');
   const [loading, setLoading] = useState(true);
+  const [streamingEntries, setStreamingEntries] = useState({});
 
   const fetchPools = useCallback(async () => {
     try {
@@ -81,7 +82,31 @@ export default function PublicPage() {
     } else if (msg.type === 'announcement_suggestion') {
       fetchAnnouncements();
     } else if (msg.type === 'narrator_update' && msg.entry) {
+      // Remove streaming entry when final version arrives
+      setStreamingEntries((prev) => {
+        const next = { ...prev };
+        delete next[msg.entry.id];
+        return next;
+      });
       setNarratorFeed((prev) => [msg.entry, ...prev]);
+    } else if (msg.type === 'narrator_stream_start') {
+      setStreamingEntries((prev) => ({
+        ...prev,
+        [msg.entry_id]: { text: '', done: false },
+      }));
+    } else if (msg.type === 'narrator_stream_token') {
+      setStreamingEntries((prev) => ({
+        ...prev,
+        [msg.entry_id]: {
+          text: (prev[msg.entry_id]?.text || '') + msg.token,
+          done: false,
+        },
+      }));
+    } else if (msg.type === 'narrator_stream_end') {
+      setStreamingEntries((prev) => ({
+        ...prev,
+        [msg.entry_id]: { ...prev[msg.entry_id], done: true },
+      }));
     } else if (msg.type === 'de_bracket_created' || msg.type === 'de_bout_completed' || msg.type === 'de_bracket_completed') {
       fetchBrackets();
       fetchNarrator();
@@ -277,7 +302,7 @@ export default function PublicPage() {
             </div>
             <div className="live-feed-section">
               <h3>Commentary</h3>
-              <NarratorFeed entries={narratorFeed} />
+              <NarratorFeed entries={narratorFeed} streamingEntries={streamingEntries} />
             </div>
           </div>
         )}

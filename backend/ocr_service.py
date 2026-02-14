@@ -104,7 +104,147 @@ Important:
                 or any(not isinstance(r, list) or len(r) != n for r in cell_confidence)):
             cell_confidence = None
 
-    return {"scores": scores, "confidence": confidence, "cell_confidence": cell_confidence}
+    first_pass = {"scores": scores, "confidence": confidence, "cell_confidence": cell_confidence}
+
+    # ── Extended Thinking Second Pass (Opus 4.6) ─────────────────
+    # If confidence is low, use extended thinking to reason through ambiguous cells
+    if confidence < 0.8:
+        try:
+            second_pass = _extended_thinking_ocr(
+                client, base64_image, media_type, fencer_names, n, first_pass
+            )
+            if second_pass:
+                return second_pass
+        except Exception as exc:
+            print(f"[OCR] Extended thinking second pass failed: {exc}")
+
+    return first_pass
+
+
+def _extended_thinking_ocr(
+    client, base64_image: str, media_type: str,
+    fencer_names: list[str], n: int, first_pass: dict
+) -> dict | None:
+    """Second-pass OCR using Opus 4.6 with extended thinking for ambiguous sheets."""
+    print(f"[OCR] Confidence {first_pass['confidence']:.0%} < 80% — invoking Opus 4.6 extended thinking")
+
+    # Build a description of ambiguous cells from first pass
+    ambiguous_cells = []
+    cell_conf = first_pass.get("cell_confidence")
+    scores = first_pass.get("scores", [])
+    if cell_conf:
+        for i in range(n):
+            for j in range(n):
+                if i == j:
+                    continue
+                conf = cell_conf[i][j]
+                if conf is not None and conf < 0.7:
+                    ambiguous_cells.append(
+                        f"  Row {i+1} ({fencer_names[i]}) vs Col {j+1} ({fencer_names[j]}): "
+                        f"read as {scores[i][j]}, confidence {conf:.0%}"
+                    )
+
+    ambiguous_text = "\n".join(ambiguous_cells) if ambiguous_cells else "  (no specific cells flagged)"
+
+    prompt = f"""You are re-analyzing a USFA fencing pool score sheet that had low OCR confidence on the first pass.
+
+This pool has {n} fencers:
+{chr(10).join(f"  {i+1}. {name}" for i, name in enumerate(fencer_names))}
+
+First pass results (confidence: {first_pass['confidence']:.0%}):
+Scores: {json.dumps(first_pass['scores'])}
+
+Ambiguous cells from first pass:
+{ambiguous_text}
+
+Please carefully re-examine every cell in the score sheet. Think through each ambiguous digit:
+- Cross-reference: if fencer A scored 5 against B, then A won that bout, so B's score should be < 5
+- In fencing pool bouts to 5 touches, exactly one fencer scores 5 (the winner)
+- Look at handwriting patterns: how does this writer form 3 vs 5? 1 vs 7?
+- Check indicator sums: total touches scored across all fencers should equal total touches received
+
+Return ONLY a JSON object:
+{{
+  "scores": [[null, 5, 3, ...], [2, null, 5, ...], ...],
+  "confidence": 0.95,
+  "cell_confidence": [[null, 0.95, 0.3, ...], [0.9, null, 0.88, ...], ...],
+  "corrections": ["Changed R1C3 from 3 to 5 because...", ...]
+}}"""
+
+    message = client.messages.create(
+        model="claude-opus-4-6-20250219",
+        max_tokens=16000,
+        thinking={
+            "type": "enabled",
+            "budget_tokens": 4096,
+        },
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image",
+                        "source": {
+                            "type": "base64",
+                            "media_type": media_type,
+                            "data": base64_image,
+                        },
+                    },
+                    {"type": "text", "text": prompt},
+                ],
+            }
+        ],
+    )
+
+    # Extract thinking and response
+    thinking_text = ""
+    response_text = ""
+    for block in message.content:
+        if block.type == "thinking":
+            thinking_text = block.thinking
+        elif block.type == "text":
+            response_text = block.text.strip()
+
+    if not response_text:
+        return None
+
+    json_match = re.search(r'\{[\s\S]*\}', response_text)
+    if not json_match:
+        return None
+
+    result = json.loads(json_match.group())
+    new_scores = result.get("scores", [])
+    new_confidence = result.get("confidence", 0.0)
+    corrections = result.get("corrections", [])
+
+    # Validate dimensions
+    if len(new_scores) != n:
+        return None
+    for row in new_scores:
+        if len(row) != n:
+            return None
+
+    new_cell_confidence = result.get("cell_confidence", None)
+    if new_cell_confidence is not None:
+        if (not isinstance(new_cell_confidence, list)
+                or len(new_cell_confidence) != n
+                or any(not isinstance(r, list) or len(r) != n for r in new_cell_confidence)):
+            new_cell_confidence = None
+
+    print(f"[OCR] Extended thinking complete: confidence {first_pass['confidence']:.0%} → {new_confidence:.0%}")
+    if corrections:
+        for c in corrections:
+            print(f"[OCR]   Correction: {c}")
+
+    return {
+        "scores": new_scores,
+        "confidence": new_confidence,
+        "cell_confidence": new_cell_confidence,
+        "extended_thinking": True,
+        "thinking": thinking_text,
+        "corrections": corrections,
+        "first_pass_confidence": first_pass["confidence"],
+    }
 
 
 def validate_scores(matrix: list[list[int | None]], fencers: list[dict]) -> list[dict]:
@@ -116,7 +256,6 @@ def validate_scores(matrix: list[list[int | None]], fencers: list[dict]) -> list
         return [{"level": "error", "message": "Empty score matrix"}]
 
     # Check 1: Indicator sum should be 0
-    # Indicator = TS - TR for each fencer; sum of all indicators should be 0
     ts_list = []
     tr_list = []
     for i in range(n):
@@ -183,8 +322,6 @@ def validate_scores(matrix: list[list[int | None]], fencers: list[dict]) -> list
             rating_b = fencers[j].get("rating", "") if j < len(fencers) else ""
             if not rating_a or not rating_b:
                 continue
-            # Higher-rated fencer (A before B, lower number before higher) losing
-            # USFA ratings: A > B > C > D > E > U
             rating_order = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "U": 5}
             rank_a = rating_order.get(rating_a[0].upper(), 5)
             rank_b = rating_order.get(rating_b[0].upper(), 5)
@@ -240,10 +377,9 @@ def compute_results(matrix: list[list[int | None]], fencers: list[dict]) -> list
             "TS": ts,
             "TR": tr,
             "indicator": indicator,
-            "place": 0,  # computed below
+            "place": 0,
         })
 
-    # Sort by: V desc, then indicator desc, then TS desc
     results.sort(key=lambda r: (-r["V"], -r["indicator"], -r["TS"]))
     for place, r in enumerate(results, start=1):
         r["place"] = place

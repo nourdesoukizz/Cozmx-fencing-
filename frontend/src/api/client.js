@@ -103,6 +103,8 @@ export const api = {
   },
   getCoachFencer: (token, id) => authRequest(`/coach/fencers/${id}`, token),
   getCoachFencerInsight: (token, id) => authRequest(`/coach/fencers/${id}/insight`, token),
+  sendCoachChat: (token, id, message) => authPostJson(`/coach/fencers/${id}/chat`, token, { message }),
+  getCoachChatHistory: (token, id) => authRequest(`/coach/fencers/${id}/chat-history`, token),
 
   // New BT engine endpoints
   getCoachState: (token) => authRequest('/coach/state', token),

@@ -68,15 +68,21 @@ class AnnouncerService:
                         "content-type": "application/json",
                     },
                     json={
-                        "model": "claude-haiku-4-5-20251001",
+                        "model": "claude-opus-4-6-20250219",
                         "max_tokens": 150,
-                        "system": (
-                            "You are a professional PA tournament announcer for a fencing competition. "
-                            "Polish the given text into 1-2 clear, professional sentences suitable for "
-                            "a public address announcement. Keep it concise and authoritative. "
-                            "Do not add any prefixes like 'Attention' unless appropriate. "
-                            "Return only the polished announcement text."
-                        ),
+                        "system": [
+                            {
+                                "type": "text",
+                                "text": (
+                                    "You are a professional PA tournament announcer for a fencing competition. "
+                                    "Polish the given text into 1-2 clear, professional sentences suitable for "
+                                    "a public address announcement. Keep it concise and authoritative. "
+                                    "Do not add any prefixes like 'Attention' unless appropriate. "
+                                    "Return only the polished announcement text."
+                                ),
+                                "cache_control": {"type": "ephemeral"},
+                            }
+                        ],
                         "messages": [{"role": "user", "content": raw_text}],
                     },
                     timeout=15.0,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { api } from '../../api/client';
 
@@ -9,10 +9,19 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
   const [insightLoading, setInsightLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Chat state
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatSending, setChatSending] = useState(false);
+  const chatEndRef = useRef(null);
+
   useEffect(() => {
     if (!fencer) return;
     setLoading(true);
     setInsight(null);
+    setChatOpen(false);
+    setChatMessages([]);
 
     const fencerId = fencer.id;
     const fencerName = fencer.name || `${fencer.first_name} ${fencer.last_name}`.trim();
@@ -30,6 +39,13 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
       .catch(() => setLoading(false));
   }, [fencer, token]);
 
+  // Scroll chat to bottom
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages]);
+
   const loadInsight = () => {
     const fencerId = detail?.id || fencer?.id;
     if (!fencerId || insightLoading) return;
@@ -37,6 +53,42 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
     api.getCoachFencerInsight(token, fencerId)
       .then(data => { setInsight(data.insight); setInsightLoading(false); })
       .catch(() => { setInsight('Unable to load insight.'); setInsightLoading(false); });
+  };
+
+  const openChat = () => {
+    setChatOpen(true);
+    const fencerId = detail?.id || fencer?.id;
+    if (fencerId) {
+      api.getCoachChatHistory(token, fencerId)
+        .then(data => setChatMessages(data.history || []))
+        .catch(() => {});
+    }
+  };
+
+  const sendChat = async () => {
+    const fencerId = detail?.id || fencer?.id;
+    if (!fencerId || !chatInput.trim() || chatSending) return;
+    const msg = chatInput.trim();
+    setChatInput('');
+    setChatSending(true);
+
+    // Optimistically add user message
+    setChatMessages(prev => [...prev, { role: 'user', content: msg }]);
+
+    try {
+      const data = await api.sendCoachChat(token, fencerId, msg);
+      setChatMessages(data.history || []);
+    } catch {
+      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Failed to get response.' }]);
+    }
+    setChatSending(false);
+  };
+
+  const handleChatKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendChat();
+    }
   };
 
   if (!fencer) return null;
@@ -188,7 +240,7 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
 
             {/* AI Insight */}
             {d.has_bouts && (
-              <div className="strip-detail-section">
+              <div className="strip-detail-section" style={{ marginBottom: 20 }}>
                 <h4>AI Performance Insight</h4>
                 {insight ? (
                   <div className="insight-box">{insight}</div>
@@ -201,6 +253,123 @@ export default function FencerDetailCard({ fencer, token, onClose }) {
                   >
                     {insightLoading ? 'Generating...' : 'Generate Insight'}
                   </button>
+                )}
+              </div>
+            )}
+
+            {/* Interactive Coach Chat */}
+            {d.has_bouts && (
+              <div className="strip-detail-section">
+                <h4>Coach Chat (Opus 4.6)</h4>
+                {!chatOpen ? (
+                  <button
+                    className="upload-btn"
+                    onClick={openChat}
+                    style={{ maxWidth: 260 }}
+                  >
+                    Ask AI about this fencer
+                  </button>
+                ) : (
+                  <div style={{
+                    border: '1px solid var(--border)',
+                    borderRadius: 8,
+                    overflow: 'hidden',
+                  }}>
+                    {/* Chat messages */}
+                    <div style={{
+                      maxHeight: 240,
+                      overflowY: 'auto',
+                      padding: 12,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                      background: 'var(--bg)',
+                    }}>
+                      {chatMessages.length === 0 && (
+                        <div style={{ color: 'var(--text-muted)', fontSize: 12, textAlign: 'center', padding: 16 }}>
+                          Ask questions like "What should they focus on for DE?" or "How do they compare to their likely opponent?"
+                        </div>
+                      )}
+                      {chatMessages.map((msg, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                            maxWidth: '85%',
+                            padding: '8px 12px',
+                            borderRadius: 12,
+                            fontSize: 13,
+                            lineHeight: 1.4,
+                            background: msg.role === 'user'
+                              ? '#3b82f6'
+                              : 'var(--surface)',
+                            color: msg.role === 'user'
+                              ? '#fff'
+                              : 'var(--text)',
+                            border: msg.role === 'user'
+                              ? 'none'
+                              : '1px solid var(--border)',
+                          }}
+                        >
+                          {msg.content}
+                        </div>
+                      ))}
+                      {chatSending && (
+                        <div style={{
+                          alignSelf: 'flex-start',
+                          padding: '8px 12px',
+                          borderRadius: 12,
+                          fontSize: 13,
+                          background: 'var(--surface)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--text-muted)',
+                        }}>
+                          Thinking...
+                        </div>
+                      )}
+                      <div ref={chatEndRef} />
+                    </div>
+
+                    {/* Chat input */}
+                    <div style={{
+                      display: 'flex',
+                      borderTop: '1px solid var(--border)',
+                      background: 'var(--surface)',
+                    }}>
+                      <input
+                        type="text"
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        onKeyDown={handleChatKeyDown}
+                        placeholder="Ask about this fencer..."
+                        disabled={chatSending}
+                        style={{
+                          flex: 1,
+                          padding: '10px 12px',
+                          border: 'none',
+                          outline: 'none',
+                          background: 'transparent',
+                          color: 'var(--text)',
+                          fontSize: 13,
+                        }}
+                      />
+                      <button
+                        onClick={sendChat}
+                        disabled={chatSending || !chatInput.trim()}
+                        style={{
+                          padding: '10px 16px',
+                          background: 'none',
+                          border: 'none',
+                          color: chatInput.trim() ? '#3b82f6' : 'var(--text-muted)',
+                          fontWeight: 600,
+                          cursor: chatInput.trim() ? 'pointer' : 'default',
+                          fontSize: 13,
+                        }}
+                      >
+                        Send
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             )}

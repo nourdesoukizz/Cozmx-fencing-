@@ -1,9 +1,9 @@
 """
-Narrator Service — AI-generated casual tournament commentary.
+Narrator Service — AI-generated casual tournament commentary with streaming.
 
 Generates engaging, parent-friendly commentary when tournament events occur
-(pool approved, event started/stopped, all pools complete) using Claude LLM.
-Separate from the PA announcer — different tone (casual vs formal).
+using Claude Opus 4.6 with streaming. Tokens are broadcast via WebSocket
+in real-time for a typing-animation effect on the public view.
 """
 
 import json
@@ -24,6 +24,14 @@ FALLBACK_TEMPLATES = {
     "de_bout_completed": "{winner_name} (#{winner_seed}) takes down {loser_name} (#{loser_seed}) {score} in the {round_name} of {event_name}!",
     "de_event_completed": "{champion_name} wins the {event_name}! What a performance!",
 }
+
+NARRATOR_SYSTEM_PROMPT = (
+    "You are an enthusiastic fencing tournament commentator writing a live feed. "
+    "Write 1-2 short, casual, parent-friendly sentences. Be engaging and fun. "
+    "Mention fencer names when available. Note any upsets or dominant performances. "
+    "Keep it brief — this is a scrolling feed, not a news article. "
+    "Return only the commentary text, no quotes or prefixes."
+)
 
 
 class NarratorService:
@@ -50,16 +58,14 @@ class NarratorService:
         except Exception as exc:
             print(f"[NARRATOR] Failed to save: {exc}")
 
-    async def _generate_text(self, trigger: str, context: dict) -> str:
-        """Call Claude Haiku to generate casual commentary."""
-        # Build a rich prompt based on trigger type
+    def _build_prompt(self, trigger: str, context: dict) -> str:
+        """Build a rich prompt based on trigger type."""
         if trigger == "pool_approved":
             results = context.get("results", [])
             fencers = context.get("fencers", [])
             event_name = context.get("event_name", "")
             pool_number = context.get("pool_number", "")
 
-            # Find the winner (place 1)
             winner_name = ""
             top_results = []
             for r in sorted(results, key=lambda x: x.get("place", 99)):
@@ -72,18 +78,18 @@ class NarratorService:
                     winner_name = name
 
             results_text = "; ".join(top_results[:5])
-            prompt = (
+            return (
                 f"Pool {pool_number} of {event_name} just finished. "
                 f"Results: {results_text}. "
                 f"Winner: {winner_name}. "
                 f"Write 1-2 sentences of casual, engaging commentary."
             )
         elif trigger == "event_started":
-            prompt = f"The {context.get('event_name', '')} event just started at a fencing tournament. Write 1-2 exciting sentences."
+            return f"The {context.get('event_name', '')} event just started at a fencing tournament. Write 1-2 exciting sentences."
         elif trigger == "event_stopped":
-            prompt = f"The {context.get('event_name', '')} event just concluded. Write 1-2 wrap-up sentences."
+            return f"The {context.get('event_name', '')} event just concluded. Write 1-2 wrap-up sentences."
         elif trigger == "all_pools_complete":
-            prompt = (
+            return (
                 f"All {context.get('pool_count', '')} pools for {context.get('event_name', '')} "
                 f"are complete. Write 1-2 celebratory sentences."
             )
@@ -97,21 +103,25 @@ class NarratorService:
                         upset = " This is an upset!"
                 except (ValueError, TypeError):
                     pass
-            prompt = (
+            return (
                 f"DE {context.get('round_name', '')} result in {context.get('event_name', '')}: "
                 f"#{winner_seed} {context.get('winner_name', '')} beat "
                 f"#{loser_seed} {context.get('loser_name', '')} {context.get('score', '')}.{upset} "
                 f"Write 1-2 sentences of exciting commentary."
             )
         elif trigger == "de_event_completed":
-            prompt = (
+            return (
                 f"{context.get('champion_name', '')} (seed #{context.get('champion_seed', '')}) "
                 f"has won the {context.get('event_name', '')} DE, defeating "
                 f"{context.get('runner_up_name', '')} (seed #{context.get('runner_up_seed', '')}) "
                 f"{context.get('score', '')} in the final. Write 1-2 celebratory sentences."
             )
         else:
-            prompt = f"Tournament update: {trigger}. Write 1-2 casual sentences."
+            return f"Tournament update: {trigger}. Write 1-2 casual sentences."
+
+    async def _generate_streaming(self, trigger: str, context: dict, entry_id: str) -> str:
+        """Generate commentary using Opus 4.6 streaming API, broadcasting tokens via WebSocket."""
+        prompt = self._build_prompt(trigger, context)
 
         if not ANTHROPIC_API_KEY:
             template = FALLBACK_TEMPLATES.get(trigger, "Tournament update!")
@@ -123,8 +133,21 @@ class NarratorService:
         try:
             import httpx
 
+            # Broadcast stream start
+            try:
+                from main import manager
+                await manager.broadcast({
+                    "type": "narrator_stream_start",
+                    "entry_id": entry_id,
+                })
+            except Exception:
+                pass
+
+            full_text = ""
+
             async with httpx.AsyncClient() as client:
-                resp = await client.post(
+                async with client.stream(
+                    "POST",
                     "https://api.anthropic.com/v1/messages",
                     headers={
                         "x-api-key": ANTHROPIC_API_KEY,
@@ -132,28 +155,70 @@ class NarratorService:
                         "content-type": "application/json",
                     },
                     json={
-                        "model": "claude-haiku-4-5-20251001",
-                        "max_tokens": 120,
-                        "system": (
-                            "You are an enthusiastic fencing tournament commentator writing a live feed. "
-                            "Write 1-2 short, casual, parent-friendly sentences. Be engaging and fun. "
-                            "Mention fencer names when available. Note any upsets or dominant performances. "
-                            "Keep it brief — this is a scrolling feed, not a news article. "
-                            "Return only the commentary text, no quotes or prefixes."
-                        ),
+                        "model": "claude-opus-4-6-20250219",
+                        "max_tokens": 150,
+                        "stream": True,
+                        "system": [
+                            {
+                                "type": "text",
+                                "text": NARRATOR_SYSTEM_PROMPT,
+                                "cache_control": {"type": "ephemeral"},
+                            }
+                        ],
                         "messages": [{"role": "user", "content": prompt}],
                     },
-                    timeout=15.0,
-                )
+                    timeout=30.0,
+                ) as response:
+                    if response.status_code != 200:
+                        print(f"[NARRATOR] Streaming returned status {response.status_code}")
+                        raise Exception(f"Status {response.status_code}")
 
-            if resp.status_code == 200:
-                data = resp.json()
-                text = data.get("content", [{}])[0].get("text", "")
-                if text:
-                    return text
-            print(f"[NARRATOR] LLM returned status {resp.status_code}")
+                    async for line in response.aiter_lines():
+                        if not line.startswith("data: "):
+                            continue
+                        data_str = line[6:]
+                        if data_str == "[DONE]":
+                            break
+
+                        try:
+                            event_data = json.loads(data_str)
+                        except json.JSONDecodeError:
+                            continue
+
+                        event_type = event_data.get("type", "")
+
+                        if event_type == "content_block_delta":
+                            delta = event_data.get("delta", {})
+                            if delta.get("type") == "text_delta":
+                                token = delta.get("text", "")
+                                if token:
+                                    full_text += token
+                                    # Broadcast each token for typing animation
+                                    try:
+                                        from main import manager
+                                        await manager.broadcast({
+                                            "type": "narrator_stream_token",
+                                            "entry_id": entry_id,
+                                            "token": token,
+                                        })
+                                    except Exception:
+                                        pass
+
+            # Broadcast stream end
+            try:
+                from main import manager
+                await manager.broadcast({
+                    "type": "narrator_stream_end",
+                    "entry_id": entry_id,
+                })
+            except Exception:
+                pass
+
+            if full_text:
+                return full_text
+
         except Exception as exc:
-            print(f"[NARRATOR] LLM generation failed: {exc}")
+            print(f"[NARRATOR] Streaming generation failed: {exc}")
 
         # Fallback to template
         template = FALLBACK_TEMPLATES.get(trigger, "Tournament update!")
@@ -163,11 +228,12 @@ class NarratorService:
             return template
 
     async def generate(self, trigger: str, context: dict) -> dict:
-        """Generate a narrator entry from a trigger event."""
-        text = await self._generate_text(trigger, context)
+        """Generate a narrator entry from a trigger event with streaming."""
+        entry_id = str(uuid.uuid4())
+        text = await self._generate_streaming(trigger, context, entry_id)
 
         entry = {
-            "id": str(uuid.uuid4()),
+            "id": entry_id,
             "trigger": trigger,
             "text": text,
             "created_at": datetime.now().isoformat(),
@@ -176,7 +242,7 @@ class NarratorService:
         self.entries.append(entry)
         self._save()
 
-        # Broadcast via WebSocket
+        # Broadcast final complete entry via WebSocket
         try:
             from main import manager
             await manager.broadcast({

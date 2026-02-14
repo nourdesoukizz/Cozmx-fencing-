@@ -11,6 +11,8 @@ const ACTION_BADGES = {
   agent_paused: { label: 'Agent Paused', color: '#6b7280' },
   config_changed: { label: 'Config Updated', color: '#6b7280' },
   tick_error: { label: 'Error', color: '#ef4444' },
+  ai_reasoning: { label: 'AI Reasoning', color: '#8b5cf6' },
+  generate_announcement: { label: 'Announcement', color: '#06b6d4' },
 };
 
 export default function AgentPanel({ addNotification }) {

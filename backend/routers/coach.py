@@ -14,6 +14,9 @@ _coach_tokens: set[str] = set()
 # Cache for AI insights: fencer_id -> insight string
 _insight_cache: dict[int, str] = {}
 
+# In-memory chat history: fencer_id -> list of messages
+_chat_history: dict[int, list[dict]] = {}
+
 # BT engine reference (set by main.py lifespan)
 _engine: BTEngine | None = None
 
@@ -31,6 +34,10 @@ class BoutRequest(BaseModel):
 
 class BracketRequest(BaseModel):
     seedings: list[str]
+
+
+class ChatRequest(BaseModel):
+    message: str
 
 
 def verify_coach_token(authorization: str = Header(None)) -> str:
@@ -228,9 +235,6 @@ async def get_coach_fencer_insight(fencer_id: int,
     bout_text = "\n".join(bout_lines) if bout_lines else "  No bouts"
 
     prompt = (
-        f"You are a fencing coach's analytics assistant using a Bradley-Terry model. "
-        f"Give a 2-3 sentence performance insight for this fencer. "
-        f"Be specific about strengths, notable wins/upsets, and tactical patterns.\n\n"
         f"Fencer: {name}\nRating: {rating}\n"
         f"BT Strength: {strength:.2f} (prior: {prior:.2f}) | "
         f"Rank: {rank} | Win Prob: {win_prob:.1f}% | "
@@ -250,8 +254,19 @@ async def get_coach_fencer_insight(fencer_id: int,
                     "content-type": "application/json",
                 },
                 json={
-                    "model": "claude-haiku-4-5-20251001",
+                    "model": "claude-opus-4-6-20250219",
                     "max_tokens": 200,
+                    "system": [
+                        {
+                            "type": "text",
+                            "text": (
+                                "You are a fencing coach's analytics assistant using a Bradley-Terry model. "
+                                "Give a 2-3 sentence performance insight for the fencer. "
+                                "Be specific about strengths, notable wins/upsets, and tactical patterns."
+                            ),
+                            "cache_control": {"type": "ephemeral"},
+                        }
+                    ],
                     "messages": [{"role": "user", "content": prompt}],
                 },
                 timeout=15.0,
@@ -267,3 +282,131 @@ async def get_coach_fencer_insight(fencer_id: int,
 
     _insight_cache[fencer_id] = insight
     return {"insight": insight}
+
+
+@router.post("/fencers/{fencer_id}/chat")
+async def coach_fencer_chat(fencer_id: int, body: ChatRequest,
+                            _token: str = Depends(verify_coach_token)):
+    """Multi-turn interactive coach chat about a specific fencer using Opus 4.6."""
+    if not _engine:
+        raise HTTPException(status_code=500, detail="Engine not initialized")
+
+    fencer = get_fencer_by_id(fencer_id)
+    if not fencer:
+        raise HTTPException(status_code=404, detail="Fencer not found")
+
+    name = f"{fencer.get('first_name', '')} {fencer.get('last_name', '')}".strip()
+    detail = _engine.get_fencer_detail(name)
+
+    if not ANTHROPIC_API_KEY:
+        return {"reply": "AI chat unavailable (no API key configured)."}
+
+    # Build system prompt with fencer context
+    rating = detail.get("rating", "U") if detail else "U"
+    strength = detail.get("strength", 1.0) if detail else 1.0
+    prior = detail.get("prior_strength", 1.0) if detail else 1.0
+    rank = detail.get("rank", 0) if detail else 0
+    win_prob = detail.get("win_prob", 0) if detail else 0
+    wins = detail.get("wins", 0) if detail else 0
+    losses = detail.get("losses", 0) if detail else 0
+    bouts = detail.get("bout_details", []) if detail else []
+
+    bout_lines = []
+    for b in bouts:
+        result = "W" if b["victory"] else "L"
+        upset = " [UPSET]" if b.get("is_upset") else ""
+        bout_lines.append(
+            f"  vs {b['opponent_name']} ({b['opponent_rating']}, "
+            f"strength={b['opponent_strength']:.1f}): "
+            f"{b['my_score']}-{b['opp_score']} [{result}]{upset}"
+        )
+    bout_text = "\n".join(bout_lines) if bout_lines else "  No bouts recorded"
+
+    # Get simulation data if bracket exists
+    sim_context = ""
+    try:
+        sim = _engine.simulate_de(5000)
+        if sim and sim.get("results"):
+            fencer_sim = [s for s in sim["results"] if name.lower() in s.get("name", "").lower()]
+            if fencer_sim:
+                fs = fencer_sim[0]
+                sim_context = (
+                    f"\nDE Simulation (5000 runs): "
+                    f"Win tournament: {fs.get('win_pct', 0):.1f}%, "
+                    f"Make final: {fs.get('final_pct', 0):.1f}%, "
+                    f"Make semis: {fs.get('semi_pct', 0):.1f}%"
+                )
+    except Exception:
+        pass
+
+    system_prompt = (
+        f"You are an expert fencing coach's analytics assistant powered by Claude Opus 4.6. "
+        f"You have deep knowledge of fencing tactics, USFA ratings, and statistical analysis via the Bradley-Terry model. "
+        f"You are analyzing data for a specific fencer and answering the coach's questions.\n\n"
+        f"Fencer: {name}\nRating: {rating}\n"
+        f"BT Strength: {strength:.2f} (prior: {prior:.2f}) | "
+        f"Rank: {rank} | Win Probability: {win_prob:.1f}% | "
+        f"Record: {wins}W-{losses}L\n"
+        f"Bout details:\n{bout_text}{sim_context}\n\n"
+        f"Give specific, actionable advice. Reference the data. Keep responses concise (2-4 sentences)."
+    )
+
+    # Get or initialize chat history for this fencer
+    if fencer_id not in _chat_history:
+        _chat_history[fencer_id] = []
+
+    # Add user message
+    _chat_history[fencer_id].append({"role": "user", "content": body.message})
+
+    # Keep last 20 messages to prevent context overflow
+    if len(_chat_history[fencer_id]) > 20:
+        _chat_history[fencer_id] = _chat_history[fencer_id][-20:]
+
+    try:
+        import httpx
+
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": "claude-opus-4-6-20250219",
+                    "max_tokens": 300,
+                    "system": [
+                        {
+                            "type": "text",
+                            "text": system_prompt,
+                            "cache_control": {"type": "ephemeral"},
+                        }
+                    ],
+                    "messages": _chat_history[fencer_id],
+                },
+                timeout=30.0,
+            )
+
+        if resp.status_code == 200:
+            data = resp.json()
+            reply = data.get("content", [{}])[0].get("text", "Unable to generate response.")
+        else:
+            reply = f"AI service returned status {resp.status_code}."
+    except Exception as e:
+        reply = f"Unable to generate response: {str(e)}"
+
+    # Add assistant reply to history
+    _chat_history[fencer_id].append({"role": "assistant", "content": reply})
+
+    return {
+        "reply": reply,
+        "history": _chat_history[fencer_id],
+    }
+
+
+@router.get("/fencers/{fencer_id}/chat-history")
+async def get_chat_history(fencer_id: int,
+                           _token: str = Depends(verify_coach_token)):
+    """Get chat history for a fencer."""
+    return {"history": _chat_history.get(fencer_id, [])}

@@ -2612,6 +2612,26 @@ body {
   margin-top: 6px;
 }
 
+.narrator-streaming {
+  border-color: #8b5cf6;
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(139, 92, 246, 0.05) 100%);
+}
+
+.narrator-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  background: #8b5cf6;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: narratorBlink 0.7s infinite;
+}
+
+@keyframes narratorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
 /* ── Live Feed Tab Layout ── */
 
 .live-feed-layout {

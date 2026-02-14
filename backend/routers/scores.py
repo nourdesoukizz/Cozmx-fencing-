@@ -78,6 +78,13 @@ async def upload_pool_photo(pool_id: int, file: UploadFile = File(...)):
         "reviewed_at": "",
         "reviewed_by": "",
     }
+
+    # Include extended thinking metadata if second-pass was triggered
+    if ocr_status != "ocr_failed" and ocr_result.get("extended_thinking"):
+        submission["extended_thinking"] = True
+        submission["thinking"] = ocr_result.get("thinking", "")
+        submission["corrections"] = ocr_result.get("corrections", [])
+        submission["first_pass_confidence"] = ocr_result.get("first_pass_confidence", 0)
     save_submission(pool_id, submission)
 
     # Broadcast via WebSocket
