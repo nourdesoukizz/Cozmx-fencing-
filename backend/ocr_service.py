@@ -3,7 +3,7 @@ import json
 import re
 from pathlib import Path
 
-from config import ANTHROPIC_API_KEY
+from config import ANTHROPIC_API_KEY, SONNET_MODEL, OPUS_MODEL
 
 
 def extract_scores(photo_path: str, pool: dict) -> dict:
@@ -57,7 +57,7 @@ Important:
 
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     message = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model=SONNET_MODEL,
         max_tokens=2048,
         messages=[
             {
@@ -172,7 +172,7 @@ Return ONLY a JSON object:
 }}"""
 
     message = client.messages.create(
-        model="claude-opus-4-6-20250219",
+        model=OPUS_MODEL,
         max_tokens=16000,
         thinking={
             "type": "enabled",

@@ -16,9 +16,9 @@ FenceFlow is an AI-powered operations layer designed to eliminate paper-based wo
 
 **The Problem:** Running a fencing tournament today requires an army of volunteers performing low-value manual tasks. Referees receive verbal strip assignments and walk paper score sheets to the bout committee table. Bout committee members hand-enter scores from often-illegible handwriting. Results lag behind the actual competition by 15-30 minutes. Errors in transcription affect fencer seeding and can invalidate legitimate results. Coaches have zero data-driven insight into how their fencers are performing relative to the field — they rely on gut feel and memory. A single local tournament with 60 fencers requires 8-12 volunteers doing work that software should handle.
 
-**The Solution:** FenceFlow digitizes the operational layer of tournament day. Referees receive automated SMS notifications with strip assignments and web-based links for score reporting. Pool score sheets are photographed and processed by Claude Vision AI, which extracts structured data and flags anomalies for bout committee review. DE bout results are reported digitally with real-time bracket updates. Coaches get a dedicated analytics view with Bayesian performance modeling that updates live as the tournament progresses — answering the question "how is my fencer really performing today?" with statistical rigor. The bout committee monitors everything from a live dashboard. No paper walks. No manual data entry. No transcription errors.
+**The Solution:** FenceFlow digitizes the operational layer of tournament day. Referees receive automated Telegram notifications with strip assignments and web-based links for score reporting. Pool score sheets are photographed and processed by Claude Vision AI, which extracts structured data and flags anomalies for bout committee review. DE bout results are reported digitally with real-time bracket updates. Coaches get a dedicated analytics view with Bradley-Terry performance modeling that updates live as the tournament progresses — answering the question "how is my fencer really performing today?" with statistical rigor. The bout committee monitors everything from a live dashboard. No paper walks. No manual data entry. No transcription errors.
 
-**Hackathon Scope:** For this hackathon, FenceFlow operates on simulated tournament data from a real tournament the developer has hosted. It demonstrates the full operational workflow from pool round through DE finals, with AI-powered score extraction, smart referee assignment, Bayesian performance analytics, and live tournament monitoring.
+**Hackathon Scope:** For this hackathon, FenceFlow operates on simulated tournament data from a real tournament the developer has hosted. It demonstrates the full operational workflow from pool round through DE finals, with AI-powered score extraction, smart referee assignment, Bradley-Terry performance analytics, and live tournament monitoring.
 
 ---
 
@@ -29,7 +29,7 @@ FenceFlow is an AI-powered operations layer designed to eliminate paper-based wo
 - An operations companion to current fencing software that handles tournament day logistics
 - A communication system between the bout committee, referees, coaches, and spectators
 - An AI-powered score digitization and validation tool
-- A Bayesian performance analytics platform for coaches
+- A Bradley-Terry performance analytics platform for coaches
 - A real-time tournament monitoring dashboard
 
 ### 2.2 What FenceFlow is NOT
@@ -45,7 +45,7 @@ FenceFlow is a web application with four interfaces serving four user types:
 | Interface | User | Access Method | Primary Function |
 |-----------|------|---------------|------------------|
 | Bout Committee Dashboard | Tournament organizer / bout committee | Laptop browser (authenticated) | Monitor and manage entire tournament |
-| Referee Portal | Assigned referees | Phone/iPad via SMS link (token-authenticated) | Receive assignments, report scores |
+| Referee Portal | Assigned referees | Phone/iPad via Telegram link (token-authenticated) | Receive assignments, report scores |
 | Coach View | Coaches | Phone/iPad/Laptop via URL + 4-digit access code | Performance analytics, win probability, Bayesian skill updates |
 | Public View | Parents, fencers, spectators | Phone browser via QR code (public, read-only) | View live results and brackets (no analytics) |
 
@@ -56,8 +56,8 @@ FenceFlow is a web application with four interfaces serving four user types:
 | Frontend | React (single-page application) | Works on laptops and iPads, single codebase, real-time updates |
 | Backend | Python with FastAPI | Fast development, auto-generated API docs, async support, great WebSocket support |
 | Data Storage | CSV files loaded into memory | Zero-config, no database setup, CSV files from real tournament data |
-| Real-time Updates | WebSockets (Socket.io) | Live dashboard, live bracket, live coach analytics, live spectator view |
-| SMS Notifications | Twilio API | Industry standard, free trial credit, simple API |
+| Real-time Updates | WebSockets (native) | Live dashboard, live bracket, live coach analytics, live spectator view |
+| Messaging | Telegram Bot API | Instant delivery, no per-message cost, rich formatting, bot commands |
 | AI / OCR | Claude API (Vision + Text) | Pool sheet extraction, anomaly detection, performance insights |
 | Performance Model | Bradley-Terry engine (Python) | Touch-level strength estimation with MM algorithm, trajectory tracking, Monte Carlo DE simulation |
 | Hosting | Local machine for demo (deployable to any Python host) | Simplicity for hackathon demo |
@@ -106,7 +106,7 @@ FenceFlow operates on tournament data that would normally come from a current fe
 | rating | TEXT | Referee rating (N1, N2, R1, R2, D1, D2, P1, P2) |
 | club | TEXT | Club affiliation (used for conflict detection) |
 | weapon_certified | TEXT | Weapons certified to referee |
-| phone | TEXT | Phone number for SMS notifications (required) |
+| phone | TEXT | Phone number for Telegram notifications (required) |
 | bouts_assigned | INTEGER | Running count of bouts assigned this tournament |
 | status | ENUM | available, assigned, on_break, unavailable |
 
@@ -265,31 +265,31 @@ The assignment algorithm follows these rules in priority order:
 
 ### Phase 2: Referee Communication and Pool Score Workflow (Day 2-3)
 
-#### 4.3 SMS Notification System
+#### 4.3 Telegram Notification System
 
-**What it does:** Sends text messages to referees with their strip assignments and a unique link to their scoring portal. Each referee receives a personalized message at two points: when pools are ready and when their DE bout is assigned.
+**What it does:** Sends Telegram messages to referees with their strip assignments and a unique link to their scoring portal. Each referee receives a personalized message at two points: when pools are ready and when their DE bout is assigned.
 
-SMS message format for pools:
+Telegram message format for pools:
 
 > *[FenceFlow] You are assigned to Pool 3 on Strip 7. Tap the link below to begin: https://fenceflow.app/ref/{unique_token}*
 
-SMS message format for DE:
+Telegram message format for DE:
 
 > *[FenceFlow] DE Round of 32 - Strip 4. Smith vs. Jones. Tap to report: https://fenceflow.app/ref/{unique_token}*
 
-**Authentication:** Each SMS link contains a unique, single-use token tied to the referee and the specific assignment. No login required. The token expires after the assignment is complete. This is critical because referees are busy and will not create accounts or type passwords.
+**Authentication:** Each Telegram link contains a unique, single-use token tied to the referee and the specific assignment. No login required. The token expires after the assignment is complete. This is critical because referees are busy and will not create accounts or type passwords.
 
-**Twilio Setup:** Use Twilio free trial. Pre-verify all demo phone numbers in the Twilio console before the demo. For the demo, have 2-3 real phone numbers verified so live SMS can be shown. For all other referees in the simulation, log the SMS to the console without sending.
+**Telegram Bot Setup:** Create a Telegram bot via BotFather. Referees interact with the bot to receive notifications. For the demo, have 2-3 real Telegram accounts connected to demonstrate live messaging. For all other referees in the simulation, log the message to the console without sending.
 
-**Implementation Notes for Claude Code:** Create a notification service that wraps the Twilio API. The service should have two methods: sendPoolAssignment(referee, pool) and sendDEAssignment(referee, deBout). Generate unique tokens using crypto.randomUUID(). Store tokens in a tokens table with referee_id, assignment_type, assignment_id, and expiry. The referee portal authenticates solely by token validation.
+**Implementation Notes for Claude Code:** Create a notification service that wraps the Telegram Bot API. The service should have two methods: sendPoolAssignment(referee, pool) and sendDEAssignment(referee, deBout). Generate unique tokens using crypto.randomUUID(). Store tokens in a tokens table with referee_id, assignment_type, assignment_id, and expiry. The referee portal authenticates solely by token validation.
 
 #### 4.4 Pool Score Sheet OCR Pipeline
 
-**What it does:** Referees fill out the standard USFA paper pool score sheet by hand (as they do today), then photograph it using the link they received via SMS. The photo is uploaded to the system. Claude Vision API extracts the structured score data from the photograph. The system validates the extraction and flags anomalies. The bout committee reviews and approves the extracted data.
+**What it does:** Referees fill out the standard USFA paper pool score sheet by hand (as they do today), then photograph it using the link they received via Telegram. The photo is uploaded to the system. Claude Vision API extracts the structured score data from the photograph. The system validates the extraction and flags anomalies. The bout committee reviews and approves the extracted data.
 
 The pipeline has five steps:
 
-1. **Photo Upload:** The referee taps the link from SMS, which opens a mobile-friendly web page. The page shows a camera button. The referee takes a photo of the completed, signed pool score sheet. The photo is uploaded to the server and stored. Pool status changes to `photo_uploaded`.
+1. **Photo Upload:** The referee taps the link from Telegram, which opens a mobile-friendly web page. The page shows a camera button. The referee takes a photo of the completed, signed pool score sheet. The photo is uploaded to the server. Pool status changes to `photo_uploaded`.
 
 2. **AI Extraction:** The server sends the photo to the Claude Vision API with a carefully crafted prompt. The prompt includes the exact pool structure (number of fencers, their names in order) so Claude knows what to extract. Claude returns a structured JSON object with all bout scores, victories, touches scored, touches received, and indicators for each fencer.
 
@@ -350,7 +350,7 @@ Seeding follows standard USFA rules:
 
 #### 4.7 DE Score Reporting
 
-**What it does:** When a DE bout is assigned, the referee receives an SMS with a link. The link opens a mobile-friendly page showing the two fencer names, their seeds, and their ratings. The referee reports the winner and the final score. Both fencers digitally sign on the screen. The result is submitted and the bracket updates live.
+**What it does:** When a DE bout is assigned, the referee receives a Telegram message with a link. The link opens a mobile-friendly page showing the two fencer names, their seeds, and their ratings. The referee reports the winner and the final score. Both fencers digitally sign on the screen. The result is submitted and the bracket updates live.
 
 The referee DE portal shows:
 
@@ -388,7 +388,7 @@ Dashboard sections:
 
 7. **Coach Access Code Display:** Shows the current 4-digit coach access code so the bout committee can share it at the coaches' meeting.
 
-**Implementation Notes for Claude Code:** Build the dashboard as a React single-page application with tabbed or panel-based layout. Use WebSockets (Socket.io) to push all state changes in real-time. The dashboard should never need to be refreshed. State updates include: pool status changes, DE bout results, referee status changes, new anomaly detections, and new narrator events. Use a REST API for initial data load and WebSockets for live updates.
+**Implementation Notes for Claude Code:** Build the dashboard as a React single-page application with tabbed or panel-based layout. Use native WebSockets to push all state changes in real-time. The dashboard should never need to be refreshed. State updates include: pool status changes, DE bout results, referee status changes, new anomaly detections, and new narrator events. Use a REST API for initial data load and WebSockets for live updates.
 
 ### Phase 4: Coach View with Bayesian Performance Analytics (Day 4-5)
 
@@ -556,11 +556,11 @@ Events that trigger narration:
 
 ### 6.1 Referee Flow — Pool Round
 
-1. Referee receives SMS: *'[FenceFlow] You are assigned to Pool 3 on Strip 7. Tap to begin: [link]'*
+1. Referee receives Telegram message: *'[FenceFlow] You are assigned to Pool 3 on Strip 7. Tap to begin: [link]'*
 2. Referee walks to assigned strip and calls roll of fencers
 3. Referee conducts all pool bouts, recording scores on the standard USFA paper pool score sheet by hand (this does not change from current practice)
 4. At the end of all pool bouts, each fencer reviews the score sheet and signs it physically
-5. Referee taps the link from the SMS on their phone/iPad
+5. Referee taps the link from the Telegram message on their phone/iPad
 6. The link opens a mobile page with a single button: 'Upload Pool Sheet Photo'
 7. Referee photographs the completed, signed pool score sheet
 8. Photo uploads to the server. Referee sees a confirmation: 'Photo uploaded. The bout committee will review shortly.'
@@ -579,9 +579,9 @@ Events that trigger narration:
 
 ### 6.3 Referee Flow — DE Round
 
-1. Referee receives SMS: *'[FenceFlow] DE T32 — Strip 4. Smith (3) vs. Jones (14). Tap to report: [link]'*
+1. Referee receives Telegram message: *'[FenceFlow] DE T32 — Strip 4. Smith (3) vs. Jones (14). Tap to report: [link]'*
 2. Referee walks to assigned strip and conducts the bout (standard 15-touch or 3 periods)
-3. After the bout ends, referee taps the link from SMS
+3. After the bout ends, referee taps the link from Telegram
 4. The link opens a mobile page showing: Fencer A name/seed, Fencer B name/seed (no win probability — that is coach-only)
 5. Referee enters both scores (e.g., 15-12)
 6. System validates: one score must be 15, or if time expired both must be below 15 with one higher
@@ -651,7 +651,7 @@ All endpoints return JSON. Authentication is via session cookie (dashboard), tok
 |--------|----------|-------------|------|
 | GET | /api/referees | List all referees with status and workload | Dashboard |
 | PUT | /api/referees/:id/status | Update referee availability | Dashboard |
-| POST | /api/referees/notify | Send SMS notifications to assigned referees | Dashboard |
+| POST | /api/referees/notify | Send Telegram notifications to assigned referees | Dashboard |
 
 ### 7.5 Coach View
 
@@ -699,7 +699,7 @@ Six days, solo developer, using Claude Code as the primary development tool. Eac
 | Day | Focus | Deliverable | Definition of Done |
 |-----|-------|-------------|-------------------|
 | Day 1 | Data model + referee assignment | SQLite schema, seed data, assignment algorithm with conflict detection | Can load tournament, assign referees, view conflict report in terminal |
-| Day 2 | SMS + Pool OCR pipeline | Twilio integration, photo upload, Claude Vision extraction, anomaly detection | SMS sends to verified number. Photo upload works. Claude extracts scores. Anomalies are flagged. |
+| Day 2 | Telegram + Pool OCR pipeline | Telegram Bot integration, photo upload, Claude Vision extraction, anomaly detection | Telegram message sends to verified user. Photo upload works. Claude extracts scores. Anomalies are flagged. |
 | Day 3 | Bout committee review UI + DE bracket | Review screen with photo/data/anomalies, bracket generation, DE score reporting | Bout committee can review, edit, approve pools. DE bracket generates. Referee can report DE result with signatures. |
 | Day 4 | Coach View + Bayesian model | Access code auth, skill model, fencer list, detail cards, win probability | Coach can authenticate, view fencer list, see prior/posterior, see win probability for DE matchups. Model updates live. |
 | Day 5 | Public view + live updates + polish | Spectator page, WebSocket integration across all four frontends, QR code, pace predictor | All four frontends work. Real-time updates flow. Spectator can view via QR. Pace estimates display. |
@@ -718,7 +718,7 @@ The demo tells a story in two acts:
 **Act 2 — The Solution (2-3 minutes):** Live walkthrough of a simulated tournament:
 
 1. Show the dashboard with the tournament loaded. Point out the smart referee assignment and conflict report: *'The system automatically prevented 3 conflict-of-interest assignments.'*
-2. Show a referee's phone receiving an SMS. Click the link. Show the pool upload interface.
+2. Show a referee's phone receiving a Telegram message. Click the link. Show the pool upload interface.
 3. Upload a real pool sheet photo. Watch Claude extract the scores in real-time. Point out the anomaly detection: *'The system flagged that indicators don't sum to zero — there's a transcription error in bout 4.'*
 4. Approve the corrected pool on the dashboard.
 5. Switch to the Coach View. Show the Bayesian model updating: *'This C-rated fencer just went 5-0 against a pool with two B-rated fencers. The model has updated her estimated skill to B-level.'*
@@ -731,7 +731,7 @@ The demo tells a story in two acts:
 
 - Pre-load the tournament data so the demo starts with pools ready
 - Have a pre-photographed pool sheet ready for the OCR demo (do not rely on taking a new photo live)
-- Pre-verify Twilio phone numbers so SMS works live
+- Pre-verify Telegram accounts so messaging works live
 - Have the Bayesian model pre-seeded with pool results so the coach view demo is immediately impressive
 - Have a fallback video recording of the full demo in case of technical issues
 - Test the full flow at least 3 times before the demo
@@ -744,7 +744,7 @@ The demo tells a story in two acts:
 |------|--------|------------|------------|
 | Claude Vision misreads pool sheet | Core feature fails in demo | Medium | Pre-test with multiple pool sheet photos. Build manual entry fallback. Have a pre-extracted result ready as backup. |
 | Bayesian model produces unreasonable estimates | Coach view shows nonsensical data | Medium | Test with real tournament data. Add sanity bounds (posterior cannot go below 0 or above 6). Validate against known results. |
-| Twilio free trial limitations | SMS does not send during demo | Low | Pre-verify all demo phone numbers. Have console log fallback showing what would have been sent. |
+| Telegram API limitations | Message does not deliver during demo | Low | Pre-verify all demo Telegram accounts. Have console log fallback showing what would have been sent. |
 | WebSocket connection drops | Live updates stop during demo | Low | Implement auto-reconnect. Add manual refresh button as fallback. Test on demo network beforehand. |
 | Scope creep on extra features | Core flow incomplete | High | Strict phase gates: do not start Phase N+1 until Phase N is 100% done. Extra features are cut first. |
 | Solo developer burnout | Quality degrades in final days | Medium | Day 6 is explicitly for polish and demo prep, not new features. Stop coding new features by end of Day 5. |
@@ -758,7 +758,7 @@ The project is a success if the following can be demonstrated live:
 
 1. A tournament is loaded with fencers, pools, and referees
 2. Referees are auto-assigned with conflict detection and a conflict report is generated
-3. An SMS is sent to a real phone with a strip assignment and link
+3. A Telegram message is sent to a real user with a strip assignment and link
 4. A pool sheet photo is uploaded and scores are extracted by AI
 5. Anomalies are detected and flagged on the review screen
 6. The bout committee reviews, edits, and approves the pool results

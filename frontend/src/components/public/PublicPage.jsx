@@ -19,6 +19,7 @@ export default function PublicPage() {
   const [activeTab, setActiveTab] = useState('leaderboards');
   const [loading, setLoading] = useState(true);
   const [streamingEntries, setStreamingEntries] = useState({});
+  const [expandedPoolEvents, setExpandedPoolEvents] = useState(null);
 
   const fetchPools = useCallback(async () => {
     try {
@@ -144,6 +145,25 @@ export default function PublicPage() {
     return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
   }, [pools]);
 
+  // Initialize all pool events as expanded
+  useEffect(() => {
+    if (expandedPoolEvents === null && groupedByEvent.length > 0) {
+      setExpandedPoolEvents(new Set(groupedByEvent.map(([event]) => event)));
+    }
+  }, [groupedByEvent, expandedPoolEvents]);
+
+  const togglePoolEvent = (event) => {
+    setExpandedPoolEvents((prev) => {
+      const next = new Set(prev);
+      if (next.has(event)) next.delete(event);
+      else next.add(event);
+      return next;
+    });
+  };
+
+  const expandAllPoolEvents = () => setExpandedPoolEvents(new Set(groupedByEvent.map(([event]) => event)));
+  const collapseAllPoolEvents = () => setExpandedPoolEvents(new Set());
+
   if (loading) {
     return <div className="loading-container">Loading results...</div>;
   }
@@ -235,21 +255,32 @@ export default function PublicPage() {
                 No approved pool results yet. Results will appear here once scored.
               </div>
             ) : (
-              groupedByEvent.map(([event, eventPools]) => (
-                <div key={event} className="pool-event-group">
-                  <h3>{event}</h3>
-                  <div className="progress-summary">
-                    <span>{eventPools.length} pools scored</span>
-                  </div>
-                  <div className="pool-matrix-grid">
-                    {eventPools
-                      .sort((a, b) => a.pool_number - b.pool_number)
-                      .map((pool) => (
-                        <PoolTable key={pool.id} pool={pool} readOnly />
-                      ))}
-                  </div>
+              <>
+                <div className="collapse-controls">
+                  <button className="collapse-control-btn" onClick={expandAllPoolEvents}>Expand All</button>
+                  <button className="collapse-control-btn" onClick={collapseAllPoolEvents}>Collapse All</button>
                 </div>
-              ))
+                {groupedByEvent.map(([event, eventPools]) => (
+                  <div key={event} className="pool-event-group">
+                    <h3 className="pool-event-header" onClick={() => togglePoolEvent(event)}>
+                      <span className="collapse-toggle">{expandedPoolEvents?.has(event) ? '−' : '+'}</span>
+                      {event}
+                    </h3>
+                    <div className="progress-summary">
+                      <span>{eventPools.length} pools scored</span>
+                    </div>
+                    {expandedPoolEvents?.has(event) && (
+                      <div className="pool-matrix-grid">
+                        {eventPools
+                          .sort((a, b) => a.pool_number - b.pool_number)
+                          .map((pool) => (
+                            <PoolTable key={pool.id} pool={pool} readOnly />
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </>
             )}
           </>
         )}
@@ -303,6 +334,25 @@ export default function PublicPage() {
             <div className="live-feed-section">
               <h3>Commentary</h3>
               <NarratorFeed entries={narratorFeed} streamingEntries={streamingEntries} />
+            </div>
+            <div className="live-feed-section">
+              <h3>Announcements</h3>
+              {announcements.length === 0 ? (
+                <div className="no-data-message" style={{ padding: '20px 0' }}>No announcements yet</div>
+              ) : (
+                <div className="announcement-list">
+                  {[...announcements].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).map((ann, i) => (
+                    <div key={ann.id || i} className="announcement-list-item">
+                      <div className="announcement-list-text">{ann.polished_text || ann.raw_text}</div>
+                      {ann.created_at && (
+                        <div className="announcement-list-time">
+                          {new Date(ann.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

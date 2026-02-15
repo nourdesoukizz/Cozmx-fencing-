@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import PoolTable from './PoolTable';
 import PoolReview from './PoolReview';
 
 export default function PoolProgress({ pools, onRefresh }) {
   const [search, setSearch] = useState('');
   const [reviewPool, setReviewPool] = useState(null);
+  const [expandedEvents, setExpandedEvents] = useState(null);
 
   const pendingCount = useMemo(
     () => pools.filter((p) => p.submission?.status === 'pending_review' || p.submission?.status === 'ocr_failed').length,
@@ -34,6 +35,25 @@ export default function PoolProgress({ pools, onRefresh }) {
     return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
   }, [filteredPools]);
 
+  // Initialize all events as expanded on first render
+  useEffect(() => {
+    if (expandedEvents === null && groupedByEvent.length > 0) {
+      setExpandedEvents(new Set(groupedByEvent.map(([event]) => event)));
+    }
+  }, [groupedByEvent, expandedEvents]);
+
+  const toggleEvent = (event) => {
+    setExpandedEvents((prev) => {
+      const next = new Set(prev);
+      if (next.has(event)) next.delete(event);
+      else next.add(event);
+      return next;
+    });
+  };
+
+  const expandAll = () => setExpandedEvents(new Set(groupedByEvent.map(([event]) => event)));
+  const collapseAll = () => setExpandedEvents(new Set());
+
   const handlePoolClick = (pool) => {
     if (pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed' || pool.submission?.status === 'approved') {
       setReviewPool(pool);
@@ -62,6 +82,13 @@ export default function PoolProgress({ pools, onRefresh }) {
         )}
       </div>
 
+      {groupedByEvent.length > 0 && (
+        <div className="collapse-controls">
+          <button className="collapse-control-btn" onClick={expandAll}>Expand All</button>
+          <button className="collapse-control-btn" onClick={collapseAll}>Collapse All</button>
+        </div>
+      )}
+
       {groupedByEvent.map(([event, eventPools]) => {
         const approved = eventPools.filter((p) => p.submission?.status === 'approved').length;
         const pending = eventPools.filter((p) => p.submission?.status === 'pending_review' || p.submission?.status === 'ocr_failed').length;
@@ -69,7 +96,8 @@ export default function PoolProgress({ pools, onRefresh }) {
 
         return (
           <div key={event} className="pool-event-group">
-            <h3>
+            <h3 className="pool-event-header" onClick={() => toggleEvent(event)}>
+              <span className="collapse-toggle">{expandedEvents?.has(event) ? '−' : '+'}</span>
               {event}
               {pending > 0 && <span className="event-pending-count">{pending} pending</span>}
             </h3>
@@ -82,17 +110,19 @@ export default function PoolProgress({ pools, onRefresh }) {
               <div className="progress-bar-fill" style={{ width: `${pct}%` }} />
             </div>
 
-            <div className="pool-matrix-grid">
-              {eventPools
-                .sort((a, b) => a.pool_number - b.pool_number)
-                .map((pool) => (
-                  <PoolTable
-                    key={pool.id}
-                    pool={pool}
-                    onClick={pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed' || pool.submission?.status === 'approved' ? () => handlePoolClick(pool) : undefined}
-                  />
-                ))}
-            </div>
+            {expandedEvents?.has(event) && (
+              <div className="pool-matrix-grid">
+                {eventPools
+                  .sort((a, b) => a.pool_number - b.pool_number)
+                  .map((pool) => (
+                    <PoolTable
+                      key={pool.id}
+                      pool={pool}
+                      onClick={pool.submission?.status === 'pending_review' || pool.submission?.status === 'ocr_failed' || pool.submission?.status === 'approved' ? () => handlePoolClick(pool) : undefined}
+                    />
+                  ))}
+              </div>
+            )}
           </div>
         );
       })}

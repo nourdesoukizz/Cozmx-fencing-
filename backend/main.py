@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
-from config import PORT, UPLOADS_DIR, DATA_DIR
+from config import PORT, UPLOADS_DIR, DATA_DIR, ANTHROPIC_API_KEY, SONNET_MODEL, OPUS_MODEL
 from data_loader import load_data, get_referee_by_token, get_pools_for_referee, get_event_status
 from data_loader import get_all_fencers, get_all_pools, get_all_submissions_dict
 from bt_engine import BTEngine
@@ -42,9 +42,43 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
+def _validate_api_key():
+    """Validate Anthropic API key and model IDs at startup."""
+    if not ANTHROPIC_API_KEY:
+        print("[STARTUP] WARNING: ANTHROPIC_API_KEY is not set — all AI features will be disabled")
+        return
+    try:
+        import httpx
+        with httpx.Client(timeout=10.0) as client:
+            resp = client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": OPUS_MODEL,
+                    "max_tokens": 1,
+                    "messages": [{"role": "user", "content": "hi"}],
+                },
+            )
+            if resp.status_code == 200:
+                print(f"[STARTUP] API key valid — models: {SONNET_MODEL}, {OPUS_MODEL}")
+            elif resp.status_code == 401:
+                print("[STARTUP] WARNING: ANTHROPIC_API_KEY is invalid (401 Unauthorized)")
+            elif resp.status_code == 404:
+                print(f"[STARTUP] WARNING: Model '{OPUS_MODEL}' not found (404) — check config.py")
+            else:
+                print(f"[STARTUP] WARNING: API validation returned status {resp.status_code}")
+    except Exception as exc:
+        print(f"[STARTUP] WARNING: Could not validate API key: {exc}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     load_data()
+    _validate_api_key()
     # Initialize Bradley-Terry engine
     engine = BTEngine(DATA_DIR)
     engine.initialize(get_all_fencers(), get_all_pools(), get_all_submissions_dict())

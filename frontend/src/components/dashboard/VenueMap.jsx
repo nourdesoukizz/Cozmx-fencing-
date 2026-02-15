@@ -54,6 +54,8 @@ export default function VenueMap({ pools }) {
       <div className="venue-floor-title">Venue Floor Plan</div>
 
       <div className="venue-floor-grid">
+        <div className="venue-compass">N</div>
+        <div className="venue-landmark">ENTRANCE</div>
         {VENUE_LAYOUT.map((area) => (
           <div key={area.id} className="floor-area">
             <div className="floor-area-label">
@@ -73,6 +75,9 @@ export default function VenueMap({ pools }) {
                   >
                     {/* The fencing strip surface */}
                     <div className="strip-surface">
+                      {/* Warning zones at strip ends */}
+                      <div className="strip-warning-zone strip-warning-left" />
+                      <div className="strip-warning-zone strip-warning-right" />
                       {/* En-garde lines */}
                       <div className="strip-line strip-line-left" />
                       <div className="strip-line strip-line-center" />
@@ -100,6 +105,7 @@ export default function VenueMap({ pools }) {
             </div>
           </div>
         ))}
+        <div className="venue-landmark">OFFICIALS TABLE</div>
       </div>
 
       {/* Legend */}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../api/client';
 import { useNotification } from '../../context/NotificationContext';
@@ -10,6 +10,7 @@ import RefereePanel from './RefereePanel';
 import AgentPanel from './AgentPanel';
 import AnnouncerPanel from './AnnouncerPanel';
 import DEManagement from './DEManagement';
+import NarratorFeed from '../public/NarratorFeed';
 
 const TABS = [
   { key: 'strips', label: 'Venue Map' },
@@ -26,9 +27,28 @@ export default function DashboardPage() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('strips');
   const [refreshing, setRefreshing] = useState(false);
-  const [agentCollapsed, setAgentCollapsed] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState('agent');
+  const sidebarTabRef = useRef('agent');
+  const [sidebarNotifications, setSidebarNotifications] = useState({ agent: false, announcer: false, commentary: false });
+  const [narratorFeed, setNarratorFeed] = useState([]);
+  const [streamingEntries, setStreamingEntries] = useState({});
 
   const { addNotification } = useNotification();
+
+  const handleSidebarTab = (tab) => {
+    setSidebarTab(tab);
+    sidebarTabRef.current = tab;
+    setSidebarNotifications((prev) => ({ ...prev, [tab]: false }));
+  };
+
+  const fetchNarrator = useCallback(async () => {
+    try {
+      const data = await api.getNarratorFeed(20);
+      setNarratorFeed(data.entries || []);
+    } catch {
+      // silent fail
+    }
+  }, []);
 
   const fetchData = useCallback(async (showToast = false) => {
     try {
@@ -36,6 +56,7 @@ export default function DashboardPage() {
         api.getTournamentStatus(),
         api.getPools(),
         api.getReferees(),
+        fetchNarrator(),
       ]);
       setTournament(tournamentData);
       setPools(poolsData);
@@ -48,7 +69,7 @@ export default function DashboardPage() {
       setError(err.message);
       addNotification('error', 'Load Failed', err.message);
     }
-  }, [addNotification]);
+  }, [addNotification, fetchNarrator]);
 
   useEffect(() => {
     setLoading(true);
@@ -63,12 +84,15 @@ export default function DashboardPage() {
     } else if (msg.type === 'scores_approved') {
       addNotification('success', 'Scores Approved', `Pool ${msg.pool_id} scores approved`);
       fetchData();
+      fetchNarrator();
     } else if (msg.type === 'event_started') {
       addNotification('success', 'Event Started', `${msg.event} has been started`);
       fetchData();
+      fetchNarrator();
     } else if (msg.type === 'event_stopped') {
       addNotification('info', 'Event Stopped', `${msg.event} has been stopped`);
       fetchData();
+      fetchNarrator();
     } else if (msg.type === 'agent_action') {
       const entry = msg.entry || {};
       if (entry.action === 'auto_approve') {
@@ -82,9 +106,37 @@ export default function DashboardPage() {
       }
       // Refresh agent panel if it's mounted
       if (window._agentPanelRefresh) window._agentPanelRefresh();
+      setSidebarNotifications((prev) => prev.agent ? prev : { ...prev, agent: sidebarTabRef.current !== 'agent' });
     } else if (msg.type === 'announcement_suggestion') {
       addNotification('info', 'New Announcement', 'A new announcement suggestion is ready');
       if (window._announcerPanelRefresh) window._announcerPanelRefresh();
+      setSidebarNotifications((prev) => prev.announcer ? prev : { ...prev, announcer: sidebarTabRef.current !== 'announcer' });
+    } else if (msg.type === 'narrator_update' && msg.entry) {
+      setStreamingEntries((prev) => {
+        const next = { ...prev };
+        delete next[msg.entry.id];
+        return next;
+      });
+      setNarratorFeed((prev) => [msg.entry, ...prev]);
+      setSidebarNotifications((prev) => prev.commentary ? prev : { ...prev, commentary: sidebarTabRef.current !== 'commentary' });
+    } else if (msg.type === 'narrator_stream_start') {
+      setStreamingEntries((prev) => ({
+        ...prev,
+        [msg.entry_id]: { text: '', done: false },
+      }));
+    } else if (msg.type === 'narrator_stream_token') {
+      setStreamingEntries((prev) => ({
+        ...prev,
+        [msg.entry_id]: {
+          text: (prev[msg.entry_id]?.text || '') + msg.token,
+          done: false,
+        },
+      }));
+    } else if (msg.type === 'narrator_stream_end') {
+      setStreamingEntries((prev) => ({
+        ...prev,
+        [msg.entry_id]: { ...prev[msg.entry_id], done: true },
+      }));
     } else if (msg.type === 'de_bracket_created') {
       addNotification('success', 'DE Bracket Created', `${msg.event} bracket created`);
       fetchData();
@@ -95,7 +147,7 @@ export default function DashboardPage() {
       addNotification('success', 'DE Complete', `${msg.event} champion: ${msg.champion}`);
       fetchData();
     }
-  }, [addNotification, fetchData]));
+  }, [addNotification, fetchData, fetchNarrator]));
 
   const handleStartEvent = async (eventName) => {
     try {
@@ -261,25 +313,26 @@ export default function DashboardPage() {
         </div>
 
         <aside className="agent-sidebar">
-          <div className="sidebar-section">
-            <div className="sidebar-section-header" onClick={() => setAgentCollapsed(!agentCollapsed)}>
-              <span style={{ fontWeight: 700, fontSize: 14 }}>Agent</span>
-              <span style={{ color: 'var(--text-muted)' }}>{agentCollapsed ? '+' : '-'}</span>
-            </div>
-            {!agentCollapsed && (
-              <div className="sidebar-section-content">
-                <AgentPanel addNotification={addNotification} />
-              </div>
-            )}
+          <div className="sidebar-tab-bar">
+            {[
+              { key: 'agent', label: 'Agent' },
+              { key: 'announcer', label: 'Announcer' },
+              { key: 'commentary', label: 'Commentary' },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                className={`sidebar-tab-btn ${sidebarTab === tab.key ? 'active' : ''}`}
+                onClick={() => handleSidebarTab(tab.key)}
+              >
+                {tab.label}
+                {sidebarNotifications[tab.key] && <span className="sidebar-tab-dot" />}
+              </button>
+            ))}
           </div>
-          <div className="sidebar-divider" />
-          <div className="sidebar-section sidebar-section-grow">
-            <div className="sidebar-section-header">
-              <span style={{ fontWeight: 700, fontSize: 14 }}>Announcer</span>
-            </div>
-            <div className="sidebar-section-content">
-              <AnnouncerPanel addNotification={addNotification} />
-            </div>
+          <div className="sidebar-tab-content">
+            {sidebarTab === 'agent' && <AgentPanel addNotification={addNotification} />}
+            {sidebarTab === 'announcer' && <AnnouncerPanel addNotification={addNotification} />}
+            {sidebarTab === 'commentary' && <NarratorFeed entries={narratorFeed} streamingEntries={streamingEntries} />}
           </div>
         </aside>
       </div>

@@ -561,7 +561,7 @@ body {
 .venue-floor-grid {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 36px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -590,6 +590,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  border: 2px dashed rgba(192, 192, 192, 0.15);
+  padding: 16px;
+  border-radius: var(--radius-sm);
 }
 
 .floor-area-label {
@@ -612,9 +615,9 @@ body {
 }
 
 .floor-strips {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
 }
 
 /* Individual fencing strip */
@@ -4151,5 +4154,327 @@ body {
 
   .de-fencer-card {
     flex: none;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   EXTENDED THINKING — Opus 4.6 AI Reasoning
+   ══════════════════════════════════════════════════ */
+
+.extended-thinking-section {
+  margin: 16px 0;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: var(--radius);
+  background: rgba(139, 92, 246, 0.06);
+  overflow: hidden;
+}
+
+.et-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.et-header:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.et-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 12px;
+  letter-spacing: 0.3px;
+}
+
+.et-confidence-improvement {
+  font-size: 13px;
+  font-weight: 700;
+  color: #a78bfa;
+}
+
+.et-toggle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #a78bfa;
+  line-height: 1;
+}
+
+.et-body {
+  padding: 0 16px 16px;
+}
+
+.et-corrections {
+  margin-bottom: 14px;
+}
+
+.et-corrections h4,
+.et-thinking h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.et-correction-item {
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  border-left: 3px solid #8b5cf6;
+  background: rgba(139, 92, 246, 0.08);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.et-correction-item strong {
+  color: var(--text-primary);
+}
+
+.et-correction-reason {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.et-thinking {
+  margin-top: 12px;
+}
+
+.et-thinking-text {
+  padding: 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.et-improved-tag {
+  margin-left: 8px;
+  padding: 1px 8px;
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+/* ══════════════════════════════════════════════════
+   UI POLISH — Trajectory Filters
+   ══════════════════════════════════════════════════ */
+
+.trajectory-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* ══════════════════════════════════════════════════
+   UI POLISH — Venue Map Enhancements
+   ══════════════════════════════════════════════════ */
+
+.strip-warning-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8%;
+  z-index: 0;
+}
+
+.strip-warning-left {
+  left: 0;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.25), transparent);
+}
+
+.strip-warning-right {
+  right: 0;
+  background: linear-gradient(270deg, rgba(239, 68, 68, 0.25), transparent);
+}
+
+.venue-compass {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-muted);
+  z-index: 1;
+}
+
+.venue-landmark {
+  text-align: center;
+  padding: 8px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  border: 1px dashed rgba(192, 192, 192, 0.15);
+  border-radius: var(--radius-sm);
+}
+
+/* ══════════════════════════════════════════════════
+   UI POLISH — Collapsible Event Sections
+   ══════════════════════════════════════════════════ */
+
+.collapse-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.collapse-control-btn {
+  padding: 5px 14px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.collapse-control-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.pool-event-header {
+  cursor: pointer;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.pool-event-header:hover {
+  color: var(--accent);
+}
+
+.collapse-toggle {
+  display: inline-block;
+  width: 20px;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   UI POLISH — Sidebar Tabs
+   ══════════════════════════════════════════════════ */
+
+.sidebar-tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.sidebar-tab-btn {
+  flex: 1;
+  padding: 10px 8px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  position: relative;
+}
+
+.sidebar-tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.sidebar-tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.sidebar-tab-dot {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: sidebarDotPulse 1.5s infinite;
+}
+
+@keyframes sidebarDotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.3); }
+}
+
+.sidebar-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  min-height: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   UI POLISH — Announcement List (Live Feed)
+   ══════════════════════════════════════════════════ */
+
+.announcement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.announcement-list-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  animation: narratorSlideIn 0.3s ease;
+}
+
+.announcement-list-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.announcement-list-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Mobile: single-column strips */
+@media (max-width: 768px) {
+  .floor-strips {
+    grid-template-columns: 1fr;
   }
 }

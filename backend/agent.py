@@ -14,7 +14,7 @@ import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from config import DATA_DIR, BASE_URL, ANTHROPIC_API_KEY
+from config import DATA_DIR, BASE_URL, ANTHROPIC_API_KEY, OPUS_MODEL
 
 STATE_PATH = DATA_DIR / "agent_state.json"
 MAX_LOG_ENTRIES = 500
@@ -689,7 +689,7 @@ class TournamentAgent:
                         "content-type": "application/json",
                     },
                     json={
-                        "model": "claude-opus-4-6-20250219",
+                        "model": OPUS_MODEL,
                         "max_tokens": 1024,
                         "system": [
                             {

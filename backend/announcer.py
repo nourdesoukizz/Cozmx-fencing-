@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-from config import DATA_DIR, ANTHROPIC_API_KEY
+from config import DATA_DIR, ANTHROPIC_API_KEY, OPUS_MODEL
 
 ANNOUNCEMENTS_PATH = DATA_DIR / "announcements.json"
 MAX_ENTRIES = 200
@@ -68,7 +68,7 @@ class AnnouncerService:
                         "content-type": "application/json",
                     },
                     json={
-                        "model": "claude-opus-4-6-20250219",
+                        "model": OPUS_MODEL,
                         "max_tokens": 150,
                         "system": [
                             {

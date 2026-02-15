@@ -11,6 +11,10 @@ UPLOADS_DIR = Path(__file__).parent / "uploads"
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 
+# Centralized model IDs — change here to update everywhere
+SONNET_MODEL = "claude-sonnet-4-20250514"
+OPUS_MODEL = "claude-opus-4-6"
+
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_BOT_USERNAME = os.getenv("TELEGRAM_BOT_USERNAME", "")
 BASE_URL = os.getenv("BASE_URL", "http://localhost:3000")

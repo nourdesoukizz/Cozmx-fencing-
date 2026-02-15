@@ -2,7 +2,7 @@ import uuid
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
 
-from config import COACH_ACCESS_CODE, ANTHROPIC_API_KEY
+from config import COACH_ACCESS_CODE, ANTHROPIC_API_KEY, OPUS_MODEL
 from data_loader import get_fencer_by_id, get_all_fencers
 from bt_engine import BTEngine
 
@@ -254,7 +254,7 @@ async def get_coach_fencer_insight(fencer_id: int,
                     "content-type": "application/json",
                 },
                 json={
-                    "model": "claude-opus-4-6-20250219",
+                    "model": OPUS_MODEL,
                     "max_tokens": 200,
                     "system": [
                         {
@@ -374,7 +374,7 @@ async def coach_fencer_chat(fencer_id: int, body: ChatRequest,
                     "content-type": "application/json",
                 },
                 json={
-                    "model": "claude-opus-4-6-20250219",
+                    "model": OPUS_MODEL,
                     "max_tokens": 300,
                     "system": [
                         {

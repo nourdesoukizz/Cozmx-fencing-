@@ -12,6 +12,8 @@ export default function TrajectoryChart({ token, eventFilter, clubFilter }) {
   const [trajectory, setTrajectory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hiddenFencers, setHiddenFencers] = useState(new Set());
+  const [topN, setTopN] = useState('all');
+  const [legendSearch, setLegendSearch] = useState('');
 
   useEffect(() => {
     if (!token) return;
@@ -54,6 +56,19 @@ export default function TrajectoryChart({ token, eventFilter, clubFilter }) {
       .sort((a, b) => (last.win_probs?.[b] ?? 0) - (last.win_probs?.[a] ?? 0));
   }, [trajectory, fencerNames]);
 
+  // Apply topN + search filters on top of activeFencers
+  const filteredFencers = useMemo(() => {
+    let list = activeFencers;
+    if (topN !== 'all') {
+      list = list.slice(0, parseInt(topN, 10));
+    }
+    if (legendSearch.trim()) {
+      const q = legendSearch.toLowerCase();
+      list = list.filter(n => n.toLowerCase().includes(q));
+    }
+    return list;
+  }, [activeFencers, topN, legendSearch]);
+
   const toggleFencer = (name) => {
     setHiddenFencers(prev => {
       const next = new Set(prev);
@@ -69,6 +84,25 @@ export default function TrajectoryChart({ token, eventFilter, clubFilter }) {
   return (
     <div className="trajectory-chart-container">
       <h4 style={{ marginBottom: 12 }}>Win Probability Trajectory</h4>
+      <div className="trajectory-filters">
+        <select
+          className="filter-select"
+          value={topN}
+          onChange={(e) => setTopN(e.target.value)}
+        >
+          <option value="5">Top 5</option>
+          <option value="10">Top 10</option>
+          <option value="all">All</option>
+        </select>
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search fencer..."
+          value={legendSearch}
+          onChange={(e) => setLegendSearch(e.target.value)}
+          style={{ width: 180 }}
+        />
+      </div>
       <ResponsiveContainer width="100%" height={360}>
         <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
           <XAxis
@@ -96,7 +130,7 @@ export default function TrajectoryChart({ token, eventFilter, clubFilter }) {
             }}
             formatter={(val, name) => [`${val.toFixed(1)}%`, name]}
           />
-          {activeFencers.filter(n => !hiddenFencers.has(n)).map((name, i) => (
+          {filteredFencers.filter(n => !hiddenFencers.has(n)).map((name, i) => (
             <Line
               key={name}
               type="monotone"
@@ -110,7 +144,7 @@ export default function TrajectoryChart({ token, eventFilter, clubFilter }) {
         </LineChart>
       </ResponsiveContainer>
       <div className="trajectory-legend">
-        {activeFencers.map((name, i) => (
+        {filteredFencers.map((name, i) => (
           <button
             key={name}
             className={`trajectory-legend-item ${hiddenFencers.has(name) ? 'hidden' : ''}`}

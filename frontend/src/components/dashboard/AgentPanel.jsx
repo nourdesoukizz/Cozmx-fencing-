@@ -32,6 +32,8 @@ export default function AgentPanel({ addNotification }) {
   });
   const [savingConfig, setSavingConfig] = useState(false);
 
+  const [expandedEntries, setExpandedEntries] = useState(new Set());
+
   const [logOffset, setLogOffset] = useState(0);
   const LOG_PAGE_SIZE = 50;
 
@@ -195,23 +197,63 @@ export default function AgentPanel({ addNotification }) {
               {log.entries.map((entry, i) => {
                 const badge = ACTION_BADGES[entry.action] || { label: entry.action, color: '#6b7280' };
                 const ts = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString() : '';
+                const isReasoning = entry.action === 'ai_reasoning';
+                const fullText = entry.reasoning || entry.message || entry.reason || JSON.stringify(entry);
+                const isLong = isReasoning && fullText.length > 200;
+                const isExpanded = expandedEntries.has(i);
+                const displayText = isLong && !isExpanded ? fullText.slice(0, 200) + '...' : fullText;
+
                 return (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 12px',
-                    background: 'var(--surface)', borderRadius: 6, border: '1px solid var(--border)',
-                    fontSize: 13,
-                  }}>
-                    <span style={{ color: 'var(--text-muted)', minWidth: 70, flexShrink: 0 }}>{ts}</span>
-                    <span style={{
-                      display: 'inline-block', padding: '2px 8px', borderRadius: 4,
-                      background: badge.color + '20', color: badge.color,
-                      fontWeight: 600, fontSize: 11, whiteSpace: 'nowrap',
-                    }}>
-                      {badge.label}
-                    </span>
-                    <span style={{ color: 'var(--text)', wordBreak: 'break-word' }}>
-                      {entry.message || entry.reason || JSON.stringify(entry)}
-                    </span>
+                  <div
+                    key={i}
+                    style={{
+                      display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 12px',
+                      background: isReasoning ? 'var(--surface)' : 'var(--surface)',
+                      borderRadius: 6,
+                      border: isReasoning ? '1px solid #8b5cf640' : '1px solid var(--border)',
+                      fontSize: 13,
+                      cursor: isLong ? 'pointer' : 'default',
+                    }}
+                    onClick={isLong ? () => setExpandedEntries((prev) => {
+                      const next = new Set(prev);
+                      next.has(i) ? next.delete(i) : next.add(i);
+                      return next;
+                    }) : undefined}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <span style={{ color: 'var(--text-muted)', minWidth: 70, flexShrink: 0 }}>{ts}</span>
+                      <span style={{
+                        display: 'inline-block', padding: '2px 8px', borderRadius: 4,
+                        background: badge.color + '20', color: badge.color,
+                        fontWeight: 600, fontSize: 11, whiteSpace: 'nowrap',
+                      }}>
+                        {badge.label}
+                      </span>
+                      {!isReasoning && (
+                        <span style={{ color: 'var(--text)', wordBreak: 'break-word' }}>
+                          {entry.message || entry.reason || JSON.stringify(entry)}
+                        </span>
+                      )}
+                      {isLong && (
+                        <span style={{
+                          marginLeft: 'auto', color: '#8b5cf6', fontSize: 11, flexShrink: 0,
+                          fontWeight: 600,
+                        }}>
+                          {isExpanded ? 'Collapse' : 'Expand'}
+                        </span>
+                      )}
+                    </div>
+                    {isReasoning && (
+                      <div style={{
+                        marginLeft: 80, padding: '6px 10px', borderRadius: 4,
+                        background: '#8b5cf610', color: 'var(--text)',
+                        whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                        lineHeight: 1.5, fontSize: 12,
+                        maxHeight: isExpanded ? 'none' : 'auto',
+                      }}>
+                        {displayText}
+                      </div>
+                    )}
                   </div>
                 );
               })}

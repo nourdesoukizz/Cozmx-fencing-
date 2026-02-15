@@ -8,6 +8,7 @@ export default function PoolReview({ pool, onClose }) {
   const [loading, setLoading] = useState(true);
   const [approving, setApproving] = useState(false);
   const [error, setError] = useState(null);
+  const [showThinking, setShowThinking] = useState(false);
 
   const fencers = pool.fencers || [];
   const n = fencers.length;
@@ -56,6 +57,12 @@ export default function PoolReview({ pool, onClose }) {
       setApproving(false);
     }
   };
+
+  const hasExtendedThinking = submission?.extended_thinking && (
+    submission.corrections?.length > 0 || submission.thinking
+  );
+  const firstPassConf = submission?.first_pass_confidence;
+  const finalConf = submission?.confidence;
 
   if (loading) {
     return (
@@ -147,10 +154,55 @@ export default function PoolReview({ pool, onClose }) {
             {submission?.confidence != null && (
               <div className="confidence-bar">
                 OCR Confidence: {Math.round(submission.confidence * 100)}%
+                {hasExtendedThinking && firstPassConf != null && (
+                  <span className="et-improved-tag">
+                    improved from {Math.round(firstPassConf * 100)}%
+                  </span>
+                )}
               </div>
             )}
           </div>
         </div>
+
+        {/* Extended Thinking Section */}
+        {hasExtendedThinking && (
+          <div className="extended-thinking-section">
+            <div className="et-header" onClick={() => setShowThinking(!showThinking)}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span className="et-badge">Opus 4.6 Extended Thinking</span>
+                {firstPassConf != null && finalConf != null && (
+                  <span className="et-confidence-improvement">
+                    {Math.round(firstPassConf * 100)}% → {Math.round(finalConf * 100)}%
+                  </span>
+                )}
+              </div>
+              <span className="et-toggle">{showThinking ? '−' : '+'}</span>
+            </div>
+
+            {showThinking && (
+              <div className="et-body">
+                {submission.corrections?.length > 0 && (
+                  <div className="et-corrections">
+                    <h4>Corrections Applied</h4>
+                    {submission.corrections.map((c, i) => (
+                      <div key={i} className="et-correction-item">
+                        <strong>Cell [{c.row},{c.col}]:</strong> {c.old_value} → {c.new_value}
+                        {c.reason && <span className="et-correction-reason"> — {c.reason}</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {submission.thinking && (
+                  <div className="et-thinking">
+                    <h4>AI Reasoning Chain</h4>
+                    <pre className="et-thinking-text">{submission.thinking}</pre>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Anomalies */}
         {anomalies.length > 0 && (
