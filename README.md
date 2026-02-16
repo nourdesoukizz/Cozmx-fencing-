@@ -102,6 +102,10 @@ Current fencing software does not offer public APIs. Connecting FenceFlow to liv
 
 [View the full tournament data on Fencing Time Live](https://www.fencingtimelive.com/tournaments/eventSchedule/F6D775EF4B744391A444D37F8CBF7860#today)
 
+## License
+
+This project is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). Free for noncommercial use — see the license for details.
+
 ---
 
 For detailed system design, see [`docs/design-doc.md`](docs/design-doc.md).
