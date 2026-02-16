@@ -9,6 +9,8 @@ const ROLES = [
     icon: '\u2694\uFE0F',
     route: '/dashboard',
     code: '1234',
+    color: 'var(--blue)',
+    colorRaw: '59,130,246',
   },
   {
     key: 'public',
@@ -17,6 +19,8 @@ const ROLES = [
     icon: '\uD83D\uDCFA',
     route: '/public',
     code: null,
+    color: 'var(--green)',
+    colorRaw: '34,197,94',
   },
   {
     key: 'coach',
@@ -25,6 +29,8 @@ const ROLES = [
     icon: '\uD83D\uDCCB',
     route: '/coach',
     code: '5678',
+    color: 'var(--orange)',
+    colorRaw: '249,115,22',
   },
   {
     key: 'referee',
@@ -33,6 +39,8 @@ const ROLES = [
     icon: '\uD83D\uDD14',
     route: '/referee',
     code: '9012',
+    color: 'var(--yellow)',
+    colorRaw: '234,179,8',
   },
 ];
 
@@ -50,15 +58,19 @@ export default function LandingPage() {
       </div>
 
       <div className="role-grid">
-        {ROLES.map((role) => (
-          <RoleCard key={role.key} role={role} onNavigate={navigate} />
+        {ROLES.map((role, index) => (
+          <RoleCard key={role.key} role={role} index={index} onNavigate={navigate} />
         ))}
+      </div>
+
+      <div className="landing-footer">
+        Powered by Opus 4.6
       </div>
     </div>
   );
 }
 
-function RoleCard({ role, onNavigate }) {
+function RoleCard({ role, index, onNavigate }) {
   const [code, setCode] = useState('');
   const [error, setError] = useState(false);
   const [showInput, setShowInput] = useState(false);
@@ -84,8 +96,18 @@ function RoleCard({ role, onNavigate }) {
   };
 
   return (
-    <div className="role-card" onClick={!showInput ? handleOpen : undefined}>
-      <span className="role-card-icon">{role.icon}</span>
+    <div
+      className="role-card"
+      style={{
+        '--role-color': role.color,
+        '--role-rgb': role.colorRaw,
+        animationDelay: `${index * 80}ms`,
+      }}
+      onClick={!showInput ? handleOpen : undefined}
+    >
+      <div className="role-card-icon-wrap">
+        <span className="role-card-icon">{role.icon}</span>
+      </div>
       <h3>{role.title}</h3>
       <p>{role.description}</p>
 

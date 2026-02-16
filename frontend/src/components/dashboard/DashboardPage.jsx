@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [sidebarTab, setSidebarTab] = useState('agent');
   const sidebarTabRef = useRef('agent');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === 'true');
   const [sidebarNotifications, setSidebarNotifications] = useState({ agent: false, announcer: false, commentary: false });
   const [narratorFeed, setNarratorFeed] = useState([]);
   const [streamingEntries, setStreamingEntries] = useState({});
@@ -39,6 +40,14 @@ export default function DashboardPage() {
     setSidebarTab(tab);
     sidebarTabRef.current = tab;
     setSidebarNotifications((prev) => ({ ...prev, [tab]: false }));
+  };
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('sidebar_collapsed', String(next));
+      return next;
+    });
   };
 
   const fetchNarrator = useCallback(async () => {
@@ -312,7 +321,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <aside className="agent-sidebar">
+        <button className="sidebar-toggle" onClick={toggleSidebar} title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
+          {sidebarCollapsed ? '\u00BB' : '\u00AB'}
+        </button>
+        <aside className={`agent-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
           <div className="sidebar-tab-bar">
             {[
               { key: 'agent', label: 'Agent' },

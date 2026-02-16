@@ -143,12 +143,14 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
+  border-top: 2px solid var(--role-color, var(--border));
   border-radius: var(--radius-lg);
   padding: 28px 24px;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  animation: cardFadeIn 0.5s ease both;
 }
 
 .role-card::before {
@@ -161,15 +163,56 @@ body {
 }
 
 .role-card:hover {
-  border-color: rgba(192, 192, 192, 0.25);
-  box-shadow: 0 0 20px var(--accent-dim);
+  border-color: rgba(var(--role-rgb, '192,192,192'), 0.25);
+  border-top-color: var(--role-color, var(--accent));
+  box-shadow: 0 0 24px rgba(var(--role-rgb, '192,192,192'), 0.15);
   transform: translateY(-2px);
 }
 
-.role-card-icon {
-  font-size: 28px;
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.role-card-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(var(--role-rgb, '192,192,192'), 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
+  position: relative;
+}
+
+.role-card-icon-wrap::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--role-rgb, '192,192,192'), 0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.role-card-icon {
+  font-size: 36px;
   display: block;
+  line-height: 1;
+}
+
+.landing-footer {
+  margin-top: 32px;
+  font-size: 13px;
+  color: var(--text-muted);
+  opacity: 0.6;
+  letter-spacing: 0.5px;
 }
 
 .role-card h3 {
@@ -491,6 +534,40 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: width 0.25s ease, border-left-color 0.25s ease, opacity 0.2s ease;
+}
+
+.agent-sidebar.collapsed {
+  width: 0;
+  border-left-color: transparent;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-toggle {
+  align-self: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px 0 0 6px;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: auto;
+  margin-bottom: auto;
+  position: relative;
+  z-index: 2;
+  transition: color 0.15s, background 0.15s;
+}
+
+.sidebar-toggle:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .sidebar-section {
@@ -537,6 +614,14 @@ body {
     border-left: none;
     border-top: 1px solid var(--border);
     max-height: 500px;
+  }
+  .agent-sidebar.collapsed {
+    width: 100%;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .sidebar-toggle {
+    display: none;
   }
 }
 
