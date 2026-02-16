@@ -4,6 +4,12 @@
 
 > *Build a Tool That Should Exist — Eliminate busywork. Make hard things effortless.*
 
+![FenceFlow Landing Page](docs/Demo/0215-Cover.jpg)
+
+## Demo
+
+[Watch the demo video](docs/Demo/0215.mov)
+
 ## The Problem
 
 Running a fencing tournament is a logistical nightmare. Score sheets are handwritten, results must be manually entered from photos, referees need constant coordination, and spectators have no visibility into live results. A single tournament with 120+ fencers generates hundreds of score sheets, announcements, and bracket updates — all managed by a small volunteer committee under time pressure.
@@ -68,11 +74,23 @@ npm run dev
 
 ## Screenshots
 
-> **OCR with Confidence Highlighting** — Handwritten score sheet processed by Claude Vision. Cells below 80% confidence trigger extended thinking for re-analysis.
+### Landing Page — Role Selection
+![Landing Page with role selection for Committee, Public, Coach, and Referee](docs/Demo/0215-Cover.jpg)
 
-> **Agent Log with AI Reasoning** — The autonomous tournament agent shows its full decision chain: which pools it auto-approved, what anomalies it flagged, and why.
+### Committee Dashboard — Referees & Agent Panel
+![Committee Dashboard showing referees tab and autonomous agent panel with Telegram integration](docs/Demo/Screenshot%202026-02-16%20at%203.38.39%E2%80%AFAM.png)
 
-> **Streaming Narrator Commentary** — Token-by-token commentary streamed over WebSocket with live typing animation on the public view.
+### Pool Progress — Score Matrices
+![Pool Progress view showing 7 completed pools with color-coded score matrices](docs/Demo/Screenshot%202026-02-16%20at%203.37.47%E2%80%AFAM.png)
+
+### DE Bracket — Direct Elimination
+![Full direct elimination bracket from Table of 16 through Final](docs/Demo/Screenshot%202026-02-16%20at%203.38.09%E2%80%AFAM.png)
+
+### Coach View — Fencer Detail & Bradley-Terry Stats
+![Coach fencer detail with Bradley-Terry strength ratings and trajectory chart](docs/Demo/Screenshot%202026-02-16%20at%203.37.13%E2%80%AFAM.png)
+
+### Autonomous Agent — AI Reasoning Log
+![Agent reasoning log showing AI decisions, announcements, and event auto-stop](docs/Demo/Screenshot%202026-02-16%20at%203.36.34%E2%80%AFAM.png)
 
 ## Tech Stack
 
