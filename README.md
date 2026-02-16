@@ -98,7 +98,7 @@ Python 3.11 · FastAPI · React 18 · Vite · Anthropic SDK · WebSocket · Tele
 
 ## Data
 
-Tournament data from an actual fencing competition: **121 real fencers**, **18 pools**, **10 referees**, across 3 weapon events. All data is loaded from CSV files — no database required.
+Current fencing software does not offer public APIs. Connecting FenceFlow to live tournament systems requires federation approval. For this reason, the demo was simulated using real tournament data from 1 out of 30 tournament events hosted in November 2025, featuring 121 fencers, 18 pools, 10 referees, across 3 weapon events. Built solo in 6 days using Claude Code.
 
 ---
 
