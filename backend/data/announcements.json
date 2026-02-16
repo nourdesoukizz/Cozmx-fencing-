@@ -1,1 +1,672 @@
-[]
+[
+  {
+    "id": "daf7d9d4-e0d4-4cb4-b6dd-6353e0c7acfa",
+    "type": "auto",
+    "trigger": "event_started",
+    "raw_text": "The Cadet Men Saber event has started. Referees should report to their strips.",
+    "polished_text": "The Cadet Men's Saber event is now underway. All assigned referees, please report to your strips immediately.",
+    "status": "announced",
+    "created_at": "2026-02-15T19:54:59.660605",
+    "announced_at": "2026-02-15T21:07:56.910260"
+  },
+  {
+    "id": "b9e8468d-de7f-4454-9470-c8a15038852a",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 2 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 2 in Cadet Men's Saber have been officially approved. Fencers assigned to this pool may now review their results at the posted standings.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:02:36.938559",
+    "announced_at": null
+  },
+  {
+    "id": "e74024f2-2478-4879-bf4f-973d4b53afaa",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 3 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 3 in Cadet Men's Saber have been approved and are now official. Fencers in this pool, please check the posted results and report to your next assigned strip.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:07:31.248666",
+    "announced_at": null
+  },
+  {
+    "id": "26fe83cc-98ea-4032-b5ce-d0621b6294ce",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 7 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 7 in Cadet Men's Saber have been approved and are now official.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:07:39.284414",
+    "announced_at": null
+  },
+  {
+    "id": "f8870599-3ec6-47e6-baa5-af61f48656f9",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 1 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 1 in Cadet Men's Saber have been approved. Fencers assigned to Pool 1, please check your scores at the posted results board.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:10:59.521226",
+    "announced_at": null
+  },
+  {
+    "id": "3ebfef4a-67e0-4459-bbe1-197889c6604f",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 2 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 2 in Cadet Men's Saber have been approved and are now official.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:12:52.108034",
+    "announced_at": null
+  },
+  {
+    "id": "564947c9-709a-48f8-ba6d-9a9cb02bcfd4",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 3 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 3 in Cadet Men's Saber have been approved and are now official.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:14:35.920449",
+    "announced_at": null
+  },
+  {
+    "id": "27d58eb1-3891-4a96-9c56-a548c4d0a00e",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 4 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 4 in Cadet Men's Saber have been approved and are now official.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:21:20.101942",
+    "announced_at": null
+  },
+  {
+    "id": "adff9d65-ad74-4c0a-a892-326ad9e8de23",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 5 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 5 in Cadet Men's Saber have been approved and are now official.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:21:29.025876",
+    "announced_at": null
+  },
+  {
+    "id": "0f35113f-ac5c-4e7d-b358-655b96060d6a",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 6 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 6 in Cadet Men's Saber have been approved and are now official.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:21:38.855355",
+    "announced_at": null
+  },
+  {
+    "id": "ccc96f26-5d73-4171-83dd-487cee8f93ba",
+    "type": "auto",
+    "trigger": "pool_approved",
+    "raw_text": "Pool 7 results for Cadet Men Saber have been approved.",
+    "polished_text": "The results for Pool 7 in Cadet Men's Saber have been approved and are now official.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:23:03.747853",
+    "announced_at": null
+  },
+  {
+    "id": "cbf357bf-01d3-4513-ae63-ea35fb581ebd",
+    "type": "auto",
+    "trigger": "all_pools_complete",
+    "raw_text": "All 7 pools for Cadet Men Saber are complete.",
+    "polished_text": "All seven pools in Cadet Men's Saber are now complete.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:28:08.957890",
+    "announced_at": null
+  },
+  {
+    "id": "196b0d67-69b6-40ba-bd76-a962c22b76c5",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Attention please: Cadet Men Saber pools are now complete. Results are being finalized. Please check the posted results for seedings. Thank you!",
+    "polished_text": "Cadet Men's Saber pools are now complete, and results are being finalized. Please check the posted results for seedings.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:28:17.043322",
+    "announced_at": null
+  },
+  {
+    "id": "11bb091c-ac55-4798-bef6-44158f65874b",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Garrick WU defeats Ishaan SRIVATSAV 15-0 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Garrick WU defeats Ishaan SRIVATSAV, 15-0.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:34:54.821448",
+    "announced_at": null
+  },
+  {
+    "id": "58c9b15f-c447-4662-a456-579e9b0651ee",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Navin YOUNG defeats Cody DARTER 15-0 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Navin Young defeats Cody Darter, 15\u20130.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:36:00.303146",
+    "announced_at": null
+  },
+  {
+    "id": "1acd5bec-69dd-465c-bcb6-aa6e720dfcd4",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Jeremy KANG defeats Sudhir VENKATRAMAN 15-0 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Jeremy Kang defeats Sudhir Venkatraman, 15\u20130.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:38:23.328709",
+    "announced_at": null
+  },
+  {
+    "id": "1c5b1ea3-af43-4048-bc46-0a914b27ed37",
+    "type": "auto",
+    "trigger": "event_started",
+    "raw_text": "The Cadet Men Saber event has started. Referees should report to their strips.",
+    "polished_text": "The Cadet Men's Saber event is now underway. All assigned referees, please report to your strips immediately.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:38:53.754301",
+    "announced_at": null
+  },
+  {
+    "id": "44a03c19-2b78-42e8-86db-71895e1e258f",
+    "type": "auto",
+    "trigger": "all_pools_complete",
+    "raw_text": "All 7 pools for Cadet Men Saber are complete.",
+    "polished_text": "The pool round for Cadet Men's Saber is now complete, with all seven pools having finished. Results will be posted shortly.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:41:23.276847",
+    "announced_at": null
+  },
+  {
+    "id": "ea57fa97-8db0-41d0-94c5-927691f33cbd",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Vito ZENG defeats wu ZEYU 15-8 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Sabre, Vito ZENG defeats Wu ZEYU, 15\u20138.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:41:27.068768",
+    "announced_at": null
+  },
+  {
+    "id": "1bbc38d6-3605-4733-a8f2-7ca1106cbf27",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Attention please: Cadet Men Saber pools are now complete. Results are final and have been posted. Thank you to all referees and fencers.",
+    "polished_text": "Attention please: Cadet Men's Saber pools are now complete, and results have been posted. Thank you to all referees and fencers.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:41:31.810091",
+    "announced_at": null
+  },
+  {
+    "id": "c12f016f-3617-47e0-9985-4a24e89f564a",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Smit RAMBHIA defeats Drake NGUYEN 15-6 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "Smit RAMBHIA wins 15\u20136 over Drake NGUYEN and advances from the Table of 64 in Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:42:10.564515",
+    "announced_at": null
+  },
+  {
+    "id": "4934d091-fbdd-4ff6-8484-c2d95bd9f451",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Kennedy PEI defeats Shih-Hsuan Elroy LO 15-14 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "Kennedy PEI defeats Shih-Hsuan Elroy LO, 15-14, in the Table of 64 of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:42:27.083975",
+    "announced_at": null
+  },
+  {
+    "id": "cce52b0a-09c4-4baa-a242-e730eeb43231",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Yahia ELSAYED defeats Henry CHAN 15-4 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "Yahia Elsayed defeats Henry Chan, 15\u20134, in the Table of 64 of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:42:43.101571",
+    "announced_at": null
+  },
+  {
+    "id": "4564a39a-55a2-47a4-9eef-71db8da0f9ec",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Joshua LEE defeats Sung Ju LEE Kyle 5-15 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Sung Ju LEE Kyle defeats Joshua LEE, 15-5.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:42:57.140479",
+    "announced_at": null
+  },
+  {
+    "id": "3ddb70da-6099-4fdc-8a24-a789dd6bbfde",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Zachery HAMDAN defeats Ethan SLOAN 13-15 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "Zachery HAMDAN is defeated by Ethan SLOAN, 13-15, in the Table of 64 of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:43:16.119482",
+    "announced_at": null
+  },
+  {
+    "id": "6fc15b24-e281-446a-8dc4-c00ad5c6a484",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Noel FISCHER defeats Chris (Siyoung) AN 14-15 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Noel Fischer defeats Chris An, 15\u201314.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:44:18.128933",
+    "announced_at": null
+  },
+  {
+    "id": "7bc62076-474a-4d00-8a70-3be3cd4bb26d",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Troy CHAN defeats Nico KATZ 2-15 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Nico KATZ defeats Troy CHAN with a commanding score of 15-2.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:44:31.136004",
+    "announced_at": null
+  },
+  {
+    "id": "deee38ef-1450-4e2e-88ad-59304f16aed3",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Samuel ORLINO defeats John BODO 15-12 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "Samuel ORLINO wins 15-12 over John BODO and advances from the Table of 64 in Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:44:44.211498",
+    "announced_at": null
+  },
+  {
+    "id": "95eab1f0-c704-4cef-bc04-ccf45bd43583",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Kai AIKMAN defeats Zhengming CHEN 15-13 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Kai AIKMAN defeats Zhengming CHEN, 15-13.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:45:01.922422",
+    "announced_at": null
+  },
+  {
+    "id": "4e9f2438-65ac-4c71-b987-235b336dbacd",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Sushil VENKATRAMAN defeats Jayden KANG 15-3 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Sushil VENKATRAMAN defeats Jayden KANG with a commanding score of 15\u20133.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:45:16.018005",
+    "announced_at": null
+  },
+  {
+    "id": "4ce80f32-c7cd-44e6-97ca-78589d1cbdb6",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Saivarun KONDOGI defeats Mark GONZALEZ 15-10 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Saivarun Kondogi defeats Mark Gonzalez, 15-10.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:45:59.761770",
+    "announced_at": null
+  },
+  {
+    "id": "15d9f845-aa78-4fe8-bceb-9568a231645c",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Cooper TSENG defeats Johnny HAO 15-7 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "Cooper TSENG defeats Johnny HAO, 15-7, and advances in the Table of 64 of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:46:14.483124",
+    "announced_at": null
+  },
+  {
+    "id": "f6aa6dac-8e12-4853-9d94-58126608e2f3",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Arick HONG defeats Jacob KIM ZOLLER 15-4 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Arick HONG defeats Jacob KIM ZOLLER, 15\u20134.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:46:32.143099",
+    "announced_at": null
+  },
+  {
+    "id": "cee35d18-3e59-4543-8d5a-c1d45b78b9e2",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Alex MASAKI defeats Garrick WU 15-6 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "In the Table of 32 of Cadet Men's Saber, Alex Masaki defeats Garrick Wu with a decisive score of 15\u20136.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:47:51.082581",
+    "announced_at": null
+  },
+  {
+    "id": "614a0bdd-1bde-4f54-97d9-a00a7446ffb6",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Navin YOUNG defeats Jeremy KANG 15-3 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Navin YOUNG advances in the Table of 32 of Cadet Men's Sabre, defeating Jeremy KANG with a commanding score of 15\u20133.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:48:04.021664",
+    "announced_at": null
+  },
+  {
+    "id": "5ff30573-0c5d-45cf-a6dd-c52c33e380f5",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Sebastian PERERA defeats Vito ZENG 15-2 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "In the Table of 32 of Cadet Men's Saber, Sebastian PERERA defeats Vito ZENG, 15\u20132.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:48:20.398425",
+    "announced_at": null
+  },
+  {
+    "id": "d64fe2a3-af4a-4627-be1e-9d5c41993817",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Faizan KHAN defeats Smit RAMBHIA 15-5 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Faizan KHAN advances in the Table of 32 of Cadet Men's Saber, defeating Smit RAMBHIA with a commanding score of 15\u20135.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:48:36.727662",
+    "announced_at": null
+  },
+  {
+    "id": "c26cf350-f69d-4ae7-8cd9-1547eda1a444",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Linkin LUC defeats Kennedy PEI 15-8 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Linkin LUC defeats Kennedy PEI, 15\u20138, in the Table of 32 of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:48:53.610232",
+    "announced_at": null
+  },
+  {
+    "id": "ca7aacf3-6734-4c98-88e3-82b9dc06b9ac",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Yahia ELSAYED defeats Leo KIM 12-15 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Leo Kim is eliminated from the Cadet Men's Saber, falling to Yahia Elsayed in the Table of 32 with a score of 15\u201312.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:49:14.401489",
+    "announced_at": null
+  },
+  {
+    "id": "1a9c1f0d-4f79-451d-adda-176fc1cde3d9",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Ron WONG defeats Joshua LEE 15-4 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "In the Table of 32 of Cadet Men's Sabre, Ron WONG defeats Joshua LEE, 15-4.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:49:29.374422",
+    "announced_at": null
+  },
+  {
+    "id": "9c3a28c9-7142-433b-b62d-7ce5b97f6e35",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Mica LITTLE defeats Zachery HAMDAN 15-14 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Mica LITTLE wins a thrilling 15-14 bout over Zachery HAMDAN to advance in the Table of 32 of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:49:45.971585",
+    "announced_at": null
+  },
+  {
+    "id": "14ce2574-024d-4292-960c-d67bdf3ef029",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Roman GRIGORIEV defeats Noel FISCHER 15-14 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Roman GRIGORIEV advances in Cadet Men's Saber, defeating Noel FISCHER 15-14 in a hard-fought Table of 32 bout.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:50:00.977504",
+    "announced_at": null
+  },
+  {
+    "id": "b7105bb0-736e-4885-b9dc-071acdf05256",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Troy CHAN defeats Ryan LI 2-15 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "In the Table of 32 of Cadet Men's Sabre, Ryan Li defeats Troy Chan with a score of 15\u20132.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:50:15.408201",
+    "announced_at": null
+  },
+  {
+    "id": "1ffd7d07-227d-4ec1-b8c8-a239a8bbebc4",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Arthur BEKDJANOV defeats Samuel ORLINO 15-4 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Arthur BEKDJANOV defeats Samuel ORLINO, 15\u20134, and advances to the Table of 16 in Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:51:01.625171",
+    "announced_at": null
+  },
+  {
+    "id": "baabb693-0708-4489-ad1c-7da170bb0329",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Anay SRIVATSAV defeats Kai AIKMAN 15-14 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Anay SRIVATSAV defeats Kai AIKMAN, 15-14, and advances from the Table of 32 in Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:51:14.663432",
+    "announced_at": null
+  },
+  {
+    "id": "bef64f21-23a6-4394-af14-ae732b25aa1b",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Nickolas HRISTOV defeats Sushil VENKATRAMAN 15-11 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Nickolas HRISTOV wins 15-11 over Sushil VENKATRAMAN and advances from the Table of 32 in Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:51:30.366619",
+    "announced_at": null
+  },
+  {
+    "id": "64234a91-f395-49ed-b81e-57fc033658f7",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Nathan Uju LEE defeats Saivarun KONDOGI 15-13 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Nathan Uju LEE defeats Saivarun KONDOGI, 15-13, and advances from the Table of 32 in Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:51:47.580607",
+    "announced_at": null
+  },
+  {
+    "id": "198f587b-06e7-4ca7-88c8-bc551d7232b9",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "linze LI defeats Cooper TSENG 15-9 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "Linze Li defeats Cooper Tseng, 15\u20139, advancing in the Table of 32 of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:52:19.400921",
+    "announced_at": null
+  },
+  {
+    "id": "dfe562ec-f9a0-4725-b62f-b0f11a791148",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Jake YANG defeats Arick HONG 15-4 in the Table of 32 of Cadet Men Saber.",
+    "polished_text": "In the Table of 32 of Cadet Men's Saber, Jake YANG defeats Arick HONG, 15\u20134.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:52:36.316088",
+    "announced_at": null
+  },
+  {
+    "id": "14536512-4a1a-40a0-8577-7a5c636c9689",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Alex MASAKI defeats Navin YOUNG 15-3 in the Table of 16 of Cadet Men Saber.",
+    "polished_text": "Alex Masaki defeats Navin Young, 15\u20133, advancing in the Table of 16 of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:53:30.648095",
+    "announced_at": null
+  },
+  {
+    "id": "b6fe97c6-c8ca-44a3-91d0-46d09ddc6b75",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Sebastian PERERA defeats Faizan KHAN 15-14 in the Table of 16 of Cadet Men Saber.",
+    "polished_text": "Sebastian PERERA advances in Cadet Men's Sabre, defeating Faizan KHAN 15-14 in a hard-fought Table of 16 bout.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:53:44.991885",
+    "announced_at": null
+  },
+  {
+    "id": "6f1f90e8-7a7b-4546-af6e-199416fd80bf",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Linkin LUC defeats Yahia ELSAYED 15-12 in the Table of 16 of Cadet Men Saber.",
+    "polished_text": "Linkin LUC defeats Yahia ELSAYED 15\u201312, advancing through the Table of 16 in Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:53:59.435857",
+    "announced_at": null
+  },
+  {
+    "id": "6efa7e56-0991-494e-90aa-6811fafb286d",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Ron WONG defeats Mica LITTLE 15-14 in the Table of 16 of Cadet Men Saber.",
+    "polished_text": "In the Table of 16 of Cadet Men's Saber, Ron Wong defeats Mica Little by a score of 15-14.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:54:26.332423",
+    "announced_at": null
+  },
+  {
+    "id": "b5cdb0d2-2f2f-40df-9351-dfeeb8ef19c9",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Roman GRIGORIEV defeats Troy CHAN 15-5 in the Table of 16 of Cadet Men Saber.",
+    "polished_text": "Roman GRIGORIEV advances in Cadet Men's Sabre, defeating Troy CHAN 15\u20135 in the Table of 16.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:54:39.702753",
+    "announced_at": null
+  },
+  {
+    "id": "3aece5f1-d659-4a4f-b267-4c66a6002b2a",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Arthur BEKDJANOV defeats Anay SRIVATSAV 15-6 in the Table of 16 of Cadet Men Saber.",
+    "polished_text": "In the Table of 16 of Cadet Men's Saber, Arthur BEKDJANOV defeats Anay SRIVATSAV, 15-6.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:54:53.101442",
+    "announced_at": null
+  },
+  {
+    "id": "2b94c0c8-216a-49cd-b4b2-efafa4c6d94d",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Nickolas HRISTOV defeats Nathan Uju LEE 15-1 in the Table of 16 of Cadet Men Saber.",
+    "polished_text": "In the Table of 16 of Cadet Men's Saber, Nickolas Hristov defeats Nathan Uju Lee, 15\u20131.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:55:06.225066",
+    "announced_at": null
+  },
+  {
+    "id": "8af8f9bd-8ff4-44b0-9e7a-70207d112175",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "linze LI defeats Jake YANG 15-6 in the Table of 16 of Cadet Men Saber.",
+    "polished_text": "Linze Li defeats Jake Yang 15\u20136, advancing from the Table of 16 in Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:55:20.214394",
+    "announced_at": null
+  },
+  {
+    "id": "deb55d58-6fe6-4565-a9db-55736ae809a5",
+    "type": "auto",
+    "trigger": "event_started",
+    "raw_text": "The Cadet Men Saber event has started. Referees should report to their strips.",
+    "polished_text": "The Cadet Men's Saber event is now underway. All assigned referees, please report to your strips immediately.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:56:07.594427",
+    "announced_at": null
+  },
+  {
+    "id": "40091ce0-18f2-4e8f-af4c-4a9d47e23777",
+    "type": "auto",
+    "trigger": "all_pools_complete",
+    "raw_text": "All 7 pools for Cadet Men Saber are complete.",
+    "polished_text": "The pool round for Cadet Men's Saber is now complete, with all seven pools finished. Results are being tabulated and the next round will be posted shortly.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:58:11.595734",
+    "announced_at": null
+  },
+  {
+    "id": "33582dbd-5726-4ed2-838c-6cba50a5208d",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Attention please: Cadet Men Saber pools are now complete. Results are final and have been posted. Thank you to all referees and fencers. Y-14 Women Foil will be starting soon \u2014 referees, please report to your assigned strips.",
+    "polished_text": "Cadet Men's Saber pools are now complete, and results have been posted \u2014 thank you to all referees and fencers. Y-14 Women's Foil will be starting shortly; referees, please report to your assigned strips.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:58:21.759003",
+    "announced_at": null
+  },
+  {
+    "id": "77be1ffd-ef5a-42b3-a00b-1f989e4ccda7",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Alex MASAKI defeats Sebastian PERERA 15-3 in the Table of 8 of Cadet Men Saber.",
+    "polished_text": "Alex Masaki defeats Sebastian Perera, 15\u20133, and advances to the semifinal of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:58:40.914468",
+    "announced_at": null
+  },
+  {
+    "id": "2537f44a-37a0-4cd6-b56a-0f25604b36e3",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Linkin LUC defeats Ron WONG 15-9 in the Table of 8 of Cadet Men Saber.",
+    "polished_text": "Linkin LUC defeats Ron WONG, 15\u20139, and advances to the semifinal of Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:58:55.547467",
+    "announced_at": null
+  },
+  {
+    "id": "ca5f25b3-c177-449b-babc-a3871ad24fc1",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Roman GRIGORIEV defeats Arthur BEKDJANOV 15-9 in the Table of 8 of Cadet Men Saber.",
+    "polished_text": "Roman GRIGORIEV advances to the semifinal round of Cadet Men's Saber, defeating Arthur BEKDJANOV 15-9 in the Table of 8.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:59:10.959850",
+    "announced_at": null
+  },
+  {
+    "id": "be26866d-8adf-428b-8034-17a16f4aa78b",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Nickolas HRISTOV defeats linze LI 15-14 in the Table of 8 of Cadet Men Saber.",
+    "polished_text": "Nickolas Hristov defeats Linze Li, 15\u201314, and advances from the Table of 8 in Cadet Men's Saber.",
+    "status": "pending",
+    "created_at": "2026-02-15T22:59:26.301175",
+    "announced_at": null
+  },
+  {
+    "id": "83539429-5c39-42cd-a91a-a5ca2d0302be",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Alex MASAKI defeats Linkin LUC 15-3 in the Semifinal of Cadet Men Saber.",
+    "polished_text": "Alex Masaki advances to the final of Cadet Men's Saber with a commanding 15\u20133 victory over Linkin Luc in the semifinal.",
+    "status": "pending",
+    "created_at": "2026-02-15T23:00:05.241620",
+    "announced_at": null
+  },
+  {
+    "id": "0fb45268-14d3-4bd6-9b36-855e427fddf9",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Roman GRIGORIEV defeats Nickolas HRISTOV 15-14 in the Semifinal of Cadet Men Saber.",
+    "polished_text": "Roman GRIGORIEV advances to the final in Cadet Men's Sabre, defeating Nickolas HRISTOV 15-14 in a hard-fought semifinal bout.",
+    "status": "pending",
+    "created_at": "2026-02-15T23:00:20.733052",
+    "announced_at": null
+  },
+  {
+    "id": "fb045591-7bef-49ca-82b5-4f4048421606",
+    "type": "auto",
+    "trigger": "de_event_completed",
+    "raw_text": "The Cadet Men Saber Direct Elimination is complete. Champion: Alex MASAKI.",
+    "polished_text": "The Cadet Men's Saber Direct Elimination is now complete. Your gold medalist and champion \u2014 Alex Masaki!",
+    "status": "pending",
+    "created_at": "2026-02-15T23:01:46.226682",
+    "announced_at": null
+  }
+]

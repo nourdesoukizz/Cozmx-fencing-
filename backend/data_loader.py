@@ -328,9 +328,16 @@ def load_scores():
                 "reviewed_at": row.get("reviewed_at", ""),
                 "reviewed_by": row.get("reviewed_by", ""),
             }
+            # Recompute results from stored scores
+            pool = _pool_by_id.get(pool_id)
+            if pool and submission["scores"]:
+                from ocr_service import compute_results
+                submission["results"] = compute_results(
+                    submission["scores"], pool.get("fencers", [])
+                )
+
             _submissions[pool_id] = submission
             # Update pool status
-            pool = _pool_by_id.get(pool_id)
             if pool:
                 pool["status"] = "approved"
                 pool["submission"] = submission

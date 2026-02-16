@@ -62,7 +62,8 @@ class BTEngine:
         # Build pool_id -> pool lookup
         pool_by_id = {p["id"]: p for p in pools}
 
-        # Decompose approved pool matrices into bouts
+        # Decompose approved pool matrices into bouts, refit after each pool
+        # so the trajectory builds incrementally
         for pool_id, sub in submissions.items():
             if sub.get("status") != "approved":
                 continue
@@ -73,14 +74,17 @@ class BTEngine:
             scores = sub.get("scores", [])
             if not scores or not pool_fencers:
                 continue
-            self._decompose_pool(pool_id, pool.get("pool_number", 0),
+            pool_number = pool.get("pool_number", 0)
+            self._decompose_pool(pool_id, pool_number,
                                  pool_fencers, scores)
+            self.refit()
+            self._snapshot(f"Pool {pool_number}")
 
         # Load manual bouts from CSV
         self._load_manual_bouts()
 
-        # Fit initial strengths if we have bouts
-        if self.bouts:
+        # Refit after manual bouts if any were loaded
+        if self.bouts and not self.trajectory:
             self.refit()
             self._snapshot("Initial fit")
 
@@ -138,6 +142,14 @@ class BTEngine:
                     "timestamp": None,
                 }
                 self.bouts.append(bout)
+
+    def ingest_pool(self, pool_id: int, pool_number: int,
+                    pool_fencers: list[dict], scores: list[list]):
+        """Ingest a newly approved pool at runtime: decompose, refit, snapshot."""
+        self._decompose_pool(pool_id, pool_number, pool_fencers, scores)
+        if self.bouts:
+            self.refit()
+            self._snapshot(f"Pool {pool_number} approved")
 
     def _load_manual_bouts(self):
         """Load manually entered bouts from CSV."""

@@ -16,7 +16,7 @@ export default function PublicPage() {
   const [announcements, setAnnouncements] = useState([]);
   const [narratorFeed, setNarratorFeed] = useState([]);
   const [brackets, setBrackets] = useState([]);
-  const [activeTab, setActiveTab] = useState('leaderboards');
+  const [activeTab, setActiveTab] = useState('feed');
   const [loading, setLoading] = useState(true);
   const [streamingEntries, setStreamingEntries] = useState({});
   const [expandedPoolEvents, setExpandedPoolEvents] = useState(null);
@@ -217,6 +217,12 @@ export default function PublicPage() {
       {/* Tab Bar */}
       <div className="public-tab-bar">
         <button
+          className={`public-tab-btn ${activeTab === 'feed' ? 'active' : ''}`}
+          onClick={() => setActiveTab('feed')}
+        >
+          Live Feed
+        </button>
+        <button
           className={`public-tab-btn ${activeTab === 'leaderboards' ? 'active' : ''}`}
           onClick={() => setActiveTab('leaderboards')}
         >
@@ -233,12 +239,6 @@ export default function PublicPage() {
           onClick={() => setActiveTab('de')}
         >
           DE Brackets
-        </button>
-        <button
-          className={`public-tab-btn ${activeTab === 'feed' ? 'active' : ''}`}
-          onClick={() => setActiveTab('feed')}
-        >
-          Live Feed
         </button>
       </div>
 

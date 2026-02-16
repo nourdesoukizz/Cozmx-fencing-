@@ -369,10 +369,13 @@ def compute_results(matrix: list[list[int | None]], fencers: list[dict]) -> list
 
         indicator = ts - tr
         fencer = fencers[i] if i < len(fencers) else {"last_name": f"Fencer {i+1}", "first_name": ""}
+        first = fencer.get("first_name", "")
+        last = fencer.get("last_name", "")
         results.append({
             "fencer_id": fencer.get("id"),
-            "last_name": fencer.get("last_name", ""),
-            "first_name": fencer.get("first_name", ""),
+            "name": f"{first} {last}".strip(),
+            "last_name": last,
+            "first_name": first,
             "V": victories,
             "TS": ts,
             "TR": tr,

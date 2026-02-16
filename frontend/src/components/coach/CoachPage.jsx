@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../api/client';
+import useSocket from '../../hooks/useSocket';
 import CoachAuth from './CoachAuth';
 import FencerList from './FencerList';
 import FencerDetailCard from './FencerDetailCard';
@@ -47,12 +48,7 @@ export default function CoachPage() {
     }
   }, [token, autoAuthDone]);
 
-  useEffect(() => {
-    if (!token) return;
-    fetchState();
-  }, [token]);
-
-  const fetchState = async () => {
+  const fetchState = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -70,7 +66,12 @@ export default function CoachPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    fetchState();
+  }, [token, fetchState]);
 
   const handleAuth = (newToken) => {
     setToken(newToken);
@@ -86,6 +87,14 @@ export default function CoachPage() {
     setRefreshKey(k => k + 1);
     fetchState();
   };
+
+  // Listen for WebSocket events that affect trajectory data
+  useSocket(useCallback((msg) => {
+    if (msg.type === 'scores_approved' || msg.type === 'event_stopped' || msg.type === 'de_bout_completed') {
+      setRefreshKey(k => k + 1);
+      fetchState();
+    }
+  }, [fetchState]));
 
   // Derive unique events and clubs for filter dropdowns
   const events = useMemo(() => {
@@ -211,7 +220,7 @@ export default function CoachPage() {
 
         {activeTab === 'Dashboard' && (
           <>
-            <TrajectoryChart token={token} eventFilter={eventFilter} clubFilter={clubFilter} />
+            <TrajectoryChart token={token} eventFilter={eventFilter} clubFilter={clubFilter} refreshKey={refreshKey} />
             {loading && !fencers.length ? (
               <div className="loading-container">Loading fencer data...</div>
             ) : (

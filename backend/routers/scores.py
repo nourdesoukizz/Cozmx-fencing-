@@ -143,6 +143,12 @@ async def approve_pool_scores(pool_id: int, body: ApproveRequest):
     save_submission(pool_id, existing)
     write_scores_csv()
 
+    # Feed approved pool into BT engine so trajectory updates in real-time
+    from routers.coach import _engine as coach_engine
+    if coach_engine:
+        coach_engine.ingest_pool(pool_id, pool.get("pool_number", 0),
+                                 pool.get("fencers", []), body.scores)
+
     # Broadcast via WebSocket
     from main import manager
     await manager.broadcast({

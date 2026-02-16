@@ -1,1 +1,386 @@
-[]
+[
+  {
+    "id": "80e665b6-7ccf-4cef-a9ab-a38864c3fff9",
+    "trigger": "event_started",
+    "text": "En garde! The Cadet Men Saber event is officially underway, and these young athletes are ready to bring the speed and intensity that makes saber the most electrifying weapon in fencing \u2014 let's see who came to play today! \u2694\ufe0f",
+    "created_at": "2026-02-15T19:55:03.780950"
+  },
+  {
+    "id": "00817673-ad08-47a1-b728-ba56f6fb8a7b",
+    "trigger": "pool_approved",
+    "text": "What a dominant performance in Pool 2 \u2014 our mystery winner went a perfect 5-0 with an incredible 27-5 touch differential, absolutely carving through the competition! That's the kind of lopsided stat line that turns heads in Cadet Men Saber! \u2694\ufe0f",
+    "created_at": "2026-02-15T22:02:40.319995"
+  },
+  {
+    "id": "40273f64-d3cb-4bef-a54c-75a75ccf7983",
+    "trigger": "pool_approved",
+    "text": "What a competitive pool in Cadet Men Saber \u2014 our top finisher went a dominant 5-1 with a stellar +16 indicator, and the battle for those middle spots was razor-thin with just a touch or two separating the pack!",
+    "created_at": "2026-02-15T22:07:34.790068"
+  },
+  {
+    "id": "2c8484d8-0191-4cbe-9f3f-0308791f714e",
+    "trigger": "pool_approved",
+    "text": "What a dominant showing in Pool 7 \u2014 our top finisher goes undefeated at 5-0 with an impressive +16 indicator, and the runner-up wasn't far behind at 5-0 as well! The middle of the pack was a real dogfight with just a few touches separating the field.",
+    "created_at": "2026-02-15T22:07:43.400227"
+  },
+  {
+    "id": "fc8b3468-48bf-4c48-b4b6-241daf40711c",
+    "trigger": "pool_approved",
+    "text": "What a dominant showing in Pool 1 \u2014 the winner went undefeated at 6-0 with an incredible +22 indicator, absolutely carving through the competition! Meanwhile it was a tight three-way battle for the middle spots with three fencers knotted at 3 victories each.",
+    "created_at": "2026-02-15T22:11:03.355242"
+  },
+  {
+    "id": "342583e7-b935-4e6a-b25c-85251c1fcc59",
+    "trigger": "pool_approved",
+    "text": "Looks like we've got a mystery champion in Pool 2 of Cadet Men Saber \u2014 someone absolutely dominated with a clean 5-victory run and an impressive 27-13 touch differential! The battle for second was a nail-biter with two fencers tied at 4 wins, so indicator made all the difference there.",
+    "created_at": "2026-02-15T22:12:56.703561"
+  },
+  {
+    "id": "dba140fe-3d27-42f0-b576-b837883e0c53",
+    "trigger": "pool_approved",
+    "text": "Looks like we've got a tight battle in Pool 3 of Cadet Men Saber \u2014 the top seed went undefeated at 5-0 with an impressive 29-18 indicator, but a three-way logjam at 4 victories kept things spicy all the way through! Great pool action with some razor-thin margins separating the pack.",
+    "created_at": "2026-02-15T22:14:39.883866"
+  },
+  {
+    "id": "ae2ede76-5ca6-4f0f-97d1-eb5984fc803c",
+    "trigger": "pool_approved",
+    "text": "Looks like we've got a dominant performance from the mystery fencer at the top of Pool 4 with a clean 5-0 sweep and an impressive +11 indicator \u2014 that's how you make a statement in Cadet Men Saber! The middle of the pack was tight with several fencers bunched at 3-4 victories, so seeding is going to be interesting heading into DEs.",
+    "created_at": "2026-02-15T22:21:23.926305"
+  },
+  {
+    "id": "76f8025c-6127-4eb3-968e-322d0333d354",
+    "trigger": "pool_approved",
+    "text": "Looks like Pool 5 of Cadet Men Saber is in the books, with one fencer going a dominant 5-0 and racking up an impressive 29-12 touch differential \u2014 what a statement performance! The middle of the pack was tight with a couple of 3-win fencers battling it out, making this one of the more competitive pools of the day.",
+    "created_at": "2026-02-15T22:21:32.844166"
+  },
+  {
+    "id": "6b3f119b-f1c2-4637-9ad8-64bbf9a29b1b",
+    "trigger": "pool_approved",
+    "text": "What a dominant showing in Pool 6 \u2014 the pool winner went a perfect 6-0 with a blazing 30-10 touch differential, absolutely carving through the competition! Meanwhile the battle for the middle of the pack was tight, with a three-way scramble that came down to every last touch.",
+    "created_at": "2026-02-15T22:21:42.405025"
+  },
+  {
+    "id": "ffe336e6-3ea8-4e80-9a16-fe821cbb006f",
+    "trigger": "pool_approved",
+    "text": "Looks like Pool 7 of Cadet Men Saber is in the books, and we've got a mystery champion \u2014 our top finisher went a stellar 6-0 with an incredible +18 indicator, absolutely dominating the strip! The battle for the middle of the pack was tight, so watch for some hungry fencers looking to make moves in the DE rounds!",
+    "created_at": "2026-02-15T22:23:08.343350"
+  },
+  {
+    "id": "b14d17ed-5144-45ff-a4a6-66d10672062d",
+    "trigger": "all_pools_complete",
+    "text": "That's a wrap on all seven pools in Cadet Men Saber \u2014 what a fantastic start to the day! Time to crunch those indicators and get ready for the real fireworks in the direct elimination rounds! \u2694\ufe0f\ud83c\udf89",
+    "created_at": "2026-02-15T22:28:12.580914"
+  },
+  {
+    "id": "a36a3069-cded-4e5d-9e7a-3b6e5345e4d4",
+    "trigger": "de_bout_completed",
+    "text": "Garrick Wu just delivered an absolutely flawless performance, shutting out Ishaan Srivatsav 15-0 in what might be the most dominant bout of the day! That's a perfect run through the T64 \u2014 not a single touch surrendered! \ud83d\udd25",
+    "created_at": "2026-02-15T22:34:58.154553"
+  },
+  {
+    "id": "6867d299-ed56-4088-9030-55bc8052a22a",
+    "trigger": "de_bout_completed",
+    "text": "Navin Young puts on an absolute masterclass, shutting out Cody Darter 15-0 \u2014 that's a perfect bout from the 16th seed! That kind of dominance in the Table of 64 sends a serious message to the rest of the field!",
+    "created_at": "2026-02-15T22:36:03.277022"
+  },
+  {
+    "id": "e151878d-9d3a-4004-ab8a-536a1fb61015",
+    "trigger": "de_bout_completed",
+    "text": "Jeremy Kang just delivered an absolute masterclass \u2014 a 15-0 shutout against Sudhir Venkatraman in the table of 64! That's total domination from the 17-seed, not giving up a single touch, and he's looking like a serious threat to make a deep run today! \ud83d\udd25",
+    "created_at": "2026-02-15T22:38:29.518446"
+  },
+  {
+    "id": "c9a79c4d-8dd7-4f02-9f5f-cb3b938e322c",
+    "trigger": "event_started",
+    "text": "The Cadet Men Saber event is officially underway and we are in for a treat \u2014 these young saber fencers are fast, fierce, and ready to battle! Let's see who's going to light up the strip today! \u2694\ufe0f",
+    "created_at": "2026-02-15T22:38:57.659243"
+  },
+  {
+    "id": "19c5c275-d08f-4b76-be31-8765fdd94915",
+    "trigger": "all_pools_complete",
+    "text": "That's a wrap on all seven pools in Cadet Men Saber \u2014 what a start to the day! \ud83c\udf89 Time to crunch those indicators and get ready for the real fireworks in the direct elimination rounds!",
+    "created_at": "2026-02-15T22:41:26.621002"
+  },
+  {
+    "id": "dec8f405-69c9-4c4d-a175-16ecb1664e60",
+    "trigger": "de_bout_completed",
+    "text": "Vito Zeng takes care of business in this one, cruising to a convincing 15-8 victory over wu Zeyu! The 25th seed looked sharp and in control from start to finish \u2014 he'll be one to watch as we head deeper into the bracket! \u2694\ufe0f",
+    "created_at": "2026-02-15T22:41:30.518505"
+  },
+  {
+    "id": "da6ee96e-85ba-440b-a741-8a42237e53d9",
+    "trigger": "de_bout_completed",
+    "text": "Smit Rambhia came out swinging and never let up, cruising to a dominant 15-6 victory over Drake Nguyen! The 24th seed looked sharp and in total control from start to finish \u2014 that's the kind of performance that makes the rest of the table take notice! \ud83d\udd25",
+    "created_at": "2026-02-15T22:42:14.673173"
+  },
+  {
+    "id": "1f163bbb-f073-466e-af98-e719fc4be21c",
+    "trigger": "de_bout_completed",
+    "text": "What a nail-biter! Kennedy from PEI survives a heart-pounding 15-14 battle against Shih-Hsuan Elroy Lo \u2014 one touch decided everything in this edge-of-your-seat clash in the table of 64!",
+    "created_at": "2026-02-15T22:42:30.413022"
+  },
+  {
+    "id": "0d9bd8fe-dad4-4174-9e54-da1393599a22",
+    "trigger": "de_bout_completed",
+    "text": "Yahia Elsayed came out swinging and never let up, cruising to a dominant 15-4 victory over Henry Chan! That's a statement win from the 20th seed \u2014 he's looking sharp and ready to make some noise in the later rounds! \ud83d\udd25",
+    "created_at": "2026-02-15T22:42:46.043543"
+  },
+  {
+    "id": "e08182f3-137f-4ef6-83d6-13450752bf29",
+    "trigger": "de_bout_completed",
+    "text": "Joshua LEE storms into the table of 32 with a commanding 15-5 victory over higher-seeded Sung Ju LEE Kyle \u2014 that's what we call making a statement! \ud83d\udd25 The 37th seed looked absolutely dominant from start to finish, and he'll be one to watch as the DE rounds heat up!",
+    "created_at": "2026-02-15T22:43:01.052166"
+  },
+  {
+    "id": "c4a425f0-87f4-4c86-b488-afbd61478bce",
+    "trigger": "de_bout_completed",
+    "text": "What a thriller in the table of 64 \u2014 Zachery Hamdan pulls off the upset, edging out 21st-seeded Ethan Sloan 15-13 in a nail-biter! That's the kind of gutsy fencing that makes cadet saber so fun to watch! \ud83c\udf89",
+    "created_at": "2026-02-15T22:43:19.749709"
+  },
+  {
+    "id": "1d0c605f-b429-48b1-9756-3f88b64f4db7",
+    "trigger": "de_bout_completed",
+    "text": "What a nail-biter! Noel Fischer edges out Chris An 15-14 in a one-touch thriller, pulling off the upset in the Table of 64 \u2014 that kind of clutch performance under pressure is what cadet saber is all about! \ud83c\udfaf",
+    "created_at": "2026-02-15T22:44:20.764698"
+  },
+  {
+    "id": "54003b09-6529-4263-ac61-aa26a32b8ffe",
+    "trigger": "de_bout_completed",
+    "text": "Wait, let's read that score again \u2014 Troy CHAN absolutely dismantles 18th-seeded Nico KATZ with a commanding 15-2 victory! The 47th seed came out swinging and never let up, putting on one of the most dominant upset performances we've seen today! \ud83d\udd25",
+    "created_at": "2026-02-15T22:44:34.658845"
+  },
+  {
+    "id": "b15f3814-98d4-4fca-900e-91b6a0623a16",
+    "trigger": "de_bout_completed",
+    "text": "Samuel Orlino takes it 15-12 over John Bodo in a solid table of 64 matchup! The 26th seed stays strong and punches his ticket to the next round \u2014 keep an eye on this one, folks! \u2694\ufe0f",
+    "created_at": "2026-02-15T22:44:47.832417"
+  },
+  {
+    "id": "13d1a1f6-4df0-40bf-adf3-a72140fbd34c",
+    "trigger": "de_bout_completed",
+    "text": "Kai Aikman holds his nerve in a tight one, edging out Zhengming Chen 15-13 in a back-and-forth battle! The 23rd seed survives and advances \u2014 that's the kind of gritty win that builds momentum heading deeper into the DE!",
+    "created_at": "2026-02-15T22:45:05.459443"
+  },
+  {
+    "id": "1b4d4664-9c62-487b-8f80-6a0066924fd2",
+    "trigger": "de_bout_completed",
+    "text": "Sushil Venkatraman absolutely dominated that bout, cruising to a 15-3 blowout against Jayden Kang! That's a statement win \u2014 Sushil looked completely locked in and barely gave his opponent a chance to get anything going! \ud83d\udd25",
+    "created_at": "2026-02-15T22:45:19.238196"
+  },
+  {
+    "id": "ce092b90-ef42-4dbd-baf4-c620fd56f33a",
+    "trigger": "de_bout_completed",
+    "text": "Saivarun Kondogi takes care of business with a convincing 15-10 win over Mark Gonzalez, showing he's got the tools to make a deep run in this tournament! The 19th seed looked sharp and in control throughout \u2014 watch out for this guy in the 32!",
+    "created_at": "2026-02-15T22:46:03.262009"
+  },
+  {
+    "id": "a514a8ac-33f1-456d-8859-f19796d69105",
+    "trigger": "de_bout_completed",
+    "text": "Cooper Tseng comes out swinging and dominates this one from start to finish, cruising to a convincing 15-7 victory over Johnny Hao! The 27th seed looked sharp and in total control \u2014 keep an eye on him as we move deeper into the bracket! \u2694\ufe0f",
+    "created_at": "2026-02-15T22:46:18.289181"
+  },
+  {
+    "id": "6dbb4540-23fc-4069-9f34-b85b7f06d5f5",
+    "trigger": "de_bout_completed",
+    "text": "Arick Hong came out swinging and absolutely dominated this bout, cruising to a commanding 15-4 victory over Jacob Kim Zoller! That's the kind of statement win in the 64 that puts the rest of the bracket on notice! \ud83d\udd25",
+    "created_at": "2026-02-15T22:46:35.449785"
+  },
+  {
+    "id": "009bcde9-a608-432a-8912-db008d39094b",
+    "trigger": "de_bout_completed",
+    "text": "Alex Masaki shows exactly why he's the top seed, cruising past Garrick Wu 15-6 with a dominant performance! The number one is looking sharp and ready to make a deep run today! \ud83c\udfaf",
+    "created_at": "2026-02-15T22:47:54.182231"
+  },
+  {
+    "id": "79f651dc-5bb9-4e7e-bb74-d25002665cfd",
+    "trigger": "de_bout_completed",
+    "text": "Navin Young came out absolutely firing in this one, dominating Jeremy Kang 15-3 and leaving no doubt who belonged in the top 16! That's the kind of statement win that puts the rest of the table on notice! \ud83d\udd25",
+    "created_at": "2026-02-15T22:48:07.449960"
+  },
+  {
+    "id": "d71b1960-7e55-440e-acc7-a566d5dfd1f3",
+    "trigger": "de_bout_completed",
+    "text": "Sebastian Perera came out absolutely blazing in this one, dismantling Vito Zeng 15-2 in a total statement bout! The 8-seed looked sharp, dominant, and ready to make a deep run in this tournament! \ud83d\udd25",
+    "created_at": "2026-02-15T22:48:24.635247"
+  },
+  {
+    "id": "cee5366c-785b-4e8d-bd1a-eec5e5232904",
+    "trigger": "de_bout_completed",
+    "text": "Faizan Khan came out swinging and never let up, cruising past Smit Rambhia with a dominant 15-5 victory! The 9-seed looked sharp and in total control from start to finish \u2014 he'll be a tough matchup for anyone in the next round! \ud83d\udd25",
+    "created_at": "2026-02-15T22:48:40.331640"
+  },
+  {
+    "id": "b994c58d-8da3-4483-b8ed-0840ab6d61c4",
+    "trigger": "de_bout_completed",
+    "text": "Linkin LUC takes care of business in the 32, cruising to a convincing 15-8 victory over Kennedy PEI! The 4th seed looked sharp and in control from start to finish \u2014 exactly the kind of dominant performance you want to see heading into the next round! \ud83c\udfaf",
+    "created_at": "2026-02-15T22:48:57.012685"
+  },
+  {
+    "id": "62e5e968-d7a4-4252-a286-f3a6c595bd0e",
+    "trigger": "de_bout_completed",
+    "text": "Yahia Elsayed pulls off the upset, taking down 13th-seeded Leo Kim 15-12 to punch his ticket to the Table of 16! The 20-seed came to compete today and showed he's not afraid of the big stage \u2014 watch out for this one, folks!",
+    "created_at": "2026-02-15T22:49:18.074213"
+  },
+  {
+    "id": "6b61604b-4618-4021-9ec5-0761e50a4c1c",
+    "trigger": "de_bout_completed",
+    "text": "Ron Wong came out absolutely firing in this one, dominating Joshua Lee 15-4 and showing exactly why he earned that fifth seed! That's the kind of statement win that puts the rest of the table on notice heading into the 16! \ud83d\udd25",
+    "created_at": "2026-02-15T22:49:32.905760"
+  },
+  {
+    "id": "f146cc81-9be6-4e11-a5aa-12a4fc8f5b82",
+    "trigger": "de_bout_completed",
+    "text": "What a nail-biter! Mica Little survives a heart-pounding 15-14 thriller against Zachery Hamdan \u2014 that's the kind of bout that keeps everyone on the edge of their seats in the table of 32!",
+    "created_at": "2026-02-15T22:49:48.827756"
+  },
+  {
+    "id": "2f3433b4-8e59-4b7d-a750-1dfb85da4027",
+    "trigger": "de_bout_completed",
+    "text": "What a nail-biter! Roman Grigoriev survives a massive scare from unseeded Noel Fischer, hanging on 15-14 \u2014 Fischer came within a single touch of pulling off a huge upset against the number 2 seed! \ud83c\udfaf",
+    "created_at": "2026-02-15T22:50:04.506626"
+  },
+  {
+    "id": "6fe1ad2f-1fd0-474b-adf1-a3a2464f9ed5",
+    "trigger": "de_bout_completed",
+    "text": "Wait, let's double-check that score \u2014 Troy Chan, seeded 47th, takes down 15th-seeded Ryan Li 15-2 in a jaw-dropping blowout! That's not just an upset, that's a statement \u2014 Chan came out swinging and absolutely dominated from start to finish! \ud83d\udd25",
+    "created_at": "2026-02-15T22:50:18.988930"
+  },
+  {
+    "id": "1777ed46-8a33-4cf7-acdf-bb40ae3641a1",
+    "trigger": "de_bout_completed",
+    "text": "Arthur Bekdjanov came out absolutely on fire, dominating this bout 15-4 and showing exactly why he earned that 7th seed! Samuel Orlino just couldn't find an answer as Bekdjanov put on a clinic in the Table of 32.",
+    "created_at": "2026-02-15T22:51:05.219639"
+  },
+  {
+    "id": "730f6def-c066-4732-851b-17c468d68a0d",
+    "trigger": "de_bout_completed",
+    "text": "What a nail-biter! Anay Srivatsav survives a massive scare from 23rd-seeded Kai Aikman, edging him out 15-14 in a bout that could have gone either way \u2014 Kai should hold his head high after pushing the 10th seed to the absolute limit!",
+    "created_at": "2026-02-15T22:51:18.371831"
+  },
+  {
+    "id": "9d0b6544-3c6d-4e11-b710-bff59a1f9919",
+    "trigger": "de_bout_completed",
+    "text": "Nickolas Hristov takes care of business, powering past Sushil Venkatraman 15-11 to punch his ticket to the table of 16! The third seed looked sharp out there \u2014 exactly the kind of confident performance you want to see heading into the deeper rounds! \ud83c\udfaf",
+    "created_at": "2026-02-15T22:51:33.546545"
+  },
+  {
+    "id": "1c9dbda8-d56e-410e-94b1-8d67d39a00c0",
+    "trigger": "de_bout_completed",
+    "text": "Nathan Uju Lee holds off a tough challenge from Saivarun Kondogi, grinding out a 15-13 victory in a back-and-forth battle! The 14th seed keeps his composure down the stretch to punch his ticket to the Table of 16! \ud83d\udcaa\u2694\ufe0f",
+    "created_at": "2026-02-15T22:51:50.740968"
+  },
+  {
+    "id": "0f869b27-55a4-4c9f-bc53-a246a14b9b08",
+    "trigger": "de_bout_completed",
+    "text": "Linze Li looking sharp and in control, cruising past Cooper Tseng 15-9 to punch his ticket to the Table of 16! The sixth seed is fencing with confidence and keeping right on track today! \ud83c\udfaf",
+    "created_at": "2026-02-15T22:52:23.166484"
+  },
+  {
+    "id": "cf3deff5-96a5-4fe4-90da-ef0695f8194e",
+    "trigger": "de_bout_completed",
+    "text": "Jake Yang is putting on a clinic! A dominant 15-4 victory over Arick Hong \u2014 the 11th seed looked absolutely locked in from start to finish, barely giving his opponent a chance to get anything going! \ud83d\udd25",
+    "created_at": "2026-02-15T22:52:39.066154"
+  },
+  {
+    "id": "218d9b6a-fdd5-41ad-a1cb-148f64b7a80e",
+    "trigger": "de_bout_completed",
+    "text": "Alex Masaki comes out swinging and shows exactly why he's the top seed, absolutely dominating Navin Young 15-3 to cruise into the table of 8! That's the kind of statement win that puts the rest of the bracket on notice! \ud83d\udd25",
+    "created_at": "2026-02-15T22:53:33.918966"
+  },
+  {
+    "id": "18ee5f45-63c2-4dd3-bee2-8cc7fc93959f",
+    "trigger": "de_bout_completed",
+    "text": "What a nail-biter! Sebastian Perera holds his nerve to edge out Faizan Khan 15-14 in a classic 8-vs-9 showdown that could have gone either way \u2014 one touch decided it all! \ud83c\udfaf",
+    "created_at": "2026-02-15T22:53:48.212556"
+  },
+  {
+    "id": "9d9a9a02-fac3-4ff8-b13f-b167814fc9df",
+    "trigger": "de_bout_completed",
+    "text": "Linkin Luc holds steady and punches his ticket to the top 8 with a solid 15-12 win over Yahia Elsayed! The 4-seed looked in control throughout \u2014 this is exactly the kind of composed fencing that could carry him deep into the bracket! \ud83d\udd25",
+    "created_at": "2026-02-15T22:54:02.297534"
+  },
+  {
+    "id": "27d79e4e-c863-4587-9ea9-f74a7ef93597",
+    "trigger": "de_bout_completed",
+    "text": "What a nail-biter! Ron Wong survives a serious scare from Mica Little, hanging on 15-14 in a bout that could have gone either way \u2014 Little came so close to pulling off the upset but Wong's experience as the 5 seed just barely carried him through!",
+    "created_at": "2026-02-15T22:54:29.785834"
+  },
+  {
+    "id": "4b061c09-ff91-47b4-b2da-522b153424ac",
+    "trigger": "de_bout_completed",
+    "text": "Roman Grigoriev is looking absolutely dominant out there, slicing through to the next round with a commanding 15-5 victory over Troy Chan! The #2 seed is making it look easy \u2014 watch out, because he's on a mission today! \ud83d\udd25\ud83e\udd3a",
+    "created_at": "2026-02-15T22:54:43.204634"
+  },
+  {
+    "id": "bea09f98-db0c-449a-bcf1-249e7808fa38",
+    "trigger": "de_bout_completed",
+    "text": "Arthur Bekdjanov came out swinging and never let up, dominating Anay Srivatsav 15-6 to punch his ticket to the quarters! The 7-seed looked absolutely locked in from the first touch \u2014 that's a statement win right there! \ud83d\udd25",
+    "created_at": "2026-02-15T22:54:56.649334"
+  },
+  {
+    "id": "fb1b81f0-b07b-4d51-a263-6055c9d42128",
+    "trigger": "de_bout_completed",
+    "text": "Nickolas Hristov just put on an absolute masterclass! The 3-seed was completely dialed in, dismantling Nathan Uju Lee 15-1 in a dominant performance that sends a serious message to the rest of the bracket! \ud83d\udd25",
+    "created_at": "2026-02-15T22:55:09.633444"
+  },
+  {
+    "id": "3b657014-6bd0-4827-bcad-b09e296ac0cf",
+    "trigger": "de_bout_completed",
+    "text": "Linze Li puts on a masterclass in that one, cruising past Jake Yang 15-6 with a dominant performance from start to finish! The 6th seed is looking sharp and dangerous heading into the quarterfinals! \ud83d\udd25",
+    "created_at": "2026-02-15T22:55:23.460606"
+  },
+  {
+    "id": "bc123f9d-c524-4e4c-ae02-312bb0c1b22a",
+    "trigger": "event_started",
+    "text": "The Cadet Men Saber event is officially underway and these young athletes are ready to bring the speed and intensity that makes saber so thrilling to watch! Let's see who's going to light up the strip today \u2014 stay tuned, folks! \u2694\ufe0f",
+    "created_at": "2026-02-15T22:56:11.665046"
+  },
+  {
+    "id": "1505aec3-3715-4a22-b3a8-7b5a416e6160",
+    "trigger": "all_pools_complete",
+    "text": "That's a wrap on all seven pools in Cadet Men Saber \u2014 what a way to kick things off! \ud83c\udf89 Time to crunch those indicators and see who's riding high into the direct elimination rounds! \u2694\ufe0f",
+    "created_at": "2026-02-15T22:58:16.042610"
+  },
+  {
+    "id": "dfb20b06-c494-4801-bf39-2dea401910e0",
+    "trigger": "de_bout_completed",
+    "text": "Top-seeded Alex Masaki is on an absolute tear, dominating Sebastian Perera 15-3 to punch his ticket to the semis! That's the kind of statement performance that puts the rest of the field on notice! \ud83d\udd25",
+    "created_at": "2026-02-15T22:58:44.264717"
+  },
+  {
+    "id": "127d2658-8e56-404c-884d-b0f8c917501e",
+    "trigger": "de_bout_completed",
+    "text": "Seeds holding serve here as Linkin Luc punches his ticket to the semis with a convincing 15-9 win over Ron Wong! The fourth seed looked sharp and in control throughout \u2014 he's looking like a real threat as we head into the final four! \ud83c\udfaf",
+    "created_at": "2026-02-15T22:58:59.311885"
+  },
+  {
+    "id": "c76c4d04-01ae-4df7-9f6d-6ca519d461e8",
+    "trigger": "de_bout_completed",
+    "text": "Roman Grigoriev locks down his spot in the semis with a convincing 15-9 victory over Arthur Bekdjanov! The 2-seed is looking sharp and fencing with authority \u2014 exactly what you'd expect from a top-ranked contender in the Table of 8! \ud83d\udd25",
+    "created_at": "2026-02-15T22:59:14.419367"
+  },
+  {
+    "id": "85ceec41-c8a4-45c8-a247-d4713809fea2",
+    "trigger": "de_bout_completed",
+    "text": "What a nail-biter! Nickolas Hristov survives a serious scare from linze Li, edging out the win 15-14 in a bout that could have gone either way \u2014 Li pushed the 3-seed to the absolute limit!",
+    "created_at": "2026-02-15T22:59:29.418628"
+  },
+  {
+    "id": "a4e1c3b7-257b-4c52-b958-ce8855472d37",
+    "trigger": "de_bout_completed",
+    "text": "What a DOMINANT performance from top-seeded Alex Masaki, absolutely dismantling Linkin Luc 15-3 to punch his ticket to the final! That's the kind of statement bout that says \"I came here to win this thing!\" \ud83d\udd25\ud83e\udd47",
+    "created_at": "2026-02-15T23:00:08.502000"
+  },
+  {
+    "id": "4a0c5611-4da4-487f-bdff-b030551e7755",
+    "trigger": "de_bout_completed",
+    "text": "What a nail-biter! Roman Grigoriev survives a razor-thin 15-14 battle against Nickolas Hristov to punch his ticket to the final \u2014 that match could have gone either way and had everyone on the edge of their seats! \ud83d\udd25\u2694\ufe0f",
+    "created_at": "2026-02-15T23:00:23.853699"
+  },
+  {
+    "id": "3e54a830-84d9-4fb8-9e5c-31900958763c",
+    "trigger": "de_event_completed",
+    "text": "What a dominant performance by Alex Masaki \u2014 the top seed takes the gold with an emphatic 15-4 victory over second-seeded Roman Grigoriev in the final! Seeds 1 and 2 met for the title, and Masaki left absolutely no doubt about who's the best in Cadet Men Saber today! \ud83e\udd47\ud83c\udf89",
+    "created_at": "2026-02-15T23:01:49.906285"
+  }
+]

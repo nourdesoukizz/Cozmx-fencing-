@@ -90,6 +90,31 @@ async def assign_referee(event_name: str, body: AssignRequest):
         "referee_id": body.referee_id,
     })
 
+    # Notify referee via Telegram
+    from telegram_bot import get_chat_id
+    from telegram_service import send_telegram
+    from data_loader import get_referee_by_id
+    from config import BASE_URL
+
+    chat_id = get_chat_id(body.referee_id)
+    if chat_id:
+        referee = get_referee_by_id(body.referee_id)
+        top_f = bout.get("top_fencer")
+        bottom_f = bout.get("bottom_fencer")
+        top = f"{top_f['first_name']} {top_f['last_name']}" if top_f else "TBD"
+        bottom = f"{bottom_f['first_name']} {bottom_f['last_name']}" if bottom_f else "TBD"
+        strip = bout.get("strip_number") or "TBD"
+        token = referee.get("token", "") if referee else ""
+        name = referee.get("first_name", "") if referee else ""
+
+        msg = (
+            f"[FenceFlow] {name}, you've been assigned a DE bout in {event_name}.\n"
+            f"Matchup: {top} vs {bottom}\n"
+            f"Strip: {strip}\n"
+            f"Report result: {BASE_URL}/referee/{token}"
+        )
+        send_telegram(chat_id, msg)
+
     return {"status": "ok", "bout": bout}
 
 

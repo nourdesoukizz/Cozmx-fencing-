@@ -8,7 +8,7 @@ const COLORS = [
   '#8b5cf6', '#14b8a6', '#d946ef', '#fb923c', '#0ea5e9',
 ];
 
-export default function TrajectoryChart({ token, eventFilter, clubFilter }) {
+export default function TrajectoryChart({ token, eventFilter, clubFilter, refreshKey }) {
   const [trajectory, setTrajectory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hiddenFencers, setHiddenFencers] = useState(new Set());
@@ -21,7 +21,7 @@ export default function TrajectoryChart({ token, eventFilter, clubFilter }) {
     api.getCoachTrajectory(token)
       .then(data => { setTrajectory(data.trajectory || []); setLoading(false); })
       .catch(() => setLoading(false));
-  }, [token]);
+  }, [token, refreshKey]);
 
   // Get all fencer names that appear in trajectory
   const fencerNames = useMemo(() => {

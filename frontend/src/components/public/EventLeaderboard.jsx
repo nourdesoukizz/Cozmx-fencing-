@@ -99,7 +99,7 @@ export default function EventLeaderboard({ pools, events }) {
                 </tr>
               </thead>
               <tbody>
-                {ranked.map((f, i) => {
+                {ranked.slice(0, 8).map((f, i) => {
                   const ind = f.TS - f.TR;
                   const indClass = ind > 0 ? 'positive' : ind < 0 ? 'negative' : 'zero';
                   return (
