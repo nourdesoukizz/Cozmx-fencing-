@@ -8,7 +8,7 @@
 
 ## Demo
 
-[Watch the demo video](docs/Demo/0215.mov)
+[![Watch the demo video](docs/Demo/0215-Cover.jpg)](https://www.youtube.com/watch?v=Yai0l43kM9c)
 
 ## The Problem
 
