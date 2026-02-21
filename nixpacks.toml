@@ -3,9 +3,9 @@ nixPkgs = ["python311", "nodejs_20"]
 
 [phases.install]
 cmds = [
-    "(python -m ensurepip --upgrade 2>/dev/null || (python -c \"from urllib.request import urlretrieve; urlretrieve('https://bootstrap.pypa.io/get-pip.py', '/tmp/get-pip.py')\" && python /tmp/get-pip.py)) && cd backend && python -m pip install -r requirements.txt",
+    "python -m venv /app/venv && /app/venv/bin/pip install -r backend/requirements.txt",
     "cd frontend && npm install && npm run build"
 ]
 
 [start]
-cmd = "cd backend && python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-3001}"
+cmd = "cd backend && /app/venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-3001}"
