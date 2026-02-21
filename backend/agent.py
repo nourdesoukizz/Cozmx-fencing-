@@ -413,6 +413,12 @@ class TournamentAgent:
         save_submission(pool_id, sub)
         write_scores_csv()
 
+        # Feed approved pool into BT engine so coach analytics update
+        from routers.coach import _engine as coach_engine
+        if coach_engine:
+            coach_engine.ingest_pool(pool_id, pool.get("pool_number", 0),
+                                     pool.get("fencers", []), scores)
+
         entry = self._log_action("auto_approve", {
             "pool_id": pool_id,
             "event": pool["event"],
