@@ -59,9 +59,12 @@ export default function RefereePortal() {
 
   // WebSocket: listen for event_started to update UI live
   useSocket(useCallback((msg) => {
-    if (msg.type === 'event_started' || msg.type === 'submission_received' || msg.type === 'scores_approved') {
+    if (msg.type === 'event_started' || msg.type === 'submission_received'
+        || msg.type === 'submission_updated' || msg.type === 'scores_approved'
+        || msg.type === 'demo_reset') {
       fetchPools();
-    } else if (msg.type === 'de_referee_assigned' || msg.type === 'de_bout_completed') {
+    } else if (msg.type === 'de_referee_assigned' || msg.type === 'de_referees_assigned'
+               || msg.type === 'de_bout_completed') {
       fetchPools();
     }
   }, [fetchPools]));
