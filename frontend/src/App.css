@@ -4578,6 +4578,54 @@ body {
   margin-top: 4px;
 }
 
+/* ── Demo Reset Button ─────────────────────────────── */
+
+.demo-reset-area {
+  position: fixed;
+  bottom: 12px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+}
+
+.demo-reset-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.demo-reset-btn:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  color: var(--text-secondary);
+}
+
+.demo-reset-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.demo-reset-msg {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  animation: fadeIn 0.2s;
+}
+
+.demo-reset-msg.success {
+  color: var(--green);
+}
+
+.demo-reset-msg.error {
+  color: var(--red);
+}
+
 /* Mobile: single-column strips */
 @media (max-width: 768px) {
   .floor-strips {
