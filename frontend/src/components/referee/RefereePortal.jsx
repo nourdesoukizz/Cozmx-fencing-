@@ -61,7 +61,8 @@ export default function RefereePortal() {
   useSocket(useCallback((msg) => {
     if (msg.type === 'event_started' || msg.type === 'submission_received'
         || msg.type === 'submission_updated' || msg.type === 'scores_approved'
-        || msg.type === 'demo_reset') {
+        || msg.type === 'demo_reset' || msg.type === 'event_stopped'
+        || msg.type === 'de_bracket_created') {
       fetchPools();
     } else if (msg.type === 'de_referee_assigned' || msg.type === 'de_referees_assigned'
                || msg.type === 'de_bout_completed') {
@@ -189,8 +190,8 @@ export default function RefereePortal() {
           })}
         </div>
 
-        {/* DE Bouts Section */}
-        {deBouts.length > 0 && (
+        {/* DE Bouts Section — only show when all pool duties are complete */}
+        {deBouts.length > 0 && pools.every(p => getPoolStatus(p) !== 'needs_upload') && (
           <div>
             <div className="de-section-title">Your DE Bouts</div>
             {deBouts.map((bout) => (
