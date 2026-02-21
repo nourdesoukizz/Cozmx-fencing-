@@ -112,6 +112,18 @@ export default function DashboardPage() {
         fetchData();
       } else if (entry.action === 'flag_for_review') {
         addNotification('warning', 'Needs Review', entry.message || entry.reason || 'Pool flagged');
+      } else if (entry.action === 'ping_referee') {
+        addNotification('info', 'Referee Pinged', entry.message || 'Referee reminder sent');
+      } else if (entry.action === 'initial_ping') {
+        addNotification('info', 'Initial Ping', entry.message || 'Referees notified');
+      } else if (entry.action === 'config_changed') {
+        addNotification('info', 'Config Updated', entry.message || 'Agent config changed');
+      } else if (entry.action === 'create_de_bracket') {
+        addNotification('success', 'DE Bracket Created', entry.message || 'DE bracket created');
+        fetchData();
+      } else if (entry.action === 'assign_de_referees') {
+        addNotification('success', 'DE Referees Assigned', entry.message || 'DE referees assigned');
+        fetchData();
       }
       // Refresh agent panel if it's mounted
       if (window._agentPanelRefresh) window._agentPanelRefresh();
