@@ -703,12 +703,14 @@ class TournamentAgent:
             if chat_id:
                 top = bout["top_fencer"]
                 bottom = bout["bottom_fencer"]
+                token = ref.get("token", "")
+                link_line = f"Report result: {BASE_URL}/referee/{token}" if token else "Please report to your strip."
                 msg = (
                     f"[FenceFlow] DE Assignment: {event_name}\n"
                     f"Bout: {top['first_name']} {top['last_name']} (#{top.get('seed','')}) "
                     f"vs {bottom['first_name']} {bottom['last_name']} (#{bottom.get('seed','')})\n"
                     f"Strip: {strip or 'TBD'}\n"
-                    f"Please report to your strip."
+                    f"{link_line}"
                 )
                 send_telegram(chat_id, msg)
                 referees_pinged.add(ref_id)
