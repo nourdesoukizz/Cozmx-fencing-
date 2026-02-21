@@ -115,6 +115,28 @@ AGENT_TOOLS = [
             "required": ["event"],
         },
     },
+    {
+        "name": "create_de_bracket",
+        "description": "Create DE bracket for an event after all pools are approved and event is stopped.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "event": {"type": "string", "description": "Event name"},
+            },
+            "required": ["event"],
+        },
+    },
+    {
+        "name": "assign_de_referees",
+        "description": "Assign referees to all pending first-round DE bouts and notify them via Telegram.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "event": {"type": "string", "description": "Event name"},
+            },
+            "required": ["event"],
+        },
+    },
 ]
 
 AGENT_SYSTEM_PROMPT = """\
@@ -129,7 +151,9 @@ Your job is to monitor the tournament and take actions to keep it running smooth
 3. **Flag suspicious pools** — if confidence is low or there are error anomalies, flag for committee review
 4. **Ping laggard referees** — if referees haven't uploaded their sheets, send reminders (max {max_pings} pings, at least {ping_interval} min apart)
 5. **Stop completed events** — when ALL pools for an event are approved, stop it
-6. **Generate announcements** — for important milestones (all pools done, events stopping)
+6. **Create DE bracket** — when an event is stopped and all pools approved, create the DE bracket using `create_de_bracket`
+7. **Assign DE referees** — after creating the DE bracket, assign referees to first-round bouts using `assign_de_referees`
+8. **Generate announcements** — for important milestones (all pools done, events stopping, DE bracket created)
 
 ## Rules
 - ALWAYS check pending submissions first to see if there's work to do
@@ -317,6 +341,10 @@ class TournamentAgent:
                 return json.dumps(await self._tool_generate_announcement(tool_input["text"]))
             elif tool_name == "stop_event":
                 return json.dumps(await self._tool_stop_event(tool_input["event"]))
+            elif tool_name == "create_de_bracket":
+                return json.dumps(await self._tool_create_de_bracket(tool_input["event"]))
+            elif tool_name == "assign_de_referees":
+                return json.dumps(await self._tool_assign_de_referees(tool_input["event"]))
             else:
                 return json.dumps({"error": f"Unknown tool: {tool_name}"})
         except Exception as exc:
@@ -583,6 +611,125 @@ class TournamentAgent:
         await narr.generate("all_pools_complete", {"event_name": event_name, "pool_count": len(event_pools)})
 
         return {"success": True, "message": f"Event '{event_name}' stopped"}
+
+    async def _tool_create_de_bracket(self, event_name: str) -> dict:
+        from de_bracket import de_service
+        from data_loader import get_event_status
+
+        status = get_event_status(event_name)
+        if status != "stopped":
+            return {"error": f"Event '{event_name}' is not stopped (status: {status}). Stop event first."}
+
+        if event_name in de_service.brackets:
+            return {"error": f"DE bracket already exists for '{event_name}'"}
+
+        try:
+            bracket = de_service.create_bracket(event_name)
+        except ValueError as exc:
+            return {"error": str(exc)}
+
+        entry = self._log_action("create_de_bracket", {
+            "event": event_name,
+            "fencer_count": bracket["fencer_count"],
+            "bracket_size": bracket["bracket_size"],
+            "round_count": len(bracket["rounds"]),
+            "message": f"DE bracket created for {event_name} — {bracket['fencer_count']} fencers, Table of {bracket['bracket_size']}",
+        })
+
+        from main import manager
+        await manager.broadcast({"type": "de_bracket_created", "event": event_name})
+        await self._broadcast_action(entry)
+
+        # Trigger announcement
+        from announcer import announcer as ann
+        await ann.polish_custom(
+            f"Direct elimination bracket created for {event_name}. "
+            f"{bracket['fencer_count']} fencers seeded into a Table of {bracket['bracket_size']}. "
+            f"First-round bouts will begin shortly."
+        )
+
+        return {
+            "success": True,
+            "fencer_count": bracket["fencer_count"],
+            "bracket_size": bracket["bracket_size"],
+            "round_count": len(bracket["rounds"]),
+            "message": f"DE bracket created for {event_name}",
+        }
+
+    async def _tool_assign_de_referees(self, event_name: str) -> dict:
+        from de_bracket import de_service
+        from data_loader import get_referees, get_referee_by_id
+        from telegram_service import send_telegram
+        from telegram_bot import get_chat_id
+
+        bracket = de_service.brackets.get(event_name)
+        if not bracket:
+            return {"error": f"No DE bracket for '{event_name}'"}
+
+        if not bracket.get("rounds"):
+            return {"error": "Bracket has no rounds"}
+
+        # Get first-round pending bouts (skip byes)
+        first_round = bracket["rounds"][0]
+        pending_bouts = [b for b in first_round["bouts"]
+                         if b["status"] == "pending" and b["top_fencer"] and b["bottom_fencer"]]
+
+        if not pending_bouts:
+            return {"error": "No pending first-round bouts to assign"}
+
+        # Get available referees for this event
+        referees = get_referees(event=event_name)
+        if not referees:
+            return {"error": f"No referees found for event '{event_name}'"}
+
+        # Round-robin assign referees
+        assigned_count = 0
+        referees_pinged = set()
+        strips = [f"S{i+1}" for i in range(len(pending_bouts))]
+
+        for i, bout in enumerate(pending_bouts):
+            ref = referees[i % len(referees)]
+            ref_id = ref["id"]
+            strip = strips[i] if i < len(strips) else None
+
+            try:
+                de_service.assign_referee(event_name, bout["bout_id"], ref_id, strip)
+                assigned_count += 1
+            except ValueError:
+                continue
+
+            # Ping referee via Telegram
+            chat_id = get_chat_id(ref_id)
+            if chat_id:
+                top = bout["top_fencer"]
+                bottom = bout["bottom_fencer"]
+                msg = (
+                    f"[FenceFlow] DE Assignment: {event_name}\n"
+                    f"Bout: {top['first_name']} {top['last_name']} (#{top.get('seed','')}) "
+                    f"vs {bottom['first_name']} {bottom['last_name']} (#{bottom.get('seed','')})\n"
+                    f"Strip: {strip or 'TBD'}\n"
+                    f"Please report to your strip."
+                )
+                send_telegram(chat_id, msg)
+                referees_pinged.add(ref_id)
+
+        entry = self._log_action("assign_de_referees", {
+            "event": event_name,
+            "assigned": assigned_count,
+            "referees_pinged": len(referees_pinged),
+            "message": f"Assigned {assigned_count} DE bouts to referees, pinged {len(referees_pinged)} referees",
+        })
+
+        from main import manager
+        await manager.broadcast({"type": "de_referees_assigned", "event": event_name})
+        await self._broadcast_action(entry)
+
+        return {
+            "success": True,
+            "assigned": assigned_count,
+            "referees_pinged": len(referees_pinged),
+            "message": f"Assigned {assigned_count} first-round bouts, pinged {len(referees_pinged)} referees",
+        }
 
     # ── Core AI Tick (Opus 4.6 with Tool Use) ────────────────────
 
