@@ -202,5 +202,8 @@ async def report_bout(event_name: str, body: ReportRequest):
 @router.get("/referee-bouts/{referee_id}")
 def get_referee_bouts(referee_id: int):
     from de_bracket import de_service
-    bouts = de_service.get_referee_bouts(referee_id)
+    from data_loader import get_event_status
+    all_bouts = de_service.get_referee_bouts(referee_id)
+    # Only return bouts for events whose pool phase is complete (status=stopped)
+    bouts = [b for b in all_bouts if get_event_status(b["event"]) == "stopped"]
     return {"bouts": bouts}
