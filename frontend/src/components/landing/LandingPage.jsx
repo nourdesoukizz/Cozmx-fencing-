@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ROLES = [
@@ -46,9 +46,36 @@ const ROLES = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const videoRef = useRef(null);
+
+  const handleVideoLoaded = () => {
+    const v = videoRef.current;
+    if (v) v.currentTime = 1;
+  };
+
+  const handleVideoLoop = () => {
+    const v = videoRef.current;
+    if (v) {
+      v.currentTime = 1;
+      v.play();
+    }
+  };
 
   return (
     <div className="landing-page">
+      <video
+        ref={videoRef}
+        className="landing-bg-video"
+        autoPlay
+        loop
+        muted
+        playsInline
+        onLoadedMetadata={handleVideoLoaded}
+        onEnded={handleVideoLoop}
+      >
+        <source src="/video/fence-video.mp4" type="video/mp4" />
+      </video>
+
       <div className="landing-brand">
         <div className="brand-name">
           <h1>FenceFlow</h1>
