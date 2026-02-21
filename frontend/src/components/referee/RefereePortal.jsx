@@ -91,8 +91,9 @@ export default function RefereePortal() {
 
   const isEventStarted = (pool) => {
     // In token mode, the backend attaches event_status to each pool
+    // Uploads are allowed in both "started" and "stopped" states
     if (isTokenMode) {
-      return pool.event_status === 'started';
+      return pool.event_status === 'started' || pool.event_status === 'stopped';
     }
     // In shared-code mode, assume started (backward compat)
     return true;
@@ -163,7 +164,7 @@ export default function RefereePortal() {
                   <p>{pool.fencer_count} fencers</p>
                   <p>Ref: {formatRefereeName(pool.referee)}</p>
                 </div>
-                {!eventStarted && (
+                {!eventStarted && pool.event_status === 'not_started' && (
                   <div className="event-not-started-notice">
                     Event not started yet — uploads will be enabled when the bout committee starts this event.
                   </div>
