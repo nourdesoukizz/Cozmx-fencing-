@@ -224,6 +224,14 @@ class TournamentAgent:
         from main import manager
         await manager.broadcast({"type": "agent_action", "entry": entry})
 
+    # ── Reset ────────────────────────────────────────────────────
+
+    def reset(self):
+        """Reset all agent state for a fresh demo run."""
+        self.tracked_events = {}
+        self.action_log = []
+        self._save_state()
+
     # ── Public API ───────────────────────────────────────────────
 
     def get_status(self) -> dict:

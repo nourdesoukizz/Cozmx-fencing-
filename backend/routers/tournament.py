@@ -190,27 +190,8 @@ async def demo_reset():
     coach._insight_cache.clear()
     coach._chat_history.clear()
 
-    # 5. Reset agent tracked state for this event
-    if event_name in tournament_agent.tracked_events:
-        tracked = tournament_agent.tracked_events[event_name]
-        tracked["flagged_pool_ids"] = [
-            pid for pid in tracked.get("flagged_pool_ids", [])
-            if pool_4 and pid != pool_4["id"]
-        ]
-        # Reset referee ping tracking for pool 4's referee
-        if pool_4:
-            ref_name = f"{pool_4['referee']['first_name'].lower()} {pool_4['referee']['last_name'].lower()}"
-            referees = get_referees(event=event_name)
-            for ref in referees:
-                if f"{ref['first_name'].lower()} {ref['last_name'].lower()}" == ref_name:
-                    ref_id_str = str(ref["id"])
-                    if ref_id_str in tracked.get("referee_pings", {}):
-                        tracked["referee_pings"][ref_id_str] = {
-                            "ping_count": 0,
-                            "last_ping_at": None,
-                        }
-                    break
-    tournament_agent._save_state()
+    # 5. Reset all agent state (tracked_events, action_log) for a fresh demo
+    tournament_agent.reset()
 
     # 6. Broadcast reset
     from main import manager
