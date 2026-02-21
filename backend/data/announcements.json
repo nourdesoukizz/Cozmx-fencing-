@@ -668,5 +668,165 @@
     "status": "pending",
     "created_at": "2026-02-15T23:01:46.226682",
     "announced_at": null
+  },
+  {
+    "id": "b4e47489-96aa-48b9-ba9c-991af3d61697",
+    "type": "auto",
+    "trigger": "event_started",
+    "raw_text": "The Cadet Men Saber event has started. Referees should report to their strips.",
+    "polished_text": "The Cadet Men's Saber event is now underway. All assigned referees, please report to your strips immediately.",
+    "status": "pending",
+    "created_at": "2026-02-20T20:21:31.691835",
+    "announced_at": null
+  },
+  {
+    "id": "98651635-0b1e-482e-ac00-ab0bf4dee451",
+    "type": "auto",
+    "trigger": "all_pools_complete",
+    "raw_text": "All 7 pools for Cadet Men Saber are complete.",
+    "polished_text": "All seven pools for Cadet Men's Saber are now complete.",
+    "status": "pending",
+    "created_at": "2026-02-20T20:21:54.022121",
+    "announced_at": null
+  },
+  {
+    "id": "64af3c26-4d2c-46d5-af37-5c21ea19c3e3",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Attention please: Cadet Men Saber pool round is now complete. The Direct Elimination bracket is being created. Fencers, please stay nearby \u2014 DE bouts will begin shortly.",
+    "polished_text": "The Cadet Men's Saber pool round is now complete, and the Direct Elimination bracket is being prepared. Fencers, please remain in the venue area \u2014 DE bouts will begin shortly.",
+    "status": "pending",
+    "created_at": "2026-02-20T20:22:03.696328",
+    "announced_at": null
+  },
+  {
+    "id": "9cf133c6-57e0-42e4-8f04-2e0839782edc",
+    "type": "auto",
+    "trigger": "all_pools_complete",
+    "raw_text": "All 7 pools for Cadet Men Saber are complete.",
+    "polished_text": "All seven pools for Cadet Men's Saber are now complete.",
+    "status": "pending",
+    "created_at": "2026-02-20T20:50:56.368191",
+    "announced_at": null
+  },
+  {
+    "id": "08f3d3b1-c40b-4b0e-98c0-c24192c2ca47",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Direct elimination bracket created for Cadet Men Saber. 49 fencers seeded into a Table of 64. First-round bouts will begin shortly.",
+    "polished_text": "The direct elimination bracket for Cadet Men's Saber has been posted, with 49 fencers seeded into a table of 64. First-round bouts will begin shortly\u2014all fencers, please report to your assigned strips.",
+    "status": "announced",
+    "created_at": "2026-02-20T20:51:05.880446",
+    "announced_at": "2026-02-20T20:57:04.675153"
+  },
+  {
+    "id": "1749edfe-f0df-49da-9084-2261b9d5b6e1",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Attention fencers! All pools for Cadet Men Saber are now complete. The DE bracket is being generated \u2014 please check the posted seedings and stay nearby for your first DE bout assignments. Thank you!",
+    "polished_text": "Attention fencers \u2014 all pools for Cadet Men's Saber are now complete. The direct elimination bracket is being generated, so please check the posted seedings and remain nearby for your first DE bout assignments.",
+    "status": "announced",
+    "created_at": "2026-02-20T20:51:07.898939",
+    "announced_at": "2026-02-20T20:56:44.918714"
+  },
+  {
+    "id": "cb3fee39-3b71-49ed-981b-f132908f62ee",
+    "type": "auto",
+    "trigger": "event_started",
+    "raw_text": "The Cadet Men Saber event has started. Referees should report to their strips.",
+    "polished_text": "The Cadet Men's Saber event is now underway. All assigned referees, please report to your strips immediately.",
+    "status": "pending",
+    "created_at": "2026-02-20T20:57:32.725638",
+    "announced_at": null
+  },
+  {
+    "id": "523ae4bd-e02a-4492-a9c3-b3e4a9f159e1",
+    "type": "auto",
+    "trigger": "all_pools_complete",
+    "raw_text": "All 7 pools for Cadet Men Saber are complete.",
+    "polished_text": "All seven pools for Cadet Men's Saber are now complete.",
+    "status": "pending",
+    "created_at": "2026-02-20T21:00:01.847486",
+    "announced_at": null
+  },
+  {
+    "id": "cb130923-e199-4834-ae87-49842795dc29",
+    "type": "auto",
+    "trigger": "all_pools_complete",
+    "raw_text": "All 7 pools for Cadet Men Saber are complete.",
+    "polished_text": "All seven pools in Cadet Men's Saber are now complete.",
+    "status": "pending",
+    "created_at": "2026-02-20T21:03:53.521484",
+    "announced_at": null
+  },
+  {
+    "id": "b3ea41b8-6a01-4ffb-9207-59fa31bdc07e",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Attention fencers and coaches: All pools for Cadet Men Saber are now complete. Seeding is being finalized and the Direct Elimination bracket will be posted shortly. Please stay nearby for bout calls. Thank you!",
+    "polished_text": "Attention fencers and coaches: all pools for Cadet Men's Saber are now complete. Seeding is being finalized and the Direct Elimination bracket will be posted shortly \u2014 please stay nearby for bout calls.",
+    "status": "pending",
+    "created_at": "2026-02-20T21:03:59.151528",
+    "announced_at": null
+  },
+  {
+    "id": "be6133ca-de11-4e29-9531-1ff00359019e",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Direct elimination bracket created for Cadet Men Saber. 49 fencers seeded into a Table of 64. First-round bouts will begin shortly.",
+    "polished_text": "The direct elimination bracket for Cadet Men's Saber has been posted, with 49 fencers seeded into a table of 64. First-round bouts will begin shortly \u2014 all fencers, please report to your assigned strips.",
+    "status": "pending",
+    "created_at": "2026-02-20T21:04:04.021680",
+    "announced_at": null
+  },
+  {
+    "id": "60547c8a-8d62-49a6-8222-61cc41d86bc0",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "The Direct Elimination bracket for Cadet Men Saber has been posted. Referees have been assigned and notified. First-round bouts will begin shortly \u2014 fencers, please check the bracket and report to your assigned strip. Good luck! \ud83e\udd3a",
+    "polished_text": "The Direct Elimination bracket for Cadet Men's Saber has been posted, and referees have been assigned. Fencers, please check the bracket and report to your assigned strip \u2014 first-round bouts will begin shortly.",
+    "status": "announced",
+    "created_at": "2026-02-20T21:04:21.700148",
+    "announced_at": "2026-02-20T21:04:44.714873"
+  },
+  {
+    "id": "3aabe109-1178-41dd-9cbb-9d9d6535c98e",
+    "type": "auto",
+    "trigger": "event_started",
+    "raw_text": "The Cadet Men Saber event has started. Referees should report to their strips.",
+    "polished_text": "The Cadet Men's Saber event is now underway. All assigned referees, please report to your strips immediately.",
+    "status": "announced",
+    "created_at": "2026-02-20T21:05:29.889913",
+    "announced_at": "2026-02-20T21:06:38.665814"
+  },
+  {
+    "id": "0253f2c5-4f1f-4a80-9a9c-2fef7e2c14d6",
+    "type": "auto",
+    "trigger": "de_bout_completed",
+    "raw_text": "Kai AIKMAN defeats Sudhir VENKATRAMAN 15-0 in the Table of 64 of Cadet Men Saber.",
+    "polished_text": "In the Table of 64 of Cadet Men's Saber, Kai AIKMAN defeats Sudhir VENKATRAMAN, 15\u20130.",
+    "status": "pending",
+    "created_at": "2026-02-20T21:05:55.691544",
+    "announced_at": null
+  },
+  {
+    "id": "2c8692c0-9170-44be-9703-73ca138e5040",
+    "type": "auto",
+    "trigger": "all_pools_complete",
+    "raw_text": "All 7 pools for Cadet Men Saber are complete.",
+    "polished_text": "The pool round for Cadet Men's Saber is now complete, with all seven pools reporting final results.",
+    "status": "pending",
+    "created_at": "2026-02-20T21:09:04.596070",
+    "announced_at": null
+  },
+  {
+    "id": "c3aa1518-049e-46d9-9433-ff21fa030e04",
+    "type": "custom",
+    "trigger": "custom",
+    "raw_text": "Attention fencers: All pools for Cadet Men Saber are now complete. The Direct Elimination bracket is being prepared. Please stay nearby for bout assignments.",
+    "polished_text": "All pools for Cadet Men's Saber are now complete, and the Direct Elimination bracket is being prepared. All Cadet Men's Saber fencers, please remain in the venue area for bout assignments.",
+    "status": "pending",
+    "created_at": "2026-02-20T21:09:14.168918",
+    "announced_at": null
   }
 ]
