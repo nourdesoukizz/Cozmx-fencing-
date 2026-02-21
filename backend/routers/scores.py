@@ -194,6 +194,7 @@ async def referee_edit_scores(pool_id: int, body: RefereeEditRequest):
     existing["scores"] = body.scores
     existing["anomalies"] = anomalies
     existing["cell_confidence"] = None  # Clear since referee manually edited
+    existing["confidence"] = 1.0  # Referee-verified scores
     existing["status"] = "pending_review"
 
     save_submission(pool_id, existing)
