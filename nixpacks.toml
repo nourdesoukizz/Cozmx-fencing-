@@ -1,9 +1,9 @@
 [phases.setup]
-nixPkgs = ["python311", "python311Packages.pip", "nodejs_20"]
+nixPkgs = ["python311", "nodejs_20"]
 
 [phases.install]
 cmds = [
-    "cd backend && python -m pip install -r requirements.txt",
+    "(python -m ensurepip --upgrade 2>/dev/null || (python -c \"from urllib.request import urlretrieve; urlretrieve('https://bootstrap.pypa.io/get-pip.py', '/tmp/get-pip.py')\" && python /tmp/get-pip.py)) && cd backend && python -m pip install -r requirements.txt",
     "cd frontend && npm install && npm run build"
 ]
 
