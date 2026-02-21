@@ -539,6 +539,16 @@ def get_pool_leaderboard(event_name: str) -> list[dict]:
     return ranked
 
 
+def clear_submission(pool_id: int):
+    """Remove a pool's submission from memory and reset pool status."""
+    if pool_id in _submissions:
+        del _submissions[pool_id]
+    pool = _pool_by_id.get(pool_id)
+    if pool:
+        pool["status"] = "not_reported"
+        pool.pop("submission", None)
+
+
 def get_pools_for_referee(referee_id: int) -> list[dict]:
     referee = _referee_by_id.get(referee_id)
     if not referee:
