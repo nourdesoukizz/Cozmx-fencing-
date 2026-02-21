@@ -5,3 +5,11 @@ dist/
 __pycache__/
 backend/uploads/*
 !backend/uploads/.gitkeep
+# Allow demo score sheet photos for deployment
+!backend/uploads/pool_1_*.HEIC
+!backend/uploads/pool_2_*.jpg
+!backend/uploads/pool_3_*.jpg
+!backend/uploads/pool_4_*.jpg
+!backend/uploads/pool_5_*.jpg
+!backend/uploads/pool_6_*.jpg
+!backend/uploads/pool_7_*.jpg
