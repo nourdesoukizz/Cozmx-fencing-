@@ -1,10 +1,12 @@
 from fastapi import APIRouter, HTTPException
 from data_loader import (
     get_tournament, get_events, get_event_status, set_event_status, get_referees,
+    clear_submission, write_scores_csv, get_pools, get_all_fencers, get_all_pools,
+    get_all_submissions_dict,
 )
 from telegram_service import send_telegram
 from telegram_bot import get_chat_id
-from config import BASE_URL
+from config import BASE_URL, DATA_DIR
 
 router = APIRouter(prefix="/api/tournament", tags=["tournament"])
 
@@ -143,4 +145,78 @@ async def ping_referees(event_name: str):
         "failed_count": failed_count,
         "skipped_count": skipped_count,
         "details": details,
+    }
+
+
+@router.post("/demo/reset")
+async def demo_reset():
+    """Reset demo state: clear Pool 4 submission, delete DE bracket, reset analytics."""
+    from de_bracket import de_service
+    from bt_engine import BTEngine
+    from agent import agent as tournament_agent
+    from routers import coach
+
+    event_name = "Cadet Men Saber"
+    demo_pool_number = 4
+
+    # 1. Find and clear Pool 4 submission
+    event_pools = get_pools(event=event_name)
+    pool_4 = None
+    for p in event_pools:
+        if p["pool_number"] == demo_pool_number:
+            pool_4 = p
+            break
+
+    if pool_4:
+        clear_submission(pool_4["id"])
+        write_scores_csv()
+
+    # 2. Delete DE bracket if it exists
+    if event_name in de_service.brackets:
+        del de_service.brackets[event_name]
+        de_service._save()
+
+    # 3. Reset event status to "started"
+    set_event_status(event_name, "started")
+
+    # 4. Reinitialize Bradley-Terry engine
+    manual_bouts_path = DATA_DIR / "manual_bouts.csv"
+    if manual_bouts_path.exists():
+        manual_bouts_path.write_text("fencer_a,fencer_b,score_a,score_b,source,timestamp\n")
+
+    engine = BTEngine(DATA_DIR)
+    engine.initialize(get_all_fencers(), get_all_pools(), get_all_submissions_dict())
+    coach._engine = engine
+    coach._insight_cache.clear()
+    coach._chat_history.clear()
+
+    # 5. Reset agent tracked state for this event
+    if event_name in tournament_agent.tracked_events:
+        tracked = tournament_agent.tracked_events[event_name]
+        tracked["flagged_pool_ids"] = [
+            pid for pid in tracked.get("flagged_pool_ids", [])
+            if pool_4 and pid != pool_4["id"]
+        ]
+        # Reset referee ping tracking for pool 4's referee
+        if pool_4:
+            ref_name = f"{pool_4['referee']['first_name'].lower()} {pool_4['referee']['last_name'].lower()}"
+            referees = get_referees(event=event_name)
+            for ref in referees:
+                if f"{ref['first_name'].lower()} {ref['last_name'].lower()}" == ref_name:
+                    ref_id_str = str(ref["id"])
+                    if ref_id_str in tracked.get("referee_pings", {}):
+                        tracked["referee_pings"][ref_id_str] = {
+                            "ping_count": 0,
+                            "last_ping_at": None,
+                        }
+                    break
+    tournament_agent._save_state()
+
+    # 6. Broadcast reset
+    from main import manager
+    await manager.broadcast({"type": "demo_reset", "event": event_name})
+
+    return {
+        "success": True,
+        "message": "Demo reset complete. Pool 4 cleared, DE bracket deleted, analytics reinitialized.",
     }
