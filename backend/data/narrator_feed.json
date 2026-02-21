@@ -382,5 +382,71 @@
     "trigger": "de_event_completed",
     "text": "What a dominant performance by Alex Masaki \u2014 the top seed takes the gold with an emphatic 15-4 victory over second-seeded Roman Grigoriev in the final! Seeds 1 and 2 met for the title, and Masaki left absolutely no doubt about who's the best in Cadet Men Saber today! \ud83e\udd47\ud83c\udf89",
     "created_at": "2026-02-15T23:01:49.906285"
+  },
+  {
+    "id": "48d9b386-2b61-4843-bdd2-26f763cdc52b",
+    "trigger": "event_started",
+    "text": "En garde! The Cadet Men Saber event is officially underway, and these young fencers are ready to light up the strip with fast-paced, electrifying action \u2014 let's see who brought their A-game today! \u2694\ufe0f",
+    "created_at": "2026-02-20T20:21:35.426693"
+  },
+  {
+    "id": "e88ea519-a995-4dab-9e02-0be28a5e330d",
+    "trigger": "all_pools_complete",
+    "text": "That's a wrap on all seven pools in Cadet Men Saber \u2014 what a fantastic start to the day! Time to crunch those indicators and get ready for the real fireworks in the direct elimination rounds! \u2694\ufe0f\ud83c\udf89",
+    "created_at": "2026-02-20T20:21:57.773867"
+  },
+  {
+    "id": "094d9b1f-be6c-46be-b3a4-2e70fcbc1590",
+    "trigger": "pool_approved",
+    "text": "Yahia ELSAYED absolutely dominated Pool 4, going undefeated at 6-0 with an impressive +20 indicator \u2014 that's the kind of performance that puts everyone else on notice! \ud83d\udd25 Tight three-way battle for second between Vito ZENG, Kai AIKMAN, and Jake YANG, all finishing with 4 victories each.",
+    "created_at": "2026-02-20T20:50:52.834460"
+  },
+  {
+    "id": "22610520-9775-47dd-b1e6-a71727ff89be",
+    "trigger": "all_pools_complete",
+    "text": "That's a wrap on all seven pools in Cadet Men Saber \u2014 what a start to the day! Time to crunch those indicators and get ready for the real fireworks in the direct elimination rounds! \u2694\ufe0f\ud83c\udf89",
+    "created_at": "2026-02-20T20:50:59.914099"
+  },
+  {
+    "id": "bb0bf1f0-e0d8-4753-90ca-53658e719c1b",
+    "trigger": "event_started",
+    "text": "The Cadet Men Saber event is officially underway and these young athletes are ready to bring the speed and intensity that makes saber the most thrilling weapon in fencing! Let's see who's going to light up the strip today! \u2694\ufe0f",
+    "created_at": "2026-02-20T20:57:36.464365"
+  },
+  {
+    "id": "4f4e0ef2-63e3-4ffe-bf11-0c300421ef5b",
+    "trigger": "all_pools_complete",
+    "text": "That's a wrap on all seven pools in Cadet Men Saber \u2014 what a start to the day! Time to crunch those indicators and see who's riding high into the direct elimination rounds! \u2694\ufe0f\ud83c\udf89",
+    "created_at": "2026-02-20T21:00:05.157163"
+  },
+  {
+    "id": "49005fb7-9e56-4013-97b1-b2f9584251cd",
+    "trigger": "pool_approved",
+    "text": "Yahia ELSAYED was absolutely on fire in Pool 4, going undefeated at 6-0 with an impressive +20 indicator \u2014 that's dominance right there! \ud83d\udd25 Tight three-way battle for second between Vito ZENG, Kai AIKMAN, and Jake YANG, all finishing with 4 victories each.",
+    "created_at": "2026-02-20T21:03:46.910420"
+  },
+  {
+    "id": "5066e1b2-22b2-4038-93e6-2e1c9ab05ed0",
+    "trigger": "all_pools_complete",
+    "text": "That's a wrap on all seven pools in Cadet Men Saber \u2014 what a start to the day! \ud83c\udf89 Time to check those indicators and get ready for the direct elimination rounds, where the real fireworks begin! \u2694\ufe0f",
+    "created_at": "2026-02-20T21:03:57.071430"
+  },
+  {
+    "id": "97c2e0f9-1289-4672-b4aa-e7edb68b7148",
+    "trigger": "event_started",
+    "text": "Welcome to Cadet Men's Saber, folks \u2014 blades are about to fly and things are going to move FAST! Let's see who brought their A-game today! \u2694\ufe0f",
+    "created_at": "2026-02-20T21:05:33.577486"
+  },
+  {
+    "id": "15c7e3c1-9602-4aef-8dfd-55da99de9106",
+    "trigger": "de_bout_completed",
+    "text": "Kai Aikman puts on an absolute masterclass, shutting out Sudhir Venkatraman 15-0 \u2014 that's about as dominant as it gets in the table of 64! The 17th seed looked razor-sharp on every single touch and sends a serious message to the rest of the field! \ud83d\udd25",
+    "created_at": "2026-02-20T21:05:59.386887"
+  },
+  {
+    "id": "d0f048ee-314c-4228-b2f0-5e752bbfa766",
+    "trigger": "all_pools_complete",
+    "text": "That's a wrap on all seven pools in Cadet Men Saber \u2014 what a thrilling start to the day! \ud83c\udf89 Now the real fun begins as these young warriors gear up for the direct elimination rounds!",
+    "created_at": "2026-02-20T21:09:08.174144"
   }
 ]
