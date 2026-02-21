@@ -38,6 +38,9 @@ export default function DEManagement({ pools, referees, addNotification, onRefre
 
   useEffect(() => { fetchBrackets(); }, [fetchBrackets]);
 
+  // Re-fetch brackets when pools change (e.g. after WebSocket refresh)
+  useEffect(() => { fetchBrackets(); }, [pools, fetchBrackets]);
+
   // When event is selected, load seedings or bracket
   useEffect(() => {
     if (!selectedEvent) {
@@ -292,6 +295,7 @@ function BoutRow({ bout, referees, onAssign }) {
   const isCompleted = bout.status === 'completed';
   const isPending = bout.status === 'pending';
   const hasBothFencers = bout.top_fencer && bout.bottom_fencer;
+  const hasReferee = Boolean(bout.referee_id);
 
   const fmtFencer = (f) => {
     if (!f) return '—';
@@ -313,10 +317,10 @@ function BoutRow({ bout, referees, onAssign }) {
         {isPending && hasBothFencers && <span style={{ color: 'var(--blue)' }}>Ready</span>}
       </td>
       <td>
-        {isCompleted && (
+        {(isCompleted || (isPending && hasReferee)) && (
           <span style={{ fontSize: 12 }}>{bout.referee_name || '—'}{bout.strip_number ? ` / Strip ${bout.strip_number}` : ''}</span>
         )}
-        {isPending && hasBothFencers && (
+        {isPending && hasBothFencers && !hasReferee && (
           <span style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
             <select
               className="de-assign-dropdown"
