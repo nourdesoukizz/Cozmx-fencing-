@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
-from config import PORT, UPLOADS_DIR, DATA_DIR, ANTHROPIC_API_KEY, SONNET_MODEL, OPUS_MODEL
+from config import PORT, UPLOADS_DIR, DATA_DIR, ANTHROPIC_API_KEY, SONNET_MODEL, OPUS_MODEL, BASE_URL
 from data_loader import load_data, get_referee_by_token, get_pools_for_referee, get_event_status
 from data_loader import get_all_fencers, get_all_pools, get_all_submissions_dict
 from bt_engine import BTEngine
@@ -87,6 +87,9 @@ async def lifespan(app: FastAPI):
     coach._engine = engine
     # Start Telegram bot polling in background thread
     start_telegram_bot()
+    # Warn if BASE_URL is still a local address
+    if "localhost" in BASE_URL or "192.168" in BASE_URL:
+        print(f"[WARNING] BASE_URL is '{BASE_URL}' — set BASE_URL env var to your Railway public URL for Telegram links to work")
     # Start tournament agent background task
     from agent import agent as tournament_agent
     tournament_agent.start_background()
@@ -159,4 +162,4 @@ if FRONTEND_DIST.exists():
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=PORT, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=PORT)
