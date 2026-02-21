@@ -756,6 +756,7 @@ class TournamentAgent:
             return
 
         # Ensure tracking entries exist and handle initial pings
+        sent_initial_pings = False
         for ev in running_events:
             event_name = ev["name"]
             if event_name not in self.tracked_events:
@@ -772,6 +773,13 @@ class TournamentAgent:
                 tracked["initial_ping_sent"] = True
                 tracked["initial_ping_at"] = datetime.now().isoformat()
                 self._save_state()
+                sent_initial_pings = True
+
+        # Don't process in the same tick as initial pings —
+        # gives referees time to see the upload interface before
+        # the agent can approve/stop/create DE in this cycle.
+        if sent_initial_pings:
+            return
 
         # Build current state summary for the AI
         current_state = self._build_state_summary(running_events)
