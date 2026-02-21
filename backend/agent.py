@@ -294,6 +294,9 @@ class TournamentAgent:
             entry = self._log_action("config_changed", {"changes": changed})
             self._save_state()
             await self._broadcast_action(entry)
+            # Trigger an immediate tick so the agent re-evaluates with new config
+            if self.enabled:
+                asyncio.create_task(self._tick())
 
     # ── Background Task ──────────────────────────────────────────
 
@@ -1047,23 +1050,43 @@ class TournamentAgent:
             self._save_state()
 
     async def _do_initial_ping(self, event_name: str):
-        from data_loader import get_referees
+        from data_loader import get_referees, get_pools, get_submission
         from telegram_service import send_telegram
         from telegram_bot import get_chat_id
 
         referees = get_referees(event=event_name)
+        event_pools = get_pools(event=event_name)
+
+        # Build map: referee_id → list of unsubmitted pools (same pattern as _reping_referees_deterministic)
+        referee_unsubmitted: dict[int, list[dict]] = {}
+        for pool in event_pools:
+            sub = get_submission(pool["id"])
+            if sub and sub.get("status") in ("approved", "pending_review"):
+                continue
+            ref_name_key = f"{pool['referee']['first_name'].lower()} {pool['referee']['last_name'].lower()}"
+            for ref in referees:
+                ref_key = f"{ref['first_name'].lower()} {ref['last_name'].lower()}"
+                if ref_key == ref_name_key:
+                    if ref["id"] not in referee_unsubmitted:
+                        referee_unsubmitted[ref["id"]] = []
+                    referee_unsubmitted[ref["id"]].append(pool)
+                    break
+
         sent = 0
         skipped = 0
 
         for ref in referees:
+            if ref["id"] not in referee_unsubmitted:
+                continue
             chat_id = get_chat_id(ref["id"])
             if not chat_id:
                 skipped += 1
                 continue
             first_name = ref.get("first_name", "")
             token = ref.get("token", "")
+            pool_nums = ", ".join(str(p["pool_number"]) for p in referee_unsubmitted[ref["id"]])
             body = (
-                f"[FenceFlow] {first_name}, your pools for {event_name} are ready. "
+                f"[FenceFlow] {first_name}, your pool(s) {pool_nums} for {event_name} are ready. "
                 f"View & upload: {BASE_URL}/referee/{token}"
             )
             send_telegram(chat_id, body)
@@ -1073,7 +1096,7 @@ class TournamentAgent:
             "event": event_name,
             "sent": sent,
             "skipped": skipped,
-            "message": f"Pinged {sent} referees for {event_name} ({skipped} not registered)",
+            "message": f"Pinged {sent} referees with unsubmitted pools for {event_name} ({skipped} not registered)",
         })
         await self._broadcast_action(entry)
 
