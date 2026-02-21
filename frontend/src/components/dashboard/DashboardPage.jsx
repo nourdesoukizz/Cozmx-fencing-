@@ -146,6 +146,16 @@ export default function DashboardPage() {
         ...prev,
         [msg.entry_id]: { ...prev[msg.entry_id], done: true },
       }));
+    } else if (msg.type === 'submission_updated') {
+      addNotification('info', 'Submission Updated', `Pool ${msg.pool_id} scores updated`);
+      fetchData();
+    } else if (msg.type === 'demo_reset') {
+      addNotification('info', 'Demo Reset', 'Demo state has been reset');
+      fetchData();
+      fetchNarrator();
+    } else if (msg.type === 'de_referees_assigned') {
+      addNotification('success', 'DE Referees Assigned', `${msg.event} referees assigned`);
+      fetchData();
     } else if (msg.type === 'de_bracket_created') {
       addNotification('success', 'DE Bracket Created', `${msg.event} bracket created`);
       fetchData();
